@@ -410,7 +410,7 @@ If you want to check your commands without sending messages to the chat, you can
 
 ## 4 Concluding words
 
-Willowbot has been in development for months and extended piece by piece whenever new scenarios to be covered arose. By now means it should be considered feature complete, but it still is and probably will be for a long time under active development, including efforts to make Willowbot more accessible.
+Willowbot has been in development for months and extended piece by piece whenever new scenarios to be covered arose. By no means it should be considered feature complete, but it still is and probably will be for a long time under active development, including efforts to make Willowbot more accessible.
 
 Feel free to use the code as an inspiration for your own IRC projects and to report any issues that arise. I will try to fix them as soon as possible.
 
