@@ -457,7 +457,7 @@ Feel free to use the code as an inspiration for your own IRC projects and to rep
     * subscription count needed to trigger the associated message
 * `suppressFollowupSingles`
     * type: boolean
-    * used in conjunction with `triggerType` `subGiftMulti` only; suppresses the evaluation of single-subscription gift messages showing up after the multi subscription gift until the according quantity of the multi-subscription gifts is reached
+    * used in conjunction with `triggerType` `subGiftMulti` only; suppresses the evaluation of single-subscription gift messages showing up after the multi-subscription gift until the according quantity of the multi-subscription gifts is reached
 * `triggerType`
     * type: string
     * `raid`, `sub`, `subGiftContinued`, `subGiftMulti`, `subGiftSingle`, `subPrime`
