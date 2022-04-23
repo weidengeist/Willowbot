@@ -119,38 +119,7 @@ def getCommands(config):
     for c in commands_raid:
       del commands[c]
 
-  # Add fallback commands for subs and raids to the appropriate commands sublists.
-  # Those will only be processed if the user has not defined his/her own.
-  commands_raid['raidFallback'] = {
-    'debug'       : '$raidersChannel joins the channel with $raidersCount viewers.',
-    'triggerType' : 'raid'
-  }
-  commands_sub['firstSubFallback'] = {
-    'debug'       : '$subName is a new subscriber on this channel.',
-    'triggerType' : 'sub',
-    'subLevel'    : 1
-  }
-  commands_sub['subFallback'] = {
-    'debug'       : '$subName subscribes for month $subMonth on this channel.',
-    'triggerType' : 'sub'
-  }
-  commands_sub['subGiftContinuedFallback'] = {
-    'debug'       : '$subName continues the gifted sub he/she received from $subGiftGifter.',
-    'triggerType' : 'subGiftContinued'
-  }
-  commands_sub['subGiftSingleFallback'] = {
-    'debug'       : '$subGiftGifter gifts a sub to $subGiftRecipient and now has a total of $subGiftCountTotal gifted subs.',
-    'triggerType' : 'subGiftSingle'
-  }
-  commands_sub['subGiftMultiFallback'] = {
-    'debug'                   : '$subGiftGifter gifts a sub to $subGiftCount users and now has a total of $subGiftCountTotal gifted subs.',
-    'triggerType'             : 'subGiftMulti',
-    'suppressFollowupSingles' : True
-  }
-  commands_sub['subPrimeFallback'] = {
-    'debug'       : '$subName has just subscribed for month $subMonth via Twitch Prime.',
-    'triggerType' : 'subPrime'
-  }
+  #print("timed", len(commands_timed), "sub", len(commands_sub)
 
   return {'general' : commands, 'timed' : commands_timed, 'sub' : commands_sub, 'raid' : commands_raid, 'status' : status}
   

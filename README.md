@@ -156,7 +156,7 @@ commands = {
   }
 }
 ```
-Besides a level definition, this command uses the regular expression `.*` to match *any* message posted by a new user. Beware where you put that reaction! The pattern `.*` matches absolutely every message. Although Willowbot will not react to every message unless the user’s level is 0, it will not process any other reaction definitions as a match has already been found. If you really want to use the example above for your own command sets, please put it at the end of your definitions.
+Besides a level definition, this command uses the regular expression `.*` to match *any* character (`.`) occuring 0 or more (`*`) times posted by a new user. We will have a closer look at such asterisk patterns and how to use them efficiently in the following section.
 
 
 ### 3.5 Placeholder variables
@@ -297,7 +297,7 @@ commands = {
   }
 }
 ```
-The trigger types `sub`, `subPrime`, and `subGiftContinued` support the keys `subLevel` and `minSubLevel`. Those allow you to differentiate even more between subscriptions by sending special messages only for a distinctive (minimal) amount of subscribed months.
+The trigger types `sub`, `subPrime`, and `subGiftContinued` support the keys `subLevel`, `minSubLevel`, and `maxSubLevel`. Those allow you to differentiate even more between subscriptions by sending special messages only for a distinctive (minimal) amount of subscribed months.
 ```
 commands = {
   "very long sub" : {
@@ -305,10 +305,22 @@ commands = {
     "minSubLevel" : 13,
     "triggerType" : "sub"
   },
+  "any other sub month 9–12" : {
+    "answer"      : "$subName has just subscribed for month $subMonth.",
+    "triggerType" : "sub",
+    "minSubLevel" : 9,
+    "maxSubLevel" : 12
+  },
   "Twitch baby" : {
     "answer"      : "We’re having a Twitch baby with $subName!",
     "subLevel"    : 9,
     "triggerType" : "sub"
+  },
+  "any other sub month 3–8" : {
+    "answer"      : "$subName has just subscribed for month $subMonth.",
+    "triggerType" : "sub",
+    "minSubLevel" : 3,
+    "maxSubLevel" : 8
   },
   "2nd month" : {
     "answer"      : "Thank you so much, $subName, for staying with us.",
@@ -319,14 +331,10 @@ commands = {
     "answer"      : "$subName decides on joining our community! Thank you very much.",
     "subLevel"    : 1,
     "triggerType" : "sub"
-  },
-  "any other sub month" : {
-    "answer"      : "$subName has just subscribed for month $subMonth.",
-    "triggerType" : "sub"
   }
 }
 ```
-Here you can see the various ways of using `subLevel` and `minSubLevel`. Please note the order of the commands! Willowbot will process the `sub` category commands (`sub`, `subPrime`, `subGiftContinued`, `subGiftSingle`, `subGiftMulti`) traversing down your definitions, execute the first match, and omit the rest. This is why the `any other sub month` definition is the last entry in our reaction list. As it has no `subLevel`/`minSubLevel` restriction, it would be executed before, e.g, the conditions for `1st month` could be checked so that the latter would never be processed by Willowbot. Therefore, make sure to sort your subscription reactions by descending levels.
+Here you can see the various ways of using `subLevel`, `minSubLevel`, and `maxSubLevel`. Willowbot will process the `sub` category commands (`sub`, `subPrime`, `subGiftContinued`, `subGiftSingle`, `subGiftMulti`) and execute *every* match, so it is important to set their restrictions carefully, i.e. disjunctive to prevent that more than one reaction will be executed. In the definitions above you can see that the subscription levels exclude each other. Although they are ordered, it is not necessary to do so to make Willowbot execute the reactions correctly. It won’t increase performance either.
 
 Whenever a multi-subscription gift occurs on the channel, there are always followup messages about single-subscription gifts with the same gifter in the respective quantity. As you might not want Willowbot to react to those messages with its defined single-subscription gift answers, the trigger type `subGiftMulti` has a special key: `suppressFollowupSingles`. It is a boolean, so the values `True` and `False` are allowed for this key. If you set this to `True`, Willowbot will do as described above and not react to the next single-subscription gift messages from this user until the amount of gifted subscriptions in the multi-subscription gift is reached. A little code sample just to clarify and leave no questions unanswered:
 ```
@@ -400,12 +408,12 @@ commands = {
   }
 }
 ```
-Whenever a user sends `!gg` to the chat (or another message that at least starts with that term), your system will play the sound located at `C:\the\path\to\my\soundfile.mp3`. Beware that the definition above will only work on Windows systems! Unix systems will need a command like `playsound /home/[user]/where/my/soundfiles/dwell.mp3`, depending on the software installed on your system. Such OS commands are processed in addition to `answer` strings, i.e. you may combine them and send a message to the chat as well as play a sound, log an action, play a video or whatever you want to do in your OS command.
+Whenever a user sends `!gg` to the chat (or another message that at least starts with that term), your system will play the sound located at `C:\the\path\to\my\soundfile.mp3`. Beware that the definition above will only work on Windows systems! Unix systems will need a command like `playsound /home/[user]/where/my/soundfiles/dwell.mp3`, depending on the software installed on your system. Such OS commands are processed in addition to `answer` strings, i.e. you may combine them and send a message to the chat as well as play a sound, log an action, play a video, or whatever you want to do in your OS command.
 
 
 ### 3.9 Debug messages
 
-If you want to check your commands without sending messages to the chat, you can use Willowbot’s `debug` key. It behaves just like your normal `answer` key string, including resolved arguments and placeholder variables, but the result will not be sent to the chat and instead be printed to the console. `answer` and `debug` are processed independently, so you may define both keys to get some more feedback from your commands.
+If you want to check your commands without sending messages to the chat, you can use Willowbot’s `debug` key. It behaves just like your normal `answer` key string, including resolved arguments and placeholder variables, but the result will not be sent to the chat and instead be printed to the console. `answer` and `debug` (and `os-command`) are processed independently, so you may define those keys in any combination and for any purpose you like.
 
 
 ## 4 Concluding words
@@ -440,6 +448,9 @@ Feel free to use the code as an inspiration for your own IRC projects and to rep
 * `matchType`
     * type: string
     * `is` [Default], `startsWith`, `contains`, `contains_caseInsensitive`, `endsWith`, `regex`
+* `maxSubLevel`
+    * type: integer
+    * maximum subscription count needed to trigger the associated message
 * `minLevel`
     * type: integer
     * minimum level needed to trigger the command

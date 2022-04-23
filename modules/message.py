@@ -254,53 +254,26 @@ class Message():
     if self.getType() == "PRIVMSG":
       # Convert Cyrillic letters to Latin ones to strike scam bots.
       self.text = cyrillicToLatin(self.getText())
-      self.level = self.getSenderLevel()
-      print(self.getSenderDisplayName() + " (lvl " + str(self.level) + ", " + msgTime + ")\n" + self.text + "\n—————")
+      senderLevel = self.getSenderLevel()
+      print(self.getSenderDisplayName() + " (lvl " + str(senderLevel) + ", " + msgTime + ")\n" + self.text + "\n—————")
 
       # Check for a match with the commands defined for this channel.
       match = ''
       for c in commands['general']:
-        # User-triggered commands.
-        # Set a default value for the match type if none is provided.
-        if not 'matchType' in commands['general'][c]:
-          commands['general'][c]['matchType'] = "is"
-        if commands['general'][c]['matchType'] == "startsWith" and self.startsWith(c):
-          match = c
-          break
-        if commands['general'][c]['matchType'] == "contains" and self.contains(c):
-          match = c
-          break
-        if commands['general'][c]['matchType'] == "contains_caseInsensitive" and self.contains_caseInsensitive(c):
-          match = c
-          break
-        if commands['general'][c]['matchType'] == "endsWith" and self.endsWith(c):
-          match = c
-          break
-        if commands['general'][c]['matchType'] == "regex" and self.matchesRegex(c):
-          match = c
-          break
-        if commands['general'][c]['matchType'] == "is" and self.text == c:
-          match = c
-          break
+        # Check if the command has no cooldown or if its cooldown has already elapsed. If so, proceed evaluating.
+        if not ('cooldown' in commands['general'][c] and not timeElapsed(commands['general'][c], 'cooldown')):
+          # Check if the level restrictions for the command are met.
+          if ('level' in commands['general'][c] and senderLevel == commands['general'][c]['level']) or ('minLevel' in commands['general'][c] and senderLevel >= commands['general'][c]['minLevel']) or (not 'level' in commands['general'][c] and not 'minLevel' in commands['general'][c]):
+            # Set a default value for the match type if none is provided.
+            if not 'matchType' in commands['general'][c]:
+              commands['general'][c]['matchType'] = "is"
+            
+            if (commands['general'][c]['matchType'] == "startsWith" and self.startsWith(c)) or (commands['general'][c]['matchType'] == "contains" and self.contains(c)) or (commands['general'][c]['matchType'] == "contains_caseInsensitive" and self.contains_caseInsensitive(c)) or (commands['general'][c]['matchType'] == "endsWith" and self.endsWith(c)) or (commands['general'][c]['matchType'] == "regex" and self.matchesRegex(c)) or (commands['general'][c]['matchType'] == "is" and self.text == c):
+              match = c
       
-      # If there was a match, check more conditions.
+      # If there was a match, all restrictions have been met and the reaction is free to be executed.
       if match != '':        
-        # Check if the command is in its cooldown.
-        if 'cooldown' in commands['general'][match] and not timeElapsed(commands['general'][match], 'cooldown'):
-          return
-      
-        # Check the fields minLevel …
-        if 'minLevel' in commands['general'][match] and self.level < commands['general'][match]['minLevel']:
-          return
-      
-        # … and level.
-        if 'level' in commands['general'][match] and self.level != commands['general'][match]['level']:
-          return
-
-        # When this point is reached, the checks before have been passed.
-        # The reaction to the command in the chat can finally be executed.
         self.reactToMessage(commands['general'][match], irc)
-
 
     elif self.getType() == "USERNOTICE":
 
@@ -308,28 +281,34 @@ class Message():
       if self.isSubPrime():
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'subPrime':
-            subMonth = self.getSubMonth()
-            if ('subLevel' in commands['sub'][m] and subMonth == commands['sub'][m]['subLevel']) or ('minSubLevel' in commands['sub'][m] and subMonth >= commands['sub'][m]['minSublevel']) or (not 'subLevel' in commands['sub'][m] and not 'minSubLevel' in commands['sub'][m]):
+            subMonth = int(self.getSubMonth())
+            subLevel = 0 if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
+            minSubLevel = 0 if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
+            maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
+            if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
               self.reactToMessage(commands['sub'][m], irc)
-              break
-        
+
       # Message indicates a subscription.
       elif self.isSub():
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'sub':
-            subMonth = self.getSubMonth()
-            if ('subLevel' in commands['sub'][m] and subMonth == commands['sub'][m]['subLevel']) or ('minSubLevel' in commands['sub'][m] and subMonth >= commands['sub'][m]['minSublevel']) or (not 'subLevel' in commands['sub'][m] and not 'minSubLevel' in commands['sub'][m]):
+            subMonth = int(self.getSubMonth())
+            subLevel = 0 if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
+            minSubLevel = 0 if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
+            maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
+            if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
               self.reactToMessage(commands['sub'][m], irc)
-              break
 
       # Message indicates that a user continues his/her gifted sub.
       elif self.isSubGiftContinued():
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'subGiftContinued':
-            subMonth = self.getSubMonth()
-            if ('subLevel' in commands['sub'][m] and subMonth == commands['sub'][m]['subLevel']) or ('minSubLevel' in commands['sub'][m] and subMonth >= commands['sub'][m]['minSublevel']) or (not 'subLevel' in commands['sub'][m] and not 'minSubLevel' in commands['sub'][m]):
+            subMonth = int(self.getSubMonth())
+            subLevel = 0 if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
+            minSubLevel = 0 if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
+            maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
+            if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
               self.reactToMessage(commands['sub'][m], irc)
-              break
 
       # Message indicates a gifted subscription.
       elif self.isSubGiftSingle():
@@ -344,8 +323,6 @@ class Message():
                 print("Followup counter deleted. Processing single sub gifts from " + gifter + " again.")
             else:
               self.reactToMessage(commands['sub'][m], irc)
-            
-            break
 
       # Message indicates a sub bomb i. e. multiple gifted subs.
       elif self.isSubGiftMulti():
@@ -358,7 +335,6 @@ class Message():
               self.subSuppressions[gifter] = int(self.getSubGiftCount())
 
             self.reactToMessage(commands['sub'][m], irc)
-            break
 
       # Message indicates a raid.
       elif self.isRaid():
@@ -366,7 +342,6 @@ class Message():
         for m in commands['raid']:
           if ('minRaidersCount' in commands['raid'][m] and raidersCount >= commands['raid'][m]['minRaidersCount']) or (not 'minRaidersCount' in commands['raid'][m]):
             self.reactToMessage(commands['raid'][m], irc)
-            break
         
       else:
         print("\nUSERNOTICE\n")

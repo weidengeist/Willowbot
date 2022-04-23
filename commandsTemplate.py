@@ -55,9 +55,21 @@ commands = {
     "minSubLevel" : 13,
     "triggerType" : "sub"
   },
+  "any other sub month 10–12" : {
+    "answer"      : "$subName has just subscribed for month $subMonth.",
+    "minSubLevel" : 10,
+    "maxSubLevel" : 12,
+    "triggerType" : "sub"
+  },
   "Twitch baby" : {
     "answer"      : "We’re having a Twitch baby with $subName!",
     "subLevel"    : 9,
+    "triggerType" : "sub"
+  },
+  "any other sub month 3–8" : {
+    "answer"      : "$subName has just subscribed for month $subMonth.",
+    "minSubLevel" : 3,
+    "maxSubLevel" : 8,
     "triggerType" : "sub"
   },
   "2nd month" : {
@@ -68,10 +80,6 @@ commands = {
   "1st month" : {
     "answer"      : "$subName decides on joining our community! Thank you very much.",
     "subLevel"    : 1,
-    "triggerType" : "sub"
-  },
-  "any other sub month" : {
-    "answer"      : "$subName has just subscribed for month $subMonth.",
     "triggerType" : "sub"
   },
   "myMultiSubGiftHandler" : {
