@@ -5,7 +5,6 @@ import select
 import time
 
 class IRC:
-  irc = socket.socket()
   
   def __init__(self, config):  
     self.irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

@@ -194,7 +194,7 @@ commands = {
   }
 }
 ```
-»Why would we want to do this?«, you might ask. `$arg1+` does not only catch the second word after `!give` like `$arg1` would do, but it gathers all words from the second onwards. So in contrast to the version shown before, our new `!give` command will now catch more than just two arguments. In our first `!give` version, we could only give McFluffy »some blanket to feel cozy«. With the new command we can `!give McFluffy a very warm blanket` to feel cozy. Just a blanket is still possible, though.
+»Why would we want to do this?«, you might ask. `$arg1+` does not only catch the second word after `!give` like `$arg1` would do, but it gathers all words from the second one onwards. So in contrast to the version shown before, our new `!give` command will now catch more than just two arguments. In our first `!give` version, we could only give McFluffy »some blanket to feel cozy«. With the new command we can `!give McFluffy a very warm blanket` to feel cozy. Just a blanket is still possible, though.
 
 Do you want to spread some love in your chat? Enable your viewers to virtually hug each other by defining a command for that action:
 ```
