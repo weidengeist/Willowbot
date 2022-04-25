@@ -19,12 +19,20 @@ Open a console (on Windows: start `cmd`, on Linux/Mac: press Ctrl+Alt+T (on most
 
 Now edit the configuration file template. Only two values have to be changed: `botname` and `oauth`. `botname` equals your bot’s account name (which means that using the bot requires a dedicated Twitch account for it, but you may also use it with your broadcaster account); `oauth` is [an access token for Twitch](https://twitchapps.com/tmi/) you must have generated.
 
-After having edited the configuration file accordingly, start the bot again the way described above and it should now successfully connect to your bot’s own Twitch channel.
+After having edited the configuration file accordingly, start the bot again the way described above and it should now successfully connect to your bot’s own Twitch channel. In practice, you will want Willowbot to run on your broadcaster channel or – if you are a moderator – on some other channel where you have moderator privileges. In this case, you just pass a that channel as the first argument when running Willowbot, meaning that you extend the line
+```
+python main_cli.py
+```
+to
+```
+python main_cli.py myownchannel
+```
+Of course, you have to replace `myownchannel` with the appropriate channel name where you want Willowbot to do its duty and run a specific set of commands.
 
 
 ## 3 Creating command sets
 
-Besides a directory for the general Willowbot/IRC configuration, this program will create a subdirectory named `commands` in this configuration directory. This is where you have to put the command sets you want your bot to use. You can create command sets for multiple channels; each set is a separate file named by the channel where you want them to be used. (This might come in handy if you are a moderator of more than one channel.) From now on, let’s assume your bot is named IAmABot, i.e. uses the Twitch account »IAmABot«. For testing purposes, it is highly recommended to use your bot’s own channel, so let’s create a command set for that now.
+Besides a directory for the general Willowbot/IRC configuration, this program will create a subdirectory named `commands` in this configuration directory. This is where you have to put the command sets you want your bot to use. You can create command sets for multiple channels; each set is a separate file named by the channel where you want it to be used. (This might come in handy if you are a moderator of more than one channel.) From now on, let’s assume your bot is named IAmABot, i.e. uses the Twitch account »IAmABot«. For testing purposes, it is highly recommended to use your bot’s own channel, so let’s create a command set for that now.
 
 The commandsets themselves are small Python scripts, doing nothing but assigning a [dictionary](https://docs.python.org/3/tutorial/datastructures.html#dictionaries) to a `commands` variable. Create a file called `iamabot.py` (as this is the channel where we want to do some tests; please note: Use small letters only!) where you can put your command checks and bot reactions.
 

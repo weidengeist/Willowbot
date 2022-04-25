@@ -119,8 +119,6 @@ def getCommands(config):
     for c in commands_raid:
       del commands[c]
 
-  #print("timed", len(commands_timed), "sub", len(commands_sub)
-
   return {'general' : commands, 'timed' : commands_timed, 'sub' : commands_sub, 'raid' : commands_raid, 'status' : status}
   
 
