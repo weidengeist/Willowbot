@@ -56,7 +56,7 @@ class Message():
     return re.sub(".+?;display-name=([^;]+).*", r'\1', self.meta)
 
   def getSenderName(self):
-    return re.sub('.+?@(.*?)tmi\.twitch\.tv PRIVMSG #.*', r'\1', self.meta)
+    return re.sub('.+?@(.*?).tmi\.twitch\.tv PRIVMSG #.*', r'\1', self.meta)
 
   def getSubGiftCount(self):
     return re.sub(".+?;msg-param-mass-gift-count=([^;]+).*", r'\1', self.meta)
@@ -246,7 +246,6 @@ class Message():
   def processCommands(self, commands, message, irc):
     self.fullText = message
     self.meta = self.getMeta()
-    #print(self.meta)
     msgTime = localtime()
     msgTime = ("" if msgTime.tm_hour > 9 else "0") + str(msgTime.tm_hour) + ":" + ("" if msgTime.tm_min > 9 else "0") + str(msgTime.tm_min) + ":" + ("" if msgTime.tm_sec > 9 else "0") + str(msgTime.tm_sec)
 
