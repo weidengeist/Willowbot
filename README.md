@@ -1,5 +1,7 @@
 # Willowbot
 
+— [Zur deutschen Version wechseln](https://github.com/weidengeist/Willowbot/blob/main/README.md)
+
 This is a chat bot intended to be used on Twitch. It allows you to configure custom commands, optionally based on regular expressions, which the bot will react to – either with an answer in the chat or by executing an OS command. It also supports timed commands and has an integrated level system to limit the usage of commands to different user groups.
 
 
@@ -8,16 +10,16 @@ The instructions and descriptions below are written especially for non-programmi
 
 ## 1 Installation
 
-You need to have installed Python 3 to use Willowbot. Download the package and just unzip it to a location to your liking.
+You need to have installed an interpreter for the programming language [Python in at least version 3](https://www.python.org/downloads/) (the latest version is recommended) to use Willowbot. The recommended option for Windows users is the Windows installer (64 bit) as it will do most of the configuration for you without any difficulties to surmount. After having successfully installed Python, download the Willowbot package and unzip it to a location to your liking.
 
 
 ## 2 Initial setup
 
-Open a console (on Windows: start `cmd`, on Linux/Mac: press Ctrl+Alt+T (on most desktop environments) or search for `terminal` in your application menu). Navigate to the directory where Willowbot is located by typing `cd`, followed by a blank space and the Willowbot location, e.g. `cd C:\Programs\Willowbot` on Windows or `cd /home/thatsme/Willowbot` on Linux/Mac. Now start the bot by typing `python main_cli.py`. If everything is installed correctly, you should now be presented Willowbot’s message that there is no configuration file for its connection. It will create a template configuration file in an appropriate directory, which Willowbot will tell you in this message.
+Open a console (on Windows: start `cmd`; on Linux/Mac: press Ctrl+Alt+T (on most desktop environments) or search for `terminal` in your application menu). Navigate to the directory where Willowbot is located by typing `cd`, followed by a blank space and the Willowbot location, e.g. `cd C:\Programs\Willowbot` on Windows or `cd /home/thatsme/Willowbot` on Linux/Mac. Now start the bot by typing `python main_cli.py` and pressing the Enter button. If everything is installed correctly, you should now be presented Willowbot’s message that there is no configuration file for its connection. It will create a template configuration file in an appropriate directory, which Willowbot will tell you in this message.
 
-**Beware!** The procedure has only been tested on Linux. If any information about the steps needed on Windows is incorrect and/or does not work, please let me know.
+**Beware!** Aforementioned procedure has only been tested on Linux. If any information about the steps needed on Windows is incorrect and/or does not work, please let me know.
 
-Now edit the configuration file template. Only two values have to be changed: `botname` and `oauth`. `botname` equals your bot’s account name (which means that using the bot requires a dedicated Twitch account for it, but you may also use it with your broadcaster account); `oauth` is [an access token for Twitch](https://twitchapps.com/tmi/) you must have generated.
+Now edit the configuration file template. Merely two values have to be changed: `botname` and `oauth`. `botname` equals your bot’s account name (which means that using the bot requires a dedicated Twitch account for it, but you may also use it with your broadcaster account); `oauth` is [an access token for Twitch](https://twitchapps.com/tmi/) you must have generated.
 
 After having edited the configuration file accordingly, start the bot again the way described above and it should now successfully connect to your bot’s own Twitch channel. In practice, you will want Willowbot to run on your broadcaster channel or – if you are a moderator – on some other channel where you have moderator privileges. In this case, you just pass that channel as the first argument when running Willowbot, meaning that you extend the line
 ```
@@ -32,16 +34,16 @@ Of course, you have to replace `myownchannel` with the appropriate channel name 
 
 ## 3 Creating command sets
 
-Besides a directory for the general Willowbot/IRC configuration, this program will create a subdirectory named `commands` in this configuration directory. This is where you have to put the command sets you want your bot to use. You can create command sets for multiple channels; each set is a separate file named by the channel where you want it to be used. (This might come in handy if you are a moderator of more than one channel.) From now on, let’s assume your bot is named IAmABot, i.e. uses the Twitch account »IAmABot«. For testing purposes, it is highly recommended to use your bot’s own channel, so let’s create a command set for that now.
+Besides a directory for the general Willowbot/IRC configuration, this program will create a subdirectory named `commands` in this configuration directory. This is where you have to put the command sets you want your bot to use. You can create command sets for multiple channels; each set is a separate file named by the channel where you want it to be used. (This might come in handy if you are a moderator of more than one channel.) From now on, let’s assume your bot is named IAmABot, i.e. uses the Twitch login iamabot. For testing your commands, it is highly recommended to use your bot’s own channel, so let’s create a command set for that now.
 
-The commandsets themselves are small Python scripts, doing nothing but assigning a [dictionary](https://docs.python.org/3/tutorial/datastructures.html#dictionaries) to a `commands` variable. Create a file called `iamabot.py` (as this is the channel where we want to do some tests; please note: Use small letters only!) where you can put your command checks and bot reactions.
+The commandsets themselves are small scripts written in the programming language Python, doing nothing but assigning a so-called [dictionary](https://docs.python.org/3/tutorial/datastructures.html#dictionaries) to a `commands` variable wherein all your command information is stored. Create a file called `iamabot.py` (as this is the channel where we want to do some tests; please note: Use small letters only!) where you can put your command checks and bot reactions.
 
-There is a `commandsTemplate.py` file included in this repository which contains most of the example commands mentioned in this Readme file in the sections below. However, further reading instead of just copying and pasting from the template file is *strongly recommended* as you will certainly run into difficulties when doing so.
+There is a `commandsTemplate.py` file included in the Willowbot repository which contains most of the example commands mentioned in this Readme file in the sections below. However, further reading instead of just copying and pasting from the template file is *strongly recommended* as you will certainly run into difficulties when doing otherwise.
 
 
 ### 3.1 User-triggered commands
 
-As a start, put the skeleton for your commands into this file:
+As a start, put the skeleton for your commands into your `iamabot.py` file:
 ```
 commands = {
   
@@ -55,7 +57,9 @@ commands = {
   }
 }
 ```
-The answer works just like an ordinary [Twitch chat command](https://help.twitch.tv/s/article/chat-commands), i.e. you can add `/me` or `/announce` to the answer to emphasize it.
+`answer` is called a key in our dictionary; the actual answer is called a value. We will use those term more often in the descriptions ahead.
+
+The value of our `answer` key works just like an ordinary [Twitch chat command](https://help.twitch.tv/s/article/chat-commands), i.e. you can precede your answer with `/me` or `/announce` to emphasize it if you like.
 
 
 #### 3.1.1 Simple matching
@@ -69,16 +73,18 @@ commands = {
   }
 }
 ```
-Now you can trigger the bot’s answer with e.g. `!bsg @randomtwitchuser`. Note the comma at the end of the line with `answer`! The order of the key definition does not matter; `matchType` can be defined before `answer` as well.
+Now you can trigger the bot’s answer by e.g. `!bsg @randomtwitchuser`. Note the comma at the end of the line with `answer`! The order of the key definition does not matter; `matchType` can be set before `answer` as well.
 
-The other `matchType` options available in Willowbot are `contains`, `endsWith`, `regex`, and `contains_caseInsensitive`. The last one is mainly for convenience reasons, however, it is recommended to use regular expressions (option `regex`) instead.
+The other `matchType` options available in Willowbot are `contains`, `endsWith`, `regex` (more on that later), and `contains_caseInsensitive`. The last one is mainly for convenience reasons, however, it is recommended to use regular expressions (option `regex`) instead.
 
 
 #### 3.1.2 Advanced matching: regular expressions
 
 Most use cases should be covered by the simple matching keywords. If you feel in need of more control about the messages that are supposed to make Willowbot react in a certain way, regular expressions can be evaluated.
 
-For example, you would like to have a `!multi` command to tell your viewers whom you are currently playing with. If you want this message to also be displayed when sending `!Multi`, you could of course simply input the same command block again and replace `m` with `M`. A more elegant way is using a regular expression instead:
+Regular expressions are a very powerful tool and therefore might look intimidating at first, but don’t worry. You will be shown how to use them by very simple first examples, which will probably suffice to teach you all you need for using Willowbot efficiently.
+
+For example, you would like to have a `!multi` command to tell your viewers whom you are currently playing with. If you want this message to also be displayed when sending `!Multi`, you could of course simply input the same `!multi` command block again and replace `m` with `M`. A more elegant way is using a regular expression instead:
 ```
 commands = {
   "^![Mm]ulti" : {
@@ -111,11 +117,12 @@ commands = {
     "interval" : 1800
   },
   "!drink" : {
-    "answer"   : "Please stay hydrated!",
-    "matchType": "startsWith"
+    "answer"    : "Please stay hydrated!",
+    "matchType" : "startsWith"
   }
 }
 ```
+Please note the comma in line 5 after `}`! The command definition blocks (`{…}`) inside your `commands` dictionary have to be separated by commas from each other.
 
 
 ### 3.3 Cooldowns
@@ -164,7 +171,7 @@ commands = {
   }
 }
 ```
-Besides a level definition, this command uses the regular expression `.*` to match *any* character (`.`) occuring 0 or more (`*`) times posted by a new user. We will have a closer look at such asterisk patterns and how to use them efficiently in the following section.
+Besides a level definition, this command uses the regular expression `.*` to match messages containing *any* character (`.`) occuring 0 or more (`*`) times. We will have a closer look at such asterisk patterns and how to use them efficiently in the following section.
 
 
 ### 3.5 Placeholder variables
@@ -213,7 +220,7 @@ commands = {
   }
 }
 ```
-This command introduces another placeholder variable: `senderDisplayName`. On Twitch, every user has a login name and a display name. Those are almost identical; the only difference is that the login name uses only small letters whereas the display name may also contain capital letters. By putting `$senderDisplayName` into our answer we can use the name of the user who issued the command. So if user McFluffy sends the command `!hug Kittycat`, our command definition above would result in the message: `McFluffy gives Kittycat a hug.` (Side note: If you use `$senderName` instead of `$senderDisplayName`, the message would read: `mcfluffy gives Kittycat a hug.`)
+This command introduces another placeholder variable: `senderDisplayName`. On Twitch, every user has a login name and a display name. Those are almost identical; the only difference is that the login name uses only small letters whereas the display name may also contain capital letters. By putting `$senderDisplayName` into our answer we can use the name of the user who issued the command. So if user McFluffy sends the command `!hug Kittycat`, our definition above would result in the message: `McFluffy gives Kittycat a hug.` (Side note: If you use `$senderName` instead of `$senderDisplayName`, the message would read: `mcfluffy gives Kittycat a hug.`)
 
 Another very useful purpose for placeholders is timeouting or banning scam bots entering the chat. If such a scam bot is known to use the message »Buy followers, subs, and viewers: [URL]«, you can easily ban the bot account from your channel as soon as this message shows up in your chat:
 ```
@@ -237,7 +244,7 @@ commands = {
   }
 }
 ```
-A short explanation for the regex used here: A user will be banned if his/her first message ever in the chat starts (`^`) with »Buy«, followed by arbitrary characters (`.`) in a quantity of 0 or more (`*`) and afterwards the word »followers«. By putting `.*` before `followers`, you can catch a scam bot message even if it changes the order of words (»Buy followers, subs, and viewers«, »Buy subs, followers, and viewers«, etc.).
+A short explanation for the regex used here: A user will be banned if his/her first message ever in the chat starts (`^`; cf. `^[Mm]ulti` in section 3.1.2) with »Buy«, followed by arbitrary characters (`.`) in a quantity of 0 or more (`*`) and afterwards the word »followers«. By putting `.*` before `followers`, you can catch a scam bot message even if it varies the order of words (»Buy followers, subs, and viewers«, »Buy subs, followers, and viewers«, etc.).
 
 Another fancy example for banning scam bots:
 ```
@@ -260,16 +267,14 @@ commands = {
   }
 }
 ```
-The command definition above will delete all Messages which contain the terms/emotes »Kappa«, »failFish«, or »LUL«. For this action we need the ID of the message you want to delete. That ID is hidden behind the placeholder variable `msgID`. The advantage of using this method instead of the Twitch blacklist: You and your moderators will be able to see the message and its problematic content and, if necessary, take further actions in case of severe discrimination or harassement, whereas messages with Twitch blacklist terms would be suppressed before any moderator can see it and have a chance to report the user to Twitch. In the section about answer types we will see how to extend this command and make it even more useful.
+The command definition above will delete all Messages which contain the terms/emotes »Kappa«, »failFish«, or »LUL«. For this action we need the ID of the message you want to delete. That ID is represented by the placeholder variable `msgID`. The advantage of using this method instead of the Twitch blacklist: You and your moderators will be able to see the message and its problematic content and, if necessary, take further actions in case of severe discrimination or harassement, whereas messages with Twitch blacklist terms would be suppressed before any moderator can see it and have a chance to report the user to Twitch. In the section about answer types we will see how to extend this command and make it even more useful.
 
 
 ### 3.6 Trigger types: raids and subscriptions
 
-The chat messages sent on Twitch all contain special meta data and can so – among others – be differentiated between user messages, subscriptions, and raids. In contrast to the user messages, which you define by providing a word or pattern that has to be matched by a message, subscription and raid messages can have an arbitrary name. You tell Willowbot under which circumstances the reaction is supposed to be triggered by providing a `triggerType` key.
+The chat messages sent on Twitch all contain special meta data and can so – among others – be differentiated between user messages, subscriptions, and raids. In contrast to the user message commands, which you define by providing a word or pattern that has to be matched by a message, raid and subscription messages can have an arbitrary name. You tell Willowbot under which circumstances the reaction is supposed to be triggered by providing a `triggerType` key.
 
-Willowbot’s default behaviour is processing messages that appear in the chat, i.e. user messages. Invisible to the common user, special messages are sent in the background. Those messages contain information about raids and subscriptions, among others. If you want Willowbot to handle those, you have to include a `triggerType` key in your command definition.
-
-Side note: Willowbot has its own handlers for the currently implemented special message types and will present you information about is on the console via a debug message. Those fallback handlers will not be triggered if you have defined your own ones.
+Willowbot’s default behaviour is processing messages that appear in the chat as user messages. Invisible to the common user, special messages are sent in the background. Those contain information about raids and subscriptions, among others. If you want Willowbot to handle those, you have to include the appropriate `triggerType` value in your command definition.
 
 
 #### 3.6.1 Raids
@@ -283,11 +288,11 @@ commands = {
   }
 }
 ```
-It is important to set `triggerType` `raid` in this definition. Otherwise, Willowbot would print the answer string to the chat as soon as someone’s complete message reads »raids«.
+It is important to set `triggerType` `raid` in this definition. Otherwise, Willowbot would print the answer string to the chat as soon as someone’s complete message reads »myRaid«.
 
-As it has been mentioned above, it is not necessary to provide a special pattern for this kind of message handlers. However, you *have* to provide a unique identifier for the handler. Non-unique identifiers will overwrite other already defined commands with the same identifier/pattern.
+As it has been mentioned above, it is not necessary to provide a special pattern for this kind of message handlers. However, you *have* to provide a unique identifier (in this case: `myRaid`) for the handler. Non-unique, i. e. multiply used identifiers, will overwrite other already defined commands with the same identifier/pattern so that only the one defined last will exist and be able to be processed.
 
-You can see two more placeholder variables in the answer: `raidersChannel` and `raidersCount`. As soon as an incoming raid is detected, the placeholders will be replaced with the channel that sends you its viewers and the number of viewers, respectively.
+You can see two more placeholder variables in the answer: `raidersChannel` and `raidersCount`. As soon as an incoming raid is detected, those placeholders will be replaced with the channel that sends you its viewers and the number of viewers, respectively.
 
 Commands with the `raid` type also support a `minRaidersCount` key. If this key is set, the according reaction will only be triggered if the raid consists of at least the specified quantity of people.
 
@@ -305,11 +310,11 @@ commands = {
   }
 }
 ```
-The trigger types `sub`, `subPrime`, and `subGiftContinued` support the keys `subLevel`, `minSubLevel`, and `maxSubLevel`. Those allow you to differentiate even more between subscriptions by sending special messages only for a distinctive (minimal) amount of subscribed months.
+The trigger types `sub`, `subPrime`, and `subGiftContinued` support the keys `subLevel`, `minSubLevel`, and `maxSubLevel`. Those allow you to differentiate even more between subscriptions by sending special messages only for a distinctive (minimal or maximal) amount of subscribed months.
 ```
 commands = {
   "very long sub" : {
-    "answer"      : "$subName has been a subscriber for more than a year now! Congratulations on $subMonth months in our community",
+    "answer"      : "$subName has been a subscriber for more than a year now! Congratulations on $subMonth months in our community.",
     "minSubLevel" : 13,
     "triggerType" : "sub"
   },
@@ -354,6 +359,8 @@ commands = {
   }
 }
 ```
+Please note: Boolean values are not enclosed in quotation marks.
+
 
 ##### Supported placeholders per subscription context
 
@@ -363,16 +370,16 @@ commands = {
 * `subPrime`
     * see `sub`
 * `subGiftContinued`
-    * `subGiftGifter`: the user gifting a subscription
-    * `subName`: the subscribing user’s display name
+    * `subGiftGifter`: the user having originally gifted the continued subscription (display name)
+    * `subName`: the subscription-continuing user’s display name
 * `subGiftSingle`:
     * `subGiftCountTotal`: the total amount of already gifted subscriptions by this user on this channel
-    * `subGiftGifter`: the user gifting a subscription
-    * `subGiftRecipient`: the user receiving a subscription
+    * `subGiftGifter`: the user gifting a subscription (display name)
+    * `subGiftRecipient`: the user receiving a subscription (display name)
 * `subGiftMulti`
     * `subGiftCount`: the quantity of subscriptions beeing gifted by the user
     * `subGiftCountTotal`: the total amount of already gifted subscriptions by this user on this channel
-    * `subGiftGifter`: the user gifting a subscription
+    * `subGiftGifter`: the user gifting the subscriptions
 
 
 ### 3.7 Answer types: sequential vs. random
@@ -400,14 +407,14 @@ commands = {
   }
 }
 ```
-If user McFluffy triggers this command by sending `!loot someUser` to the chat, Willowbot will randomly pick one of the answers in the `answer` key and show it in the chat, e.g. `McFluffy loots and old sock from someUser.`
+If user McFluffy triggers this command by sending `!loot someUser` to the chat, Willowbot will randomly pick one of the answers in the `answer` key separated by `\n` and show it in the chat, e.g. `McFluffy loots and old sock from someUser.`
 
 
 ### 3.8 OS commands
 
-Besides sending messages to the chat, Willowbot allows you to execute any system command you like (unless the command requires root/administrative access to the system and Willowbot does not run with those privileges, which is *highly recommended*). You will mostly use this to play sounds or videos, but you could also make Willowbot log certain events to a file.
+Besides sending messages to the chat, Willowbot allows you to execute any system command you like (unless the command requires root/administrative access to the system and Willowbot does not run with those privileges, which is *highly recommended*). You will mostly use this to play sounds or videos, but you could also make Willowbot log certain chat events to a file.
 
-As an example, we define a command that will let your viewers cheer you for achieving something great in your gameplay and play a sound:
+As an example, we define a command that will let your viewers cheer you for achieving something great in your gameplay by playing a sound:
 ```
 commands = {
   "!gg" : {
@@ -426,7 +433,7 @@ If you want to check your commands without sending messages to the chat, you can
 
 ## 4 Concluding words
 
-Willowbot has been in development for months and extended piece by piece whenever new scenarios to be covered arose. By no means it should be considered feature complete, but it still is and probably will be for a long time under active development, including efforts to make Willowbot more accessible.
+Willowbot has been in development for months now and is extended piece by piece whenever new scenarios to be covered arise. By no means it should be considered feature complete, but it still is and probably will be for a long time under active development, including efforts to make Willowbot more accessible.
 
 Feel free to use the code as an inspiration for your own IRC projects and to report any issues that arise. I will try to fix them as soon as possible.
 
@@ -491,8 +498,8 @@ Variables for bot answers, which are resolved before Willowbot sends its message
 * `msgID`<br>ID of the processed message; needed for deleting specific messages
 * `raidersChannel`<br>the channel which the raiders are coming from
 * `raidersCount`<br>quantity of raiders joining the channel
-* `senderDisplayName`<br>sender’s display name
-* `senderName`<br>sender of the processed message
+* `senderDisplayName`<br>processed message sender’s display name
+* `senderName`<br>processed message sender’s login name
 * `subGiftCount`<br>amount of subscriptions gifted in one gift action
 * `subGiftCountTotal`<br>total amount of subscriptions a user has already gifted
 * `subGiftGifter`<br>gifting user’s display name
