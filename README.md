@@ -1,6 +1,6 @@
 # Willowbot
 
-— [Zur deutschen Version wechseln](https://github.com/weidengeist/Willowbot/blob/main/README.md)
+— [Zur deutschen Version wechseln](https://github.com/weidengeist/Willowbot/blob/main/README_de.md)
 
 This is a chat bot intended to be used on Twitch. It allows you to configure custom commands, optionally based on regular expressions, which the bot will react to – either with an answer in the chat or by executing an OS command. It also supports timed commands and has an integrated level system to limit the usage of commands to different user groups.
 
