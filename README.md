@@ -428,7 +428,7 @@ Whenever a user sends `!gg` to the chat (or another message that at least starts
 
 ### 3.9 Debug messages
 
-If you want to check your commands without sending messages to the chat, you can use Willowbot’s `debug` key. It behaves just like your normal `answer` key string, including resolved arguments and placeholder variables, but the result will not be sent to the chat and instead be printed to the console. `answer` and `debug` (and `os-command`) are processed independently, so you may define those keys in any combination and for any purpose you like.
+If you want to check your command definitions, i. e. whether Willowbot will react to certain events/patterns the way you are intending, and need feedback about the reaction, but you don’t want to send messages to the chat for that purpose, you can use Willowbot’s `debug` key. The string in your `debug` key will behave as if it was an `answer`, however, it will not be sent to the chat but be output on the console. Resolving arguments and placeholder variables is also featured in the `debug` key. `answer` and `debug` (and `os-command`) are processed independently, so you may define those keys in any combination and for any purpose you like.
 
 
 ## 4 Concluding words

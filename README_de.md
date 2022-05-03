@@ -429,7 +429,7 @@ Wann immer ein Nutzer `!gg` (oder eine andere Nachricht, die zumindest mit diese
 
 ### 3.9 Nachrichten zur Fehlersuche (Debugging)
 
-Möchten Sie Ihre Kommandos prüfen, ohne Nachrichten an den Chat zu schicken, können Sie Willowbots `debug`-Schlüssel verwenden. Dieser verhält sich genau wie Ihr normaler `answer`-Satz, inklusive Auflösung von Argumenten und Platzhaltervariablen, aber das Ergebnis wird nicht an den Chat gesendet, sondern Ihnen als Nachricht auf der Textkonsole ausgegeben. `answer` und `debug` (und ebenso `os-command`) werden unabhängig voneinander verarbeitet, also können Sie diese Schlüssel in beliebiger Kombination für beliebige Zwecke definieren.
+Möchten Sie Ihre Kommandos prüfen, d. h. eruieren, ob Willowbot auf bestimmte Ereignisse/Muster so wie von Ihnen vorgesehen reagieren wird, und entsprechende Rückmeldung über die Reaktionen bekommen, wollen zu diesem Zweck aber keine Nachricht in den Chat schreiben lassen, können Sie Willowbots `debug`-Schlüssel benutzen. Die Zeichenkette in Ihrem `debug`-Schlüssel wird sich genau so verhalten, als wäre es ein `answer`-Wert, allerdings wird es nicht an den Chat gesendet, sondern auf Ihrer Konsole ausgegeben. Das Auflösen von Argumenten und Platzhaltervariablen ist ebenfalls Bestandteil des `debug`-Schlüssels. `answer` und `debug` (und ebenso `os-command`) werden unabhängig voneinander verarbeitet, also können Sie diese Schlüssel in beliebiger Kombination für beliebige Zwecke definieren.
 
 
 ## 4 Abschließende Worte
