@@ -7,6 +7,9 @@ import sys
 import time
 
 
+# To do: Load custom modules here.
+
+
 # Check for elapsed command time.
 # Context: the dictionary entry with the command/string that triggers the answer.
 # Modes: 'cooldown' (regular commands), 'interval' (timed commands).
@@ -61,7 +64,9 @@ def getConfig():
     configFile.close()
 
   # Channel where the bot is supposed to be used. Bot’s own channel as fallback (i.e. no argument passed).
-  CONFIG['channel'] = len(sys.argv) > 1 and sys.argv[1].lower() or ('botname' in CONFIG and CONFIG['botname'].lower())
+  # 'channel' default may be set in the config.py file.
+  if not 'channel' in CONFIG:
+    CONFIG['channel'] = len(sys.argv) > 1 and sys.argv[1].lower() or ('botname' in CONFIG and CONFIG['botname'].lower())
   
   return CONFIG
 
@@ -122,22 +127,62 @@ def getCommands(config):
   return {'general' : commands, 'timed' : commands_timed, 'sub' : commands_sub, 'raid' : commands_raid, 'status' : status}
   
 
-def checkTimedCommands(commands_timed, irc):
+def checkTimedCommands(commands, commands_timed, irc):
   # Check for elapsed intervals in timed commands.
-  for c in commands_timed.keys():
+  for c in list(commands_timed.keys()):
     if timeElapsed(commands_timed[c], 'interval'):
-      answer = commands_timed[c]['answer'].split('\n')
-      if len(answer) > 1:
-        if 'answerType' in commands[match] and commands[match]['answerType'] == 'random':
-          irc.send(answer[randint(0, len(answer) - 1)])
+      reaction = commands_timed[c]
+       # If the command contains an answer key, process its value.
+      if 'answer' in reaction:
+        answer = commands_timed[c]['answer'].split('\n')
+        if len(answer) > 1:
+          if 'answerType' in reaction and reaction['answerType'] == 'random':
+            # Choose a random answer to send.
+            answer = answer[randint(0, len(answer) - 1)]
+            # Turn the answer into a list of chunks with a maximum of 500 characters.
+            answer = splitIntoGroupsOf(answer, 500)
+            for a in answer:
+              irc.send(a)
+          else:
+            # Defaults to »sequence«.
+            for a in answer:
+              chunkList = splitIntoGroupsOf(a, 500)
+              for c in chunkList:
+                irc.send(c)
         else:
-          # Defaults to »sequence«.
+          answer = splitIntoGroupsOf(answer[0], 500)
           for a in answer:
             irc.send(a)
-      else:
-        irc.send(answer[0])
-      if 'debug' in commands_timed[c]:
-        print('  [debug] ' + commands_timed[match]['debug'])
+  
+      # Execute the string in »os-command« as a system command.
+      if 'os-command' in reaction:
+        os.system(reaction['os-command'])
+  
+      if 'function' in reaction:
+        print("function", reaction['function'])
+        eval(reaction['function'])
+  
+      # If there is a debug message provided, output this on the console.
+      if 'debug' in reaction:
+        answer = reaction['debug'].split('\n')
+        if len(answer) > 1:
+          if 'answerType' in reaction and reaction['answerType'] == 'random':
+            # Choose a random answer to send.
+            answer = answer[randint(0, len(answer) - 1)]
+            # Turn the answer into a list of chunks with a maximum of 500 characters.
+            answer = splitIntoGroupsOf(answer, 500)
+            for a in answer:
+              print("    [debug]: " + a)
+          else:
+            # Defaults to »sequence«.
+            for a in answer:
+              chunkList = splitIntoGroupsOf(a, 500)
+              for c in chunkList:
+                print("    [debug]: " + c)
+        else:
+          answer = splitIntoGroupsOf(answer[0], 500)
+          for a in answer:
+            print("    [debug]: " + a)
 
 
 # Used to split too long bot messages into chunks of a distinct character limit.

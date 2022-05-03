@@ -9,7 +9,7 @@ from basics import getConfig
 from irc import IRC                   # Import the IRC class from the irc(.py) module in ./modules.
 from message import Message           # Import the Message class.
 
-CONFIG = getConfig()        # Load configuration files. 
+CONFIG = getConfig()                  # Load configuration files. 
 
 # Check if a configuration could be loaded.
 if CONFIG['status'] == 0:
@@ -28,7 +28,7 @@ commands = getCommands(CONFIG)
 if commands['status'] == 0:
   print("Successfully loaded commands for channel " + CONFIG['channel'] + ".")
 else:
-  print("No commands available for channel " + CONFIG['channel'] + ". Only raid and subscription defaults are available.")
+  print("No commands available for channel " + CONFIG['channel'] + ".")
 
 # Create an instance of the IRC class with the loaded configuration, …
 irc = IRC(CONFIG)
@@ -50,8 +50,8 @@ while 1:
   # Get this response before checking the timed commands to ensure the connection is still/already alive.
   response = irc.getResponse()
   
-  # Needs the irc connection as an argument to enable sending reactions to the chat.
-  checkTimedCommands(commands['timed'], irc)
+  # Needs the irc connection as an argument to enable sending reactions to the chat. Full commands are passed for »function« key, which might tamper with the commands set.
+  checkTimedCommands(commands, commands['timed'], irc)
   
   # Iterate over the received messages.
   for r in response:

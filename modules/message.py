@@ -6,7 +6,10 @@ from time import localtime
 from basics import timeElapsed
 from basics import splitIntoGroupsOf
 from basics import cyrillicToLatin
+
 import re
+
+# To do: Load custom modules here.
 
 class Message():
 
@@ -190,8 +193,8 @@ class Message():
       else:
         return ""
 
-
-  def reactToMessage(self, reaction, irc):
+  # Added commands variable to the function as a »function« key might modify the commands.
+  def reactToMessage(self, commands, reaction, irc):
     # If the command contains an answer key, process its value.
     if 'answer' in reaction:
       answer = self.resolveArguments(reaction['answer'])
@@ -218,6 +221,11 @@ class Message():
     # Execute the string in »os-command« as a system command.
     if 'os-command' in reaction:
       os.system(reaction['os-command'])
+
+    if 'function' in reaction:
+      func = self.resolveArguments(reaction['function'])
+      func = self.resolvePlaceholders(func)
+      eval(func)
 
     # If there is a debug message provided, output this on the console.
     if 'debug' in reaction:
@@ -249,12 +257,14 @@ class Message():
     msgTime = localtime()
     msgTime = ("" if msgTime.tm_hour > 9 else "0") + str(msgTime.tm_hour) + ":" + ("" if msgTime.tm_min > 9 else "0") + str(msgTime.tm_min) + ":" + ("" if msgTime.tm_sec > 9 else "0") + str(msgTime.tm_sec)
 
+    print("—————")
+
     # Response type is user’s chat message.
     if self.getType() == "PRIVMSG":
       # Convert Cyrillic letters to Latin ones to strike scam bots.
       self.text = cyrillicToLatin(self.getText())
       senderLevel = self.getSenderLevel()
-      print(self.getSenderDisplayName() + " (lvl " + str(senderLevel) + ", " + msgTime + ")\n" + self.text + "\n—————")
+      print(self.getSenderDisplayName() + " (lvl " + str(senderLevel) + ", " + msgTime + ")\n" + self.text)
 
       # Check for a match with the commands defined for this channel.
       match = ''
@@ -272,7 +282,7 @@ class Message():
       
       # If there was a match, all restrictions have been met and the reaction is free to be executed.
       if match != '':        
-        self.reactToMessage(commands['general'][match], irc)
+        self.reactToMessage(commands, commands['general'][match], irc)
 
     elif self.getType() == "USERNOTICE":
 
@@ -281,33 +291,34 @@ class Message():
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'subPrime':
             subMonth = int(self.getSubMonth())
-            subLevel = 0 if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
-            minSubLevel = 0 if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
+            subLevel = float('inf') if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
+            minSubLevel = float('inf') if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
             maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
+            print("sublevel", subLevel, "minSubLevel", minSubLevel, "maxSubLevel", maxSubLevel)
             if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
-              self.reactToMessage(commands['sub'][m], irc)
+              self.reactToMessage(commands, commands['sub'][m], irc)
 
       # Message indicates a subscription.
       elif self.isSub():
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'sub':
             subMonth = int(self.getSubMonth())
-            subLevel = 0 if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
-            minSubLevel = 0 if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
+            subLevel = float('inf') if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
+            minSubLevel = float('inf') if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
             maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
             if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
-              self.reactToMessage(commands['sub'][m], irc)
+              self.reactToMessage(commands, commands['sub'][m], irc)
 
       # Message indicates that a user continues his/her gifted sub.
       elif self.isSubGiftContinued():
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'subGiftContinued':
             subMonth = int(self.getSubMonth())
-            subLevel = 0 if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
-            minSubLevel = 0 if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
+            subLevel = float('inf') if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
+            minSubLevel = float('inf') if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
             maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
             if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
-              self.reactToMessage(commands['sub'][m], irc)
+              self.reactToMessage(commands, commands['sub'][m], irc)
 
       # Message indicates a gifted subscription.
       elif self.isSubGiftSingle():
@@ -321,7 +332,7 @@ class Message():
                 del self.subSuppressions[gifter]
                 print("Followup counter deleted. Processing single sub gifts from " + gifter + " again.")
             else:
-              self.reactToMessage(commands['sub'][m], irc)
+              self.reactToMessage(commands, commands['sub'][m], irc)
 
       # Message indicates a sub bomb i. e. multiple gifted subs.
       elif self.isSubGiftMulti():
@@ -333,14 +344,14 @@ class Message():
               gifter = self.getSenderDisplayName()
               self.subSuppressions[gifter] = int(self.getSubGiftCount())
 
-            self.reactToMessage(commands['sub'][m], irc)
+            self.reactToMessage(commands, commands['sub'][m], irc)
 
       # Message indicates a raid.
       elif self.isRaid():
         raidersCount = self.getRaidersCount()
         for m in commands['raid']:
           if ('minRaidersCount' in commands['raid'][m] and raidersCount >= commands['raid'][m]['minRaidersCount']) or (not 'minRaidersCount' in commands['raid'][m]):
-            self.reactToMessage(commands['raid'][m], irc)
+            self.reactToMessage(commands, commands['raid'][m], irc)
         
       else:
         print("\nUSERNOTICE\n")
