@@ -1,15 +1,13 @@
 import os
+import re
 import sys
 from random import randint  # For random answers.
 from time import localtime
 
-from basics import timeElapsed
-from basics import splitIntoGroupsOf
-from basics import cyrillicToLatin
+# Import all (*) variables and functions; needed to get all functions from optional modules loaded in the basics module.
+from basics import *
+loadOptionalModules(False) # False; do not list the imported modules or other debug information. This is already done in the basics module.
 
-import re
-
-# To do: Load custom modules here.
 
 class Message():
 
@@ -257,14 +255,12 @@ class Message():
     msgTime = localtime()
     msgTime = ("" if msgTime.tm_hour > 9 else "0") + str(msgTime.tm_hour) + ":" + ("" if msgTime.tm_min > 9 else "0") + str(msgTime.tm_min) + ":" + ("" if msgTime.tm_sec > 9 else "0") + str(msgTime.tm_sec)
 
-    print("—————")
-
     # Response type is user’s chat message.
     if self.getType() == "PRIVMSG":
       # Convert Cyrillic letters to Latin ones to strike scam bots.
       self.text = cyrillicToLatin(self.getText())
       senderLevel = self.getSenderLevel()
-      print(self.getSenderDisplayName() + " (lvl " + str(senderLevel) + ", " + msgTime + ")\n" + self.text)
+      print(self.getSenderDisplayName() + " (lvl " + str(senderLevel) + ", " + msgTime + ")\n" + self.text + "\n———————")
 
       # Check for a match with the commands defined for this channel.
       match = ''
@@ -308,7 +304,7 @@ class Message():
             maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
             if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
               self.reactToMessage(commands, commands['sub'][m], irc)
-
+  
       # Message indicates that a user continues his/her gifted sub.
       elif self.isSubGiftContinued():
         for m in commands['sub']:

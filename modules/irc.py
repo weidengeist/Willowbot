@@ -59,6 +59,7 @@ class IRC:
       if ", raddr=(" in str(ready[0]):
         try:
           text = self.irc.recv(4096).decode("utf-8") # Receive the text.
+          print(text)
         except ConnectionError:
           print("Connection error.")
           text = 'EXCEPTION'

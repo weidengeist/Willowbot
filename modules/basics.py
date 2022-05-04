@@ -2,12 +2,8 @@ import importlib # For importing other python files, especially configuration.
 import os.path   # Needed for various system path operations.
 import platform  # Import module »platform« to be able to get the user’s operating system.
 import re        # Regular expressions.
-
 import sys       
 import time
-
-
-# To do: Load custom modules here.
 
 
 # Check for elapsed command time.
@@ -27,6 +23,33 @@ def timeElapsed(context, mode):
     context['latestUseTime'] = time.perf_counter()
     return 1
 
+
+def loadOptionalModules(verbose):
+  if os.path.exists("./modules_opt/activeModules"):
+    activeModulesFile = open("./modules_opt/activeModules", "r")
+    while True:
+      line = activeModulesFile.readline()
+      if line:
+        line = re.findall("^[^#\n ]+", line)
+        line = line[0] if len(line) > 0 else ""
+        if line != "":
+          verbose and print("Trying to import module " + line + ".")
+          if os.path.exists("./modules_opt/" + line + ".py"):
+            module = importlib.import_module(line)
+            # Determine a list of names to copy to the current name space
+            names = getattr(module, '__all__', [n for n in dir(module) if not n.startswith('_')])
+            # Copy those names into the current name space
+            g = globals()
+            for name in names:
+              g[name] = getattr(module, name)
+            verbose and print("  " + line + " loaded successfully " + ".")
+          else:
+            verbose and print("  Could not load " + line + ". Not found.")
+      else:
+        break
+    activeModulesFile.close()
+
+loadOptionalModules(True)
 
 def getConfig():
   # Check the user’s operating system and set the configuration path.
