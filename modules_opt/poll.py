@@ -37,8 +37,6 @@ def poll_start(commands, irc, *args):
       print("Vote option already defined. Poll not started.")
       break
 
-  print("Poll started!")  
-
   irc.send("/me Die Abstimmung läuft " + str(duration) + " Sekunden. Stimmt ab mit " + poll_options_announcementString + " in den Chat.")
 
 

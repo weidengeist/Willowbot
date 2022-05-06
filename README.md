@@ -321,7 +321,7 @@ commands = {
   "any other sub month 9–12" : {
     "answer"      : "$subName has just subscribed for month $subMonth.",
     "triggerType" : "sub",
-    "minSubLevel" : 9,
+    "minSubLevel" : 10,
     "maxSubLevel" : 12
   },
   "Twitch baby" : {
@@ -431,7 +431,39 @@ Whenever a user sends `!gg` to the chat (or another message that at least starts
 If you want to check your command definitions, i. e. whether Willowbot will react to certain events/patterns the way you are intending, and need feedback about the reaction, but you don’t want to send messages to the chat for that purpose, you can use Willowbot’s `debug` key. The string in your `debug` key will behave as if it was an `answer`, however, it will not be sent to the chat but be output on the console. Resolving arguments and placeholder variables is also featured in the `debug` key. `answer` and `debug` (and `os-command`) are processed independently, so you may define those keys in any combination and for any purpose you like.
 
 
-## 4 Concluding words
+## 4 Optional/Custom modules
+
+Willowbot consists of various core modules. However, there are situations that might require some more complex actions than just reacting to a chat message by sending another message to the chat. This is where custom modules come into play. Those are Python scripts as well and provide you the full capabilities of Python to extend Willowbot’s functionality.
+
+To keep all routines and variables properly sorted and to minimize the risk of unintentionally overwriting already defined ones, it is recommended to prefix them with the module name, e. g. if you have a custom module named `giveaway`, you should name the routines and variables within this module `giveaway_doStuff()`, `giveaway_entries`, `giveaway_doSomeOtherThings()`, and so on.
+
+
+### 4.1 Accessing custom modules: the `function` key
+
+Calling one of the routines provided by your custom module is achieved by using the `function` key in your command definition. The value for that key is a string with the routine name and the passed parameters where necessary. Since writing your own modules requires profound knowledge in Python programming, it is considered a technique for experienced users. Please be aware of that if you want to extend Willowbot.
+
+
+### 4.2 `poll` module
+
+A first optional module is already provided in this repository and enables your viewers to take part in a quick poll, initiated simply by a chat command issued by moderators or the broadcaster. As mentioned in the introduction of this section, we use the poll-initiating routine provided by the module via using the `function` key in our command definition:
+```
+commands = {
+  '!poll' : {
+    'matchType' : 'startsWith',
+    'debug'     : 'Poll has been started.',
+    'function'  : 'poll_start(commands, irc, "$arg0+")',
+    'minLevel'  : 3
+  }
+}
+```
+Before turning to the most interesting part, let’s quickly summarize what other things than calling a `poll` routine happens in this command definition. The poll is started as soon as a user of at least level 3 (moderator or broadcaster) sends a message to the chat that `startsWith` `!poll`. As soon as that happens, there will be a short message on the console that a `Poll has been started.` The key newly introduced in this section and used in the command definition above is `function`. Its value calls the routine defined by `def poll_start(commands, irc, *args)` in the `poll` module and passes the required arguments. As the `poll` module manipulates the command set, it needs `commands` as an argument. Furthermore, we want the module to be able to send messages to the chat, so it needs access to our `irc` connection. Finally, we hand over all the arguments sent to the chat together with the `!poll` command.
+
+To actually start a poll, you would send a command like `!poll 30 left right forward` to the chat. This will initiate a poll that will last 30 seconds and allow the viewers to choose where to go next in the currently played game – left, right, or forward – by sending the appropriate word to the chat. An according message will appear in the chat. Willowbot will then gather the votes sent by the users and put them into a list that will eventually be evaluated. Every user can vote only once, but he/she may change his/her vote by just sending another of the available options to the chat. After the time passed to the `!poll` command has elapsed, the poll will be summarized and Willowbot sends a list of the results to the chat, shown in percentage terms and in descending order, from the option with the most to the one with the fewest votes.
+
+Currently, only German information messages are deposited in the module and changing them into another language requires modifying the module itself.
+
+
+## 5 Concluding words
 
 Willowbot has been in development for months now and is extended piece by piece whenever new scenarios to be covered arise. By no means it should be considered feature complete, but it still is and probably will be for a long time under active development, including efforts to make Willowbot more accessible.
 
@@ -454,6 +486,9 @@ Feel free to use the code as an inspiration for your own IRC projects and to rep
 * `debug`
     * type: string
     * debug message; will be displayed on the console only and will not be sent via IRC
+* `function`
+    * type: string
+    * name of a callable routine in a custom module
 * `interval`
     * type: integer
     * for timed commands; in seconds

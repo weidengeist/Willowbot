@@ -322,7 +322,7 @@ commands = {
   "jeder andere Monat 9–12" : {
     "answer"      : "$subName hat gerade für Monat $subMonth abonniert.",
     "triggerType" : "sub",
-    "minSubLevel" : 9,
+    "minSubLevel" : 10,
     "maxSubLevel" : 12
   },
   "Twitchbaby" : {
@@ -432,7 +432,39 @@ Wann immer ein Nutzer `!gg` (oder eine andere Nachricht, die zumindest mit diese
 Möchten Sie Ihre Kommandos prüfen, d. h. eruieren, ob Willowbot auf bestimmte Ereignisse/Muster so wie von Ihnen vorgesehen reagieren wird, und entsprechende Rückmeldung über die Reaktionen bekommen, wollen zu diesem Zweck aber keine Nachricht in den Chat schreiben lassen, können Sie Willowbots `debug`-Schlüssel benutzen. Die Zeichenkette in Ihrem `debug`-Schlüssel wird sich genau so verhalten, als wäre es ein `answer`-Wert, allerdings wird es nicht an den Chat gesendet, sondern auf Ihrer Konsole ausgegeben. Das Auflösen von Argumenten und Platzhaltervariablen ist ebenfalls Bestandteil des `debug`-Schlüssels. `answer` und `debug` (und ebenso `os-command`) werden unabhängig voneinander verarbeitet, also können Sie diese Schlüssel in beliebiger Kombination für beliebige Zwecke definieren.
 
 
-## 4 Abschließende Worte
+## 4 Optionale/Eigene Module
+
+Willowbot besteht aus diversen Kernmodulen. Allerdings können Situationen auftreten, die etwas komplexere Aktionen als das Reagieren auf eine Chatnachricht durch das Absenden einer anderen Nachricht erfordern. Hier kommen dann eigene Module ins Spiel. Diese sind ebenfalls Pythonskripte und stellen Ihnen so Pythons komplettes Potential zur Verfügung, um Willowbots Funtionalität zu erweitern.
+
+Um alle Routinen und Variablen säuberlich sortiert zu halten und das Risiko des ungewollten Überschreibens bereits definierter Routinen/Variablen zu minimieren, wird empfohlen, sie jeweils mit dem Modulnamen als Präfix zu versehen. Wenn Sie also bspw. ein Modul namens `verschenken` schreiben, sollten Sie die Routinen und Variablen innerhalb des Moduls `verschenken_tueDinge()`, `verschenken_teilnehmer`, `verschenken_tueIrgendetwasAnderes()` und so weiter nennen.
+
+
+### 4.1 Auf eigene Module zugreifen: der `function`-Schlüssel
+
+Eine Routine aufzurufen, die Ihnen durch Ihr eigenes Modul zur Verfügung gestellt wird, erreichen Sie durch das Benutzen des `function`-Schlüssels in Ihrer Kommandodefinition. Der Wert für diesen Schlüssel ist eine Zeichenkette (string) mit dem Namen der Routine und den ggf. zu übergeben nötigen Parametern. Da das Schreiben eigener Module fundierte Kenntnis in der Programmiersprache Python erfordert, sollten sich nur erfahrene Nutzer daran wagen. Bitte seien Sie dessen gewahr, wenn Sie Willowbot erweitern wollen.
+
+
+### 4.2 `poll`-Modul (Abstimmungen)
+
+Ein erstes optionales Modul ist bereits in diesem Paket enthalten und erlaubt Ihren Zuschauern, an einer schnellen Umfrage teilzunehmen, die schlicht durch ein Chatkommando von Moderatoren oder dem Streamer gestartet werden kann. Wie in der Einführung dieses Kapitels erwähnt, nutzen wir die Routine, die die Abstimmung startet und im entsprechenden Modul hinterlegt ist, indem wir den `function`-Schlüssel in unserer Kommandodefinition verwenden:
+```
+commands = {
+  '!abstimmung' : {
+    'matchType' : 'startsWith',
+    'debug'     : 'Abstimmung wurde gestartet.',
+    'function'  : 'poll_start(commands, irc, "$arg0+")',
+    'minLevel'  : 3
+  }
+}
+```
+Bevor wir uns dem interessantesten Part zuwenden, fassen wir kurz die anderen Dinge, die neben dem Aufruf einer Routine aus dem `poll`-Modul geschehen, zusammen. Die Abstimmung wird gestartet, sobald ein Nutzer mit wenigstens Level 3 (Moderator oder Streamer) eine Nachricht an den Chat sendet, die mit `!abstimmung` startet (`startsWith`). Sobald dies erfolgt ist, wird auf der Konsole die kurze Nachricht `Abstimmung wurde gestartet.` ausgegeben. Der in diesem Abschnitt neu eingeführte und in der Kommandodefinition genutzte Schlüssel ist `function`. Sein Wert ruft die Routine auf, die im Umfragemodul durch `def poll_start(commands, irc, *args)` definiert ist, und übergibt ihr die notwendigen Argumente. Da das `poll`-Modul das Kommandoset manipuliert, benötigt es `commands` als Argument. Des Weiteren wollen wir, dass das Modul in der Lage sein soll, Nachrichten an den Chat zu senden, also braucht es Zugriff auf unsere `irc`-Verbindung. Schließlich übergeben wird alle Argumente, die zusammen mit dem `!abstimmung`-Kommando in den Chat geschrieben wurden.
+
+Um nun tatsächlich eine Umfrage zu starten, würden Sie ein Kommando wie `!abstimmung 30 links rechts geradeaus` an den Chat senden. Dieses startet eine Abstimmung, die 30 Sekunden dauern und den Zuschauern erlauben wird, auszuwählen, wo es im derzeit gespielten Spiel als Nächstes langgehen soll – nach links, rechts oder geradeaus –, indem sie das passende Wort in den Chat schreiben. Eine entsprechende Nachricht wird im Chat erscheinen. Willowbot wird anschließend the Stimmen einsammeln und in einer Liste sammeln, die am Ende ausgewertet wird. Jeder Nutzer kann nur einmal abstimmen, jedoch seine Stimme ändern, indem er eine andere der verfügbaren Optionen in den Chat schreibt. Nachdem die Zeit, die dem `!abstimmung`-Kommando übergeben wurde, abgelaufen ist, wird die Abstimmung zusammengefasst und Willowbot schickt eine List mit den Ergebnissen an den Chat, angezeigt in Prozent und absteigender Reihenfolge, von der Option mit den meisten zu derjenigen mit den wenigsten Stimmen.
+
+Derzeit sind in diesem Modul nur deutsche Infotexte hinterlegt und eine Änderung zu einer anderen Sprache erfordert das direkte Bearbeiten des Moduls selbst.
+
+
+## 5 Abschließende Worte
 
 Willowbot ist nun seit einigen Monaten in Entwicklung und wird Stück für Stück erweitert, wann immer neue Szenarien, die abgedeckt werden müssen, auftauchen. Unter keinen Umständen sollte er als vollständig hinsichtlich seiner Funktionen betrachtet werden, aber er befindet sich nach wie vor in aktiver Entwicklung – einschließlich Bemühungen, Willowbot zugänglicher zu gestalten – und wird es wahrscheinlich lange Zeit bleiben.
 
@@ -455,6 +487,9 @@ Fühlen Sie sich frei, den Code als Inspiration für Ihre eigenen IRC-Projekte z
 * `debug`
     * Typ: Zeichenkette (string)
     * Fehlersuchmeldung; wird nur auf der Textkonsole angezeigt und nicht an den Chat gesendet
+* `function`
+    * Typ: Zeichenkette (string)
+    * Name einer aufrufbaren Routine in einem eigenen Modul
 * `interval`
     * Typ: Ganzzahl (integer)
     * für zeitabhängige Kommandos; in Sekunden

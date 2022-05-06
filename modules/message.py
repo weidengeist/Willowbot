@@ -282,37 +282,15 @@ class Message():
 
     elif self.getType() == "USERNOTICE":
 
-      # Message indicates a Prime sub. Has to be checked first, because it has the same msg-id as ordinary subs do and the only distinguishing feature is the msg-param-sub-plan parameter.
-      if self.isSubPrime():
+      # Message indicates a Prime sub, a regular subscription, or that a user continues his/her gifted sub.
+      if self.isSubPrime() or self.isSub() or self.isSubGiftContinued():
+        subMonth = int(self.getSubMonth())
         for m in commands['sub']:
-          if commands['sub'][m]['triggerType'] == 'subPrime':
-            subMonth = int(self.getSubMonth())
+          if commands['sub'][m]['triggerType'] == 'subPrime' or commands['sub'][m]['triggerType'] == 'sub' or commands['sub'][m]['triggerType'] == 'subGiftContinued':
             subLevel = float('inf') if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
             minSubLevel = float('inf') if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
             maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
-            print("sublevel", subLevel, "minSubLevel", minSubLevel, "maxSubLevel", maxSubLevel)
-            if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
-              self.reactToMessage(commands, commands['sub'][m], irc)
-
-      # Message indicates a subscription.
-      elif self.isSub():
-        for m in commands['sub']:
-          if commands['sub'][m]['triggerType'] == 'sub':
-            subMonth = int(self.getSubMonth())
-            subLevel = float('inf') if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
-            minSubLevel = float('inf') if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
-            maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
-            if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
-              self.reactToMessage(commands, commands['sub'][m], irc)
-  
-      # Message indicates that a user continues his/her gifted sub.
-      elif self.isSubGiftContinued():
-        for m in commands['sub']:
-          if commands['sub'][m]['triggerType'] == 'subGiftContinued':
-            subMonth = int(self.getSubMonth())
-            subLevel = float('inf') if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
-            minSubLevel = float('inf') if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
-            maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
+            print("subMonth", subMonth, "subLevel", subLevel, "minSubLevel", minSubLevel, "maxSubLevel", maxSubLevel)
             if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
               self.reactToMessage(commands, commands['sub'][m], irc)
 
