@@ -290,7 +290,6 @@ class Message():
             subLevel = float('inf') if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
             minSubLevel = float('inf') if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
             maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
-            print("subMonth", subMonth, "subLevel", subLevel, "minSubLevel", minSubLevel, "maxSubLevel", maxSubLevel)
             if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
               self.reactToMessage(commands, commands['sub'][m], irc)
 
