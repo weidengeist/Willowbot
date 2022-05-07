@@ -17,8 +17,6 @@ def poll_start(commands, irc, *args):
   # A string that gathers the vote options for an message that announces the beginning of a poll.
   poll_options_announcementString = ""
   
-  poll_initiated = True
-
   for i in range(0, len(poll_options)):
     a = poll_options[i]
     poll_options_announcementString = poll_options_announcementString + "»" + a + "«"
