@@ -17,7 +17,8 @@ def poll_start(commands, irc, *args):
   # A string that gathers the vote options for an message that announces the beginning of a poll.
   poll_options_announcementString = ""
   
-  i = 0
+  poll_initiated = True
+
   for i in range(0, len(poll_options)):
     a = poll_options[i]
     poll_options_announcementString = poll_options_announcementString + "»" + a + "«"
@@ -35,13 +36,18 @@ def poll_start(commands, irc, *args):
     else:
       # To do. Finish the else branch and clear the commands from vote options.
       print("Vote option already defined. Poll not started.")
-      break
+      del commands['timed']['willowbot_poll']
+      for o in poll_options:
+        if o in commands['general']:
+          if o != poll_options[i]:
+            del commands['general'][o]
+          del poll_results[o]
+      return
 
   irc.send("/me Die Abstimmung läuft " + str(duration) + " Sekunden. Stimmt ab mit " + poll_options_announcementString + " in den Chat.")
 
 
 def poll_addUserVote(poll_results, vote, sender):
-  print(poll_results)
   for i in poll_results:
     if i != vote:
       if sender in poll_results[i]:
@@ -65,13 +71,9 @@ def poll_stop(commands, results, irc):
     votes[c] = len(results[c])
     # Delete the vote options from the commands dictionary.
     del commands['general'][c]
-  results = {}
   votes_sorted = sorted(votes.items(), key=lambda x:x[1], reverse=True)
-  print(votes_sorted)
-  irc.send(str(votes_total) + " Stimme" + (votes_total > 1 and "n" or "") + " abgegeben.")
+  irc.send(str(votes_total) + " Stimme" + (votes_total == 1 and " " or "n ") + "abgegeben.")
   # Prevent division by zero.
   votes_total = max(votes_total, 1)
   for v in votes_sorted:
     irc.send(v[0] + ": " + str(round(v[1]/votes_total*100)) + " %")
-
-
