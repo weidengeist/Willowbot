@@ -283,15 +283,22 @@ class Message():
     elif self.getType() == "USERNOTICE":
 
       # Message indicates a Prime sub, a regular subscription, or that a user continues his/her gifted sub.
-      if self.isSubPrime() or self.isSub() or self.isSubGiftContinued():
+      if self.isSubPrime() or self.isSub():
         subMonth = int(self.getSubMonth())
         for m in commands['sub']:
-          if commands['sub'][m]['triggerType'] == 'subPrime' or commands['sub'][m]['triggerType'] == 'sub' or commands['sub'][m]['triggerType'] == 'subGiftContinued':
+          if commands['sub'][m]['triggerType'] == 'subPrime' or commands['sub'][m]['triggerType'] == 'sub':
             subLevel = float('inf') if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
             minSubLevel = float('inf') if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
             maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
             if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
               self.reactToMessage(commands, commands['sub'][m], irc)
+
+      if self.isSubGiftContinued():
+        for m in commands['sub']:
+          if commands['sub'][m]['triggerType'] == 'subGiftContinued':
+            subGiftGifter = self.getSenderDisplayName()
+            subName = self.getSubGiftRecipient()
+            self.reactToMessage(commands, commands['sub'][m], irc)
 
       # Message indicates a gifted subscription.
       elif self.isSubGiftSingle():
