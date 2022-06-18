@@ -24,7 +24,7 @@ class Message():
     return re.match(".*" + string.lower() + ".*", self.text.lower())
     
   def endsWith(self, string):
-    return re.match(".*" + string + "[\r]?$", self.text)
+    return re.match(".*" + string + "$", self.text)
   
   def equals(self, string):
     return self.text == string
