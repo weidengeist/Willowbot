@@ -183,7 +183,6 @@ def checkTimedCommands(commands, commands_timed, irc):
         os.system(reaction['os-command'])
   
       if 'function' in reaction:
-        print("function", reaction['function'])
         eval(reaction['function'])
   
       # If there is a debug message provided, output this on the console.

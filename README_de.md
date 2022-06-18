@@ -350,18 +350,6 @@ commands = {
 ```
 Hier sehen Sie diverse Arten `subLevel`, `minSubLevel` und `maxSubLevel` zu verwenden. Willowbot wird die Kommando-/Auslöserkategorie `sub` (`sub`, `subPrime`, `subGiftContinued`, `subGiftSingle`, `subGiftMulti`) durchlaufen und *jeden* Treffer ausführen, es ist also wichtig, ihre Einschränkungen sorgsam, d. h. sich nicht überschneidend zu wählen, um zu vermeiden, dass mehr als eine Reaktion ausgeführt wird. In der obigen Definition können Sie sehen, dass die Abonnementstufen sich gegenseitig ausschließen. Obwohl sie geordnet sind, ist dies nicht erforderlich, damit Willowbot die Reaktionen korrekt ausführt. Es wird auch die Performanz nicht verbessern.
 
-Wann immer ein Mehrfachabonnement auf dem Kanal verschenkt wird, gibt es auch Folgebenachrichtigungen über einzelne verschenkte Abonnements mit demselben Verschenker in der entsprechenden Anzahl. Da Sie wahrscheinlich nicht möchten, dass Willowbot mit seinen von Ihnen definierten Reaktionen für einzelne verschenkte Abonnements darauf reagiert, besitzt der Auslösetyp `subGiftMulti` einen besonderen Schlüssel: `suppressFollowupSingles`. Es ist ein Wahrheitswert (boolean), also sind die Werte `True` (wahr) und `False` (falsch) für diesen Schlüssel erlaubt. Wenn Sie ihn auf `True` setzen, wird Willowbot wie oben beschrieben verfahren und nicht auf die nächsten Nachrichten über Einzelgeschenkabonnements von diesem Nutzer reagieren, bis die Anzahl aus der Meldung über das verschenkte Mehrfachabonnement erreicht ist. Ein kleines Codebeispiel, um Klarheit zu schaffen und keine Fragen offen zu lassen:
-```
-commands = {
-  "meinMultiaboverarbeiter" : {
-    "answer"                  : "$subGiftGifter hat soeben $subGiftCount Abos an die Community und damit insgesamt $subGiftCountTotal Abos auf diesem Kanal verschenkt.",
-    "triggerType"             : "subGiftMulti",
-    "suppressFollowupSingles" : True
-  }
-}
-```
-Bitte beachten Sie: Wahrheitswerte sind nicht von Anführungszeichen eingeschlossen.
-
 
 ##### Unterstütze Platzhalter nach Abonnementkontext
 
@@ -517,12 +505,9 @@ Fühlen Sie sich frei, den Code als Inspiration für Ihre eigenen IRC-Projekte z
 * `subLevel`
     * Typ: Ganzzahl (integer)
     * exakte Abomonatszahl, die benötigt wird, um die zugehörige Nachricht auszulösen
-* `suppressFollowupSingles`
-    * Typ: Wahrheitwert (boolean)
-    * nur in Verbindung mit `triggerType` `subGiftMulti` verwendet; unterdrückt die Verarbeitung von Nachrichten über einzelne verschenkte Abonnements, die nach einem Mehrfachgeschenkeabonnement auftauchen, bis die entsprechende Anzahl des Mehrfachgeschenkeabonnements erreicht ist
 * `triggerType`
     * Typ: Zeichenkette (string)
-    * `raid`, `sub`, `subGiftContinued`, `subGiftMulti`, `subGiftSingle`, `subPrime`
+    * `raid`, `sub`, `subGiftAnon`, `subGiftContinued`, `subGiftMulti`, `subGiftSingle`, `subPrime`
 
 
 ### Liste der Platzhaltervariablen

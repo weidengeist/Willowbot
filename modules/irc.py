@@ -4,6 +4,9 @@ import ssl
 import select
 import time
 
+# For debugging only. Remove.
+import os
+
 class IRC:
   
   def __init__(self, config):  
@@ -59,7 +62,6 @@ class IRC:
       if ", raddr=(" in str(ready[0]):
         try:
           text = self.irc.recv(4096).decode("utf-8") # Receive the text.
-          print(text)
         except ConnectionError:
           print("Connection error.")
           text = 'EXCEPTION'
@@ -88,7 +90,7 @@ class IRC:
 
   
     # Split the response for cases where more than one user message is in one response.
-    text = text.split('\r\n')
+    text = text.replace("\r\n", "\n").split('\n')
     # Split command above creates an empty last entry in response list. Delete this.
     del text[-1]
 

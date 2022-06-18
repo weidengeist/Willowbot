@@ -11,7 +11,8 @@ loadOptionalModules(False) # False; do not list the imported modules or other de
 
 class Message():
 
-  subSuppressions = {}
+  # No longer needed as subGiftSingle only applies for msg-param-sender-count > 0.
+  #subSuppressions = {}
 
   ################################
   # Various checks and metadata. #
@@ -23,13 +24,13 @@ class Message():
     return re.match(".*" + string.lower() + ".*", self.text.lower())
     
   def endsWith(self, string):
-    return re.match(".*" + string + "$", self.text)
+    return re.match(".*" + string + "[\r]?$", self.text)
   
   def equals(self, string):
     return self.text == string
 
   def getID(self):
-    return re.sub(".+?;id=([0-9]+).*", r'\1', self.meta)
+    return re.sub(".+?;id=([^;]+);.*", r'\1', self.meta)
 
   def getMeta(self):
     return re.sub("(.+?[A-Z]+ #[^ ]+).*", r'\1', self.fullText)
@@ -74,6 +75,13 @@ class Message():
   def getText(self):
     return re.sub(".+?[A-Z]+ #[^ ]+ :(.+)", r'\1', self.fullText)
 
+  def getTimeSent(self):
+    t_msg = re.findall(".+?;tmi-sent-ts=([0-9]+)[0-9]{3}.*", self.fullText)
+    if len(t_msg) > 0:
+      return localtime(int(t_msg[0]))
+    else:
+      return localtime()
+
   def getType(self):
     return re.sub(".+?tmi\.twitch\.tv ([A-Z]+) .*", r'\1', self.meta)
 
@@ -86,11 +94,14 @@ class Message():
   def isSub(self):
     return (";msg-id=sub;" in self.meta) or (";msg-id=resub;" in self.meta)
 
+  def isSubGiftAnon(self):
+    return ";login=ananonymousgifter;" in self.meta and ";msg-id=subgift;" in self.meta
+
   def isSubGiftContinued(self):
     return ";msg-id=giftpaidupgrade;" in self.meta
 
   def isSubGiftSingle(self):
-    return ";msg-id=subgift;" in self.meta
+    return ";msg-id=subgift;" in self.meta and not ";login=ananonymousgifter;" in self.meta and int(re.sub(".+?;msg-param-sender-count=([^;]+).*", r'\1', self.meta)) > 0
 
   def isSubGiftMulti(self):
     return ";msg-id=submysterygift;" in self.meta and int(self.getSubGiftCount()) > 1
@@ -126,10 +137,13 @@ class Message():
     if self.isRaid():
       answerText = answerText.replace('$raidersChannel', self.getSenderDisplayName())
       answerText = answerText.replace('$raidersCount', self.getRaidersCount())
-    # Message is a subscription (self).
+    # Message is a regular or Prime subscription.
     elif self.isSub() or self.isSubPrime():
       answerText = answerText.replace('$subMonth', self.getSubMonth())
       answerText = answerText.replace('$subName', self.getSenderDisplayName())
+    # Message is an anonymous subscription.
+    elif self.isSubGiftAnon():
+      answerText = answerText.replace('$subGiftRecipient', self.getSubGiftRecipient())
     # Message is a continued subscription.
     elif self.isSubGiftContinued():
       answerText = answerText.replace('$subName', self.getSenderDisplayName())
@@ -144,7 +158,7 @@ class Message():
       answerText = answerText.replace('$subGiftGifter', self.getSenderDisplayName())
       answerText = answerText.replace('$subGiftCountTotal', self.getSubGiftCountTotal())
       answerText = answerText.replace('$subGiftCount', self.getSubGiftCount())
-    # Message is a user’s message or Prime Sub.
+    # Message is a user’s message.
     else:
       answerText = answerText.replace('$msgID', self.getID())
       answerText = answerText.replace('$senderName', self.getSenderName())
@@ -252,7 +266,7 @@ class Message():
   def processCommands(self, commands, message, irc):
     self.fullText = message
     self.meta = self.getMeta()
-    msgTime = localtime()
+    msgTime = self.getTimeSent()
     msgTime = ("" if msgTime.tm_hour > 9 else "0") + str(msgTime.tm_hour) + ":" + ("" if msgTime.tm_min > 9 else "0") + str(msgTime.tm_min) + ":" + ("" if msgTime.tm_sec > 9 else "0") + str(msgTime.tm_sec)
 
     # Response type is user’s chat message.
@@ -282,48 +296,50 @@ class Message():
 
     elif self.getType() == "USERNOTICE":
 
-      # Message indicates a Prime sub, a regular subscription, or that a user continues his/her gifted sub.
-      if self.isSubPrime() or self.isSub():
+      # Message indicates a regular subscription.
+      if self.isSub():
         subMonth = int(self.getSubMonth())
         for m in commands['sub']:
-          if commands['sub'][m]['triggerType'] == 'subPrime' or commands['sub'][m]['triggerType'] == 'sub':
+          if commands['sub'][m]['triggerType'] == 'sub':
             subLevel = float('inf') if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
             minSubLevel = float('inf') if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
             maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
             if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
               self.reactToMessage(commands, commands['sub'][m], irc)
 
-      if self.isSubGiftContinued():
+      # Message indicates a Prime sub.
+      elif self.isSubPrime():
+        subMonth = int(self.getSubMonth())
+        for m in commands['sub']:
+          if commands['sub'][m]['triggerType'] == 'subPrime':
+            subLevel = float('inf') if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
+            minSubLevel = float('inf') if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
+            maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
+            if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
+              self.reactToMessage(commands, commands['sub'][m], irc)
+
+      # Message indicates an anonymously gifted subscription.
+      elif self.isSubGiftAnon():
+        for m in commands['sub']:
+          if commands['sub'][m]['triggerType'] == 'subGiftAnon':
+            self.reactToMessage(commands, commands['sub'][m], irc)
+
+      # Message indicates a continued gifted subscription.
+      elif self.isSubGiftContinued():
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'subGiftContinued':
-            subGiftGifter = self.getSenderDisplayName()
-            subName = self.getSubGiftRecipient()
             self.reactToMessage(commands, commands['sub'][m], irc)
 
       # Message indicates a gifted subscription.
       elif self.isSubGiftSingle():
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'subGiftSingle':
-            gifter = self.getSenderDisplayName()
-            if gifter in self.subSuppressions:
-              self.subSuppressions[gifter] -= 1
-              print("Suppressing a followup single sub gift. " + str(self.subSuppressions[gifter]) + " more to come.")
-              if self.subSuppressions[gifter] == 0:
-                del self.subSuppressions[gifter]
-                print("Followup counter deleted. Processing single sub gifts from " + gifter + " again.")
-            else:
-              self.reactToMessage(commands, commands['sub'][m], irc)
-
+            self.reactToMessage(commands, commands['sub'][m], irc)
+      
       # Message indicates a sub bomb i. e. multiple gifted subs.
       elif self.isSubGiftMulti():
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'subGiftMulti':
-            # If the followup single subs are set to be suppressed, …
-            if 'suppressFollowupSingles' in commands['sub'][m] and commands['sub'][m]['suppressFollowupSingles']:
-              # … create an entry for the multi sub gifting user in the subSuppressions dictionary
-              gifter = self.getSenderDisplayName()
-              self.subSuppressions[gifter] = int(self.getSubGiftCount())
-
             self.reactToMessage(commands, commands['sub'][m], irc)
 
       # Message indicates a raid.

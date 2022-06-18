@@ -349,18 +349,6 @@ commands = {
 ```
 Here you can see the various ways of using `subLevel`, `minSubLevel`, and `maxSubLevel`. Willowbot will process the `sub` category commands (`sub`, `subPrime`, `subGiftContinued`, `subGiftSingle`, `subGiftMulti`) and execute *every* match, so it is important to set their restrictions carefully, i.e. disjunctive to prevent that more than one reaction will be executed. In the definitions above you can see that the subscription levels exclude each other. Although they are ordered, it is not necessary to do so to make Willowbot execute the reactions correctly. It won’t increase performance either.
 
-Whenever a multi-subscription gift occurs on the channel, there are always followup messages about single-subscription gifts with the same gifter in the respective quantity. As you might not want Willowbot to react to those messages with its defined single-subscription gift answers, the trigger type `subGiftMulti` has a special key: `suppressFollowupSingles`. It is a boolean, so the values `True` and `False` are allowed for this key. If you set this to `True`, Willowbot will do as described above and not react to the next single-subscription gift messages from this user until the amount of gifted subscriptions in the multi-subscription gift is reached. A little code sample just to clarify and leave no questions unanswered:
-```
-commands = {
-  "myMultiSubGiftHandler" : {
-    "answer"                  : "$subGiftGifter has just gifted $subGiftCount subs to the community with a total of $subGiftCountTotal on this channel.",
-    "triggerType"             : "subGiftMulti",
-    "suppressFollowupSingles" : True
-  }
-}
-```
-Please note: Boolean values are not enclosed in quotation marks.
-
 
 ##### Supported placeholders per subscription context
 
@@ -516,12 +504,9 @@ Feel free to use the code as an inspiration for your own IRC projects and to rep
 * `subLevel`
     * type: integer
     * subscription count needed to trigger the associated message
-* `suppressFollowupSingles`
-    * type: boolean
-    * used in conjunction with `triggerType` `subGiftMulti` only; suppresses the evaluation of single-subscription gift messages showing up after the multi-subscription gift until the according quantity of the multi-subscription gifts is reached
 * `triggerType`
     * type: string
-    * `raid`, `sub`, `subGiftContinued`, `subGiftMulti`, `subGiftSingle`, `subPrime`
+    * `raid`, `sub`, `subGiftAnon`, `subGiftContinued`, `subGiftMulti`, `subGiftSingle`, `subPrime`
 
 
 ### List of placeholder variables
