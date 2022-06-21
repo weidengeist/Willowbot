@@ -364,6 +364,8 @@ Here you can see the various ways of using `subLevel`, `minSubLevel`, and `maxSu
     * `subGiftCountTotal`: the total amount of already gifted subscriptions by this user on this channel
     * `subGiftGifter`: the user gifting a subscription (display name)
     * `subGiftRecipient`: the user receiving a subscription (display name)
+* `subGiftSingleFollowup`:
+    * see `subGiftSingle`
 * `subGiftMulti`
     * `subGiftCount`: the quantity of subscriptions beeing gifted by the user
     * `subGiftCountTotal`: the total amount of already gifted subscriptions by this user on this channel
@@ -506,7 +508,7 @@ Feel free to use the code as an inspiration for your own IRC projects and to rep
     * subscription count needed to trigger the associated message
 * `triggerType`
     * type: string
-    * `raid`, `sub`, `subGiftAnon`, `subGiftContinued`, `subGiftMulti`, `subGiftSingle`, `subPrime`
+    * `raid`, `sub`, `subGiftAnon`, `subGiftContinued`, `subGiftMulti`, `subGiftSingle`, `subGiftSingleFollowup`, `subPrime`
 
 
 ### List of placeholder variables

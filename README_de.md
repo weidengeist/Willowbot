@@ -365,6 +365,8 @@ Hier sehen Sie diverse Arten `subLevel`, `minSubLevel` und `maxSubLevel` zu verw
     * `subGiftCountTotal`: Gesamtzahl bereits verschenkter Abonnements auf diesem Kanal durch den Nutzer
     * `subGiftGifter`: der das Abonnement verschenkende Nutzer (Anzeigename)
     * `subGiftRecipient`: der das Abonnement geschenkt bekommende Nutzer (Anzeigename)
+* `subGiftSingleFollowup`:
+    * siehe `subGiftSingle`
 * `subGiftMulti`
     * `subGiftCount`: Anzahl der durch den Nutzer verschenkten Abonnements
     * `subGiftCountTotal`: Gesamtzahl bereits verschenkter Abonnements auf diesem Kanal durch den Nutzer
@@ -507,7 +509,7 @@ Fühlen Sie sich frei, den Code als Inspiration für Ihre eigenen IRC-Projekte z
     * exakte Abomonatszahl, die benötigt wird, um die zugehörige Nachricht auszulösen
 * `triggerType`
     * Typ: Zeichenkette (string)
-    * `raid`, `sub`, `subGiftAnon`, `subGiftContinued`, `subGiftMulti`, `subGiftSingle`, `subPrime`
+    * `raid`, `sub`, `subGiftAnon`, `subGiftContinued`, `subGiftMulti`, `subGiftSingle`, `subGiftSingleFollowup`, `subPrime`
 
 
 ### Liste der Platzhaltervariablen

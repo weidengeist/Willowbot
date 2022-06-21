@@ -103,6 +103,9 @@ class Message():
   def isSubGiftSingle(self):
     return ";msg-id=subgift;" in self.meta and not ";login=ananonymousgifter;" in self.meta and int(re.sub(".+?;msg-param-sender-count=([^;]+).*", r'\1', self.meta)) > 0
 
+  def isSubGiftSingleFollowup(self):
+    return ";msg-id=subgift;" in self.meta and not ";login=ananonymousgifter;" in self.meta and int(re.sub(".+?;msg-param-sender-count=([^;]+).*", r'\1', self.meta)) == 0
+
   def isSubGiftMulti(self):
     return ";msg-id=submysterygift;" in self.meta and int(self.getSubGiftCount()) > 1
 
@@ -149,10 +152,10 @@ class Message():
       answerText = answerText.replace('$subName', self.getSenderDisplayName())
       answerText = answerText.replace('$subGiftGifter', self.getOriginalGifter())
     # Message is a subscription gift (single).
-    elif self.isSubGiftSingle():
+    elif self.isSubGiftSingle() or self.isSubGiftSingleFollowup():
       answerText = answerText.replace('$subGiftGifter', self.getSenderDisplayName())
       answerText = answerText.replace('$subGiftRecipient', self.getSubGiftRecipient())
-      answerText = answerText.replace('$subGiftCountTotal', self.getSubGiftCountTotal())
+      answerText = answerText.replace('$subGiftCountTotal', self.getSubGiftCountTotal())      
     # Message is a subscription gift (multiple).
     elif self.isSubGiftMulti():
       answerText = answerText.replace('$subGiftGifter', self.getSenderDisplayName())
@@ -334,6 +337,12 @@ class Message():
       elif self.isSubGiftSingle():
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'subGiftSingle':
+            self.reactToMessage(commands, commands['sub'][m], irc)
+
+      # Message indicates a followup message of a multi-gifted subscription.
+      elif self.isSubGiftSingleFollowup():
+        for m in commands['sub']:
+          if commands['sub'][m]['triggerType'] == 'subGiftSingleFollowup':
             self.reactToMessage(commands, commands['sub'][m], irc)
       
       # Message indicates a sub bomb i. e. multiple gifted subs.
