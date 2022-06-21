@@ -290,7 +290,7 @@ commands = {
 ```
 It is important to set `triggerType` `raid` in this definition. Otherwise, Willowbot would print the answer string to the chat as soon as someone’s complete message reads »myRaid«.
 
-As it has been mentioned above, it is not necessary to provide a special pattern for this kind of message handlers. However, you *have* to provide a unique identifier (in this case: `myRaid`) for the handler. Non-unique, i. e. multiply used identifiers, will overwrite other already defined commands with the same identifier/pattern so that only the one defined last will exist and be able to be processed.
+As it has been mentioned above, it is not necessary to provide a special pattern for this kind of message handlers. However, you *have* to provide a unique identifier (in this case: `myRaid`) for the handler. Non-unique, i.e. multiply used identifiers, will overwrite other already defined commands with the same identifier/pattern so that only the one defined last will exist and be able to be processed.
 
 You can see two more placeholder variables in the answer: `raidersChannel` and `raidersCount`. As soon as an incoming raid is detected, those placeholders will be replaced with the channel that sends you its viewers and the number of viewers, respectively.
 
@@ -418,14 +418,14 @@ Whenever a user sends `!gg` to the chat (or another message that at least starts
 
 ### 3.9 Debug messages
 
-If you want to check your command definitions, i. e. whether Willowbot will react to certain events/patterns the way you are intending, and need feedback about the reaction, but you don’t want to send messages to the chat for that purpose, you can use Willowbot’s `debug` key. The string in your `debug` key will behave as if it was an `answer`, however, it will not be sent to the chat but be output on the console. Resolving arguments and placeholder variables is also featured in the `debug` key. `answer` and `debug` (and `os-command`) are processed independently, so you may define those keys in any combination and for any purpose you like.
+If you want to check your command definitions, i.e. whether Willowbot will react to certain events/patterns the way you are intending, and need feedback about the reaction, but you don’t want to send messages to the chat for that purpose, you can use Willowbot’s `debug` key. The string in your `debug` key will behave as if it was an `answer`, however, it will not be sent to the chat but be output on the console. Resolving arguments and placeholder variables is also featured in the `debug` key. `answer` and `debug` (and `os-command`) are processed independently, so you may define those keys in any combination and for any purpose you like.
 
 
 ## 4 Optional/Custom modules
 
 Willowbot consists of various core modules. However, there are situations that might require some more complex actions than just reacting to a chat message by sending another message to the chat. This is where custom modules come into play. Those are Python scripts as well and provide you the full capabilities of Python to extend Willowbot’s functionality.
 
-To keep all routines and variables properly sorted and to minimize the risk of unintentionally overwriting already defined ones, it is recommended to prefix them with the module name, e. g. if you have a custom module named `giveaway`, you should name the routines and variables within this module `giveaway_doStuff()`, `giveaway_entries`, `giveaway_doSomeOtherThings()`, and so on.
+To keep all routines and variables properly sorted and to minimize the risk of unintentionally overwriting already defined ones, it is recommended to prefix them with the module name, e.g. if you have a custom module named `giveaway`, you should name the routines and variables within this module `giveaway_doStuff()`, `giveaway_entries`, `giveaway_doSomeOtherThings()`, and so on.
 
 
 ### 4.1 Accessing custom modules: the `function` key
