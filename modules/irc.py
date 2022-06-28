@@ -4,8 +4,6 @@ import ssl
 import select
 import time
 
-# For debugging only. Remove.
-import os
 
 class IRC:
   
