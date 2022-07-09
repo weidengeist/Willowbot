@@ -32,7 +32,7 @@ class IRC:
       self.irc.send(bytes("PASS oauth:" + oauth + "\n", "UTF-8")) # User authentication.
       print("Pass sent successfully.")
       self.irc.send(bytes("NICK " + botname + "\n", "UTF-8"))
-      print("Nick sent successfully.")
+      print("Bot account name " + botname + " sent successfully.")
       self.irc.send(bytes("JOIN #" + self.config['channel'] + "\n", "UTF-8"))  # Join the channel.
       print("Entered channel " + self.config['channel'] + ".")
       self.irc.send(bytes("CAP REQ :twitch.tv/tags" + "\n", "UTF-8"))
@@ -44,7 +44,7 @@ class IRC:
       self.irc.send(bytes("PASS oauth:" + oauth + "\n", "UTF-8")) # User authentication.
       print("Pass sent successfully")
       self.irc.send(bytes("NICK " + botname + "\n", "UTF-8"))
-      print("Nick sent successfully")
+      print("Bot account name " + botname + " sent successfully.")
       self.irc.send(bytes("JOIN #" + self.config['channel'] + "\n", "UTF-8")) # Join the channel.
       print("Entered channel " + self.config['channel'] + ".")
       self.irc.send(bytes("CAP REQ :twitch.tv/tags" + "\n", "UTF-8"))

@@ -52,6 +52,7 @@ def loadOptionalModules(verbose):
 # Initially load optional modules.
 loadOptionalModules(True)
 
+
 def getConfig():
   # Check the user’s operating system and set the configuration path.
   CONFIG = {}

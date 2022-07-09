@@ -218,9 +218,9 @@ class Message():
         return ""
 
   # Added commands variable to the function as a »function« key might modify the commands.
-  def reactToMessage(self, commands, match, irc):
+  def reactToMessage(self, commands, subset, match, irc):
     # If the command contains an answer key, process its value.
-    reaction = commands['general'][match]
+    reaction = commands[subset][match]
     if 'answer' in reaction:
       if reaction['matchType'] == 'regex':
         answer = self.resolveCaptureGroups(match, reaction['answer'])
@@ -315,7 +315,7 @@ class Message():
       
       # If there was a match, all restrictions have been met and the reaction is free to be executed.
       if match != '':
-        self.reactToMessage(commands, match, irc)
+        self.reactToMessage(commands, 'general', match, irc)
 
     elif self.getType() == "USERNOTICE":
 
@@ -328,7 +328,7 @@ class Message():
             minSubLevel = float('inf') if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
             maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
             if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
-              self.reactToMessage(commands, commands['sub'][m], irc)
+              self.reactToMessage(commands, 'sub', m, irc)
 
       # Message indicates a Prime sub.
       elif self.isSubPrime():
@@ -339,44 +339,44 @@ class Message():
             minSubLevel = float('inf') if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
             maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
             if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
-              self.reactToMessage(commands, commands['sub'][m], irc)
+              self.reactToMessage(commands, 'sub', m, irc)
 
       # Message indicates an anonymously gifted subscription.
       elif self.isSubGiftAnon():
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'subGiftAnon':
-            self.reactToMessage(commands, commands['sub'][m], irc)
+            self.reactToMessage(commands, 'sub', m, irc)
 
       # Message indicates a continued gifted subscription.
       elif self.isSubGiftContinued():
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'subGiftContinued':
-            self.reactToMessage(commands, commands['sub'][m], irc)
+            self.reactToMessage(commands, 'sub', m, irc)
 
       # Message indicates a gifted subscription.
       elif self.isSubGiftSingle():
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'subGiftSingle':
-            self.reactToMessage(commands, commands['sub'][m], irc)
+            self.reactToMessage(commands, 'sub', m, irc)
 
       # Message indicates a followup message of a multi-gifted subscription.
       elif self.isSubGiftSingleFollowup():
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'subGiftSingleFollowup':
-            self.reactToMessage(commands, commands['sub'][m], irc)
+            self.reactToMessage(commands, 'sub', m, irc)
       
       # Message indicates a sub bomb i. e. multiple gifted subs.
       elif self.isSubGiftMulti():
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'subGiftMulti':
-            self.reactToMessage(commands, commands['sub'][m], irc)
+            self.reactToMessage(commands, 'sub', m, irc)
 
       # Message indicates a raid.
       elif self.isRaid():
         raidersCount = self.getRaidersCount()
         for m in commands['raid']:
           if ('minRaidersCount' in commands['raid'][m] and raidersCount >= commands['raid'][m]['minRaidersCount']) or (not 'minRaidersCount' in commands['raid'][m]):
-            self.reactToMessage(commands, commands['raid'][m], irc)
+            self.reactToMessage(commands, 'raid', m, irc)
         
       else:
         print("\nUSERNOTICE\n")
