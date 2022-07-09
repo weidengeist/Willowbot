@@ -14,7 +14,11 @@ Um Willowbot benutzen zu können, muss [Python in wenigstens Version 3](https://
 
 ## 2 Ersteinrichtung
 
-Öffnen Sie eine Konsole (unter Windows: starten Sie `cmd`; unter Linux/Mac: drücken Sie Strg+Alt+T (unter den meisten Desktopumgebungen) or suchen Sie nach `Terminal` in Ihrem Anwendungsmenü). Navigieren Sie in das Verzeichnis, wo sich Willowbot befindet, indem Sie `cd` eintippen, gefolgt von einem Leerzeichen und dem Willowbotverzeichnis, z. B. `cd C:\Programme\Willowbot` unter Windows oder `cd /home/dasbinich/Willowbot` unter Linux/Mac. Starten Sie nun den Bot, indem Sie `python main_cli.py` eintippen und die Entertaste drücken. Sofern alles korrekt installiert ist, sollte Ihnen nun die Nachricht des Willowbots, dass für seine Verbindung keine Konfigurationsdatei vorliegt, angezeigt werden. Er wird eine Datei mit einer Konfigurationsvorlage in einem passenden Verzeichnis, das Willowbot Ihnen in dieser Nachricht mitteilen wird, für Sie anlegen.
+Öffnen Sie eine Konsole (unter Windows: starten Sie `cmd`; unter Linux/Mac: drücken Sie Strg+Alt+T (unter den meisten Desktopumgebungen) or suchen Sie nach `Terminal` in Ihrem Anwendungsmenü). Navigieren Sie in das Verzeichnis, wo sich Willowbot befindet, indem Sie `cd` eintippen, gefolgt von einem Leerzeichen und dem Willowbotverzeichnis, z. B. `cd C:\Programme\Willowbot` unter Windows oder `cd /home/dasbinich/Willowbot` unter Linux/Mac. Starten Sie nun den Bot, indem Sie `python main_cli.py` eintippen und die Entertaste drücken. Sofern alles korrekt installiert ist, sollte Ihnen nun die Nachricht des Willowbots, dass für seine Verbindung keine Konfigurationsdatei vorliegt, angezeigt werden. Er wird eine Datei mit einer Konfigurationsvorlage in einem passenden Verzeichnis, das Willowbot Ihnen in dieser Nachricht mitteilen wird, für Sie anlegen. Die Standardverzeichnisse für die Konfigurationsdatei `config.py` sind die folgenden:
+
+* Windows: `%appdata%\twitch\willowbot\`
+* MacOS: `/home/[user]/Library/Preferences/twitch/willowbot/`
+* Linux: `/home/[user]/.config/twitch/willowbot/`
 
 **Achtung!** Das soeben beschriebene Vorgehen wurde nur unter Linux getestet. Falls irgendwelche der Informationen über die unter Windows benötigten Schritte inkorrekt sein oder nicht funktionieren sollten, lassen Sie es mich bitte wissen.
 
@@ -94,6 +98,18 @@ commands = {
 }
 ```
 Das Symbol `^` bedeutet, dass die Nachricht mit dem Muster startet, das ihm folgt, also kann `^` mit Abgleichstyp `regex` die Verwendung von `startsWith` ersetzen. Das sogenannte Zeichenset (character set) `[Mm]` bedeutet genau das, was wir erreichen wollen: Jedwedes dieser beiden Zeichen darf das Kommando beginnen.
+
+Willowbots Regexfunktion unterstützt auch die Verwendung sogenannter Treffergruppen (capture groups) in seinen Antworten. Das bedeutet, dass Sie einzelne Teile der Nachricht, den den Bot zu einer Reaktion veranlasst hat, herausnehmen und für Ihre Antwort verwenden können.
+
+Einige häufig benutze Bots auf Twitch, die nicht so flexibel wie Willowbot sind, löschen automatisch Links, die von Nichtabonnenten in den Chat geschrieben wurden, selbst wenn es sich um einen Link zu einem Clip handelt, der auf Twitch selbst erstellt wurde. Um dieses Verhalten zu korrigieren, kann Willowbot beigebracht werden, die URL, die zum Clip führt, der Nachricht zu entnehmen und sie noch einmal mit Moderatorrechten zu senden:
+```
+'.*(https://clips.twitch.tv/[^ ]+).*' : {
+  'matchType' : 'regex',
+  'answer'    : 'Danke für deinen Clip, $senderDisplayName. Leider löscht der Bot alle Links von Nonsubs. Hier dein Repost: \1',
+  'level'     : 1
+},
+```
+Das Muster, das hier benutzt wird, veranlasst Willowbot, auf URLs, die zu Twitchclips führen, zu reagieren. Aber es gibt etwas Besonderes in diesem Muster: die Klammern. Diese weisen den Bot an, den Ausdruck darin zu »speichern«. Sie können auf diese gespeicherten Teile zugreifen, indem Sie `\1`, `\2`, `\3` etc. in Ihrer Antwort verwenden, um die Inhalte des 1., 2., 3. etc. Klammernpaars aufzurufen.
 
 
 ### 3.2 Zeitabhängige Kommandos

@@ -170,6 +170,15 @@ class Message():
     return answerText
 
   
+  def resolveCaptureGroups(self, pattern, replacement):
+    try:
+      replEncoded = re.sub( "\\\\x([0-9]{2})", r"\\\\g<\1>", replacement.encode('unicode_escape').decode() ).encode().decode('unicode_escape')
+      return re.sub(pattern, replEncoded, self.text)
+    except Exception as err:
+      print("  Regex resolve error! " + str(err))
+      return self.text
+
+
   def resolveArguments(self, answerText):
     argsMsg = re.findall("[^ ]+", self.text)
     # Delete the command triggering the bot so that only the arguments remain.
@@ -209,10 +218,16 @@ class Message():
         return ""
 
   # Added commands variable to the function as a »function« key might modify the commands.
-  def reactToMessage(self, commands, reaction, irc):
+  def reactToMessage(self, commands, match, irc):
     # If the command contains an answer key, process its value.
+    reaction = commands['general'][match]
     if 'answer' in reaction:
-      answer = self.resolveArguments(reaction['answer'])
+      if reaction['matchType'] == 'regex':
+        answer = self.resolveCaptureGroups(match, reaction['answer'])
+      else:
+        answer = reaction['answer']
+
+      answer = self.resolveArguments(answer)
       answer = self.resolvePlaceholders(answer).split('\n')
       if len(answer) > 1:
         if 'answerType' in reaction and reaction['answerType'] == 'random':
@@ -244,6 +259,11 @@ class Message():
 
     # If there is a debug message provided, output this on the console.
     if 'debug' in reaction:
+      if reaction['matchType'] == 'regex':
+        answer = self.resolveCaptureGroups(match, reaction['debug'])
+      else:
+        answer = reaction['debug']
+
       answer = self.resolveArguments(reaction['debug'])
       answer = self.resolvePlaceholders(answer).split('\n')
       if len(answer) > 1:
@@ -294,8 +314,8 @@ class Message():
               match = c
       
       # If there was a match, all restrictions have been met and the reaction is free to be executed.
-      if match != '':        
-        self.reactToMessage(commands, commands['general'][match], irc)
+      if match != '':
+        self.reactToMessage(commands, match, irc)
 
     elif self.getType() == "USERNOTICE":
 

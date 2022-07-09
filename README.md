@@ -15,7 +15,11 @@ You need to have installed an interpreter for the programming language [Python i
 
 ## 2 Initial setup
 
-Open a console (on Windows: start `cmd`; on Linux/Mac: press Ctrl+Alt+T (on most desktop environments) or search for `terminal` in your application menu). Navigate to the directory where Willowbot is located by typing `cd`, followed by a blank space and the Willowbot location, e.g. `cd C:\Programs\Willowbot` on Windows or `cd /home/thatsme/Willowbot` on Linux/Mac. Now start the bot by typing `python main_cli.py` and pressing the Enter button. If everything is installed correctly, you should now be presented Willowbot’s message that there is no configuration file for its connection. It will create a template configuration file in an appropriate directory, which Willowbot will tell you in this message.
+Open a console (on Windows: start `cmd`; on Linux/Mac: press Ctrl+Alt+T (on most desktop environments) or search for `terminal` in your application menu). Navigate to the directory where Willowbot is located by typing `cd`, followed by a blank space and the Willowbot location, e.g. `cd C:\Programs\Willowbot` on Windows or `cd /home/thatsme/Willowbot` on Linux/Mac. Now start the bot by typing `python main_cli.py` and pressing the Enter button. If everything is installed correctly, you should now be presented Willowbot’s message that there is no configuration file for its connection. It will create a template configuration file in an appropriate directory, which Willowbot will tell you in this message. The default directories for the configuration file `config.py` are the following ones:
+
+* Windows: `%appdata%\twitch\willowbot\`
+* MacOS: `/home/[user]/Library/Preferences/twitch/willowbot/`
+* Linux: `/home/[user]/.config/twitch/willowbot/`
 
 **Beware!** Aforementioned procedure has only been tested on Linux. If any information about the steps needed on Windows is incorrect and/or does not work, please let me know.
 
@@ -94,6 +98,18 @@ commands = {
 }
 ```
 The symbol `^` means that the message starts with the pattern following it, so `^` in the `matchType` `regex` can replace `startsWith`. The so-called character set `[Mm]` means just what we want to achieve: Either of these two letters may introduce the command.
+
+Willowbot’s regex feature also supports using so-called capture groups in its answers. That means that you can take out parts of the message that triggered the bot reaction to re-use them in your answer.
+
+Some commonly used bots on Twitch which are not as flexible as Willowbot automatically delete links posted by non-subscribers, even though it is a link to a clip created on Twitch itself. To correct this behaviour, you can teach Willowbot to extract the URL leading to the clip and repost it with moderator privileges:
+```
+'.*(https://clips.twitch.tv/[^ ]+).*' : {
+  'matchType' : 'regex',
+  'answer'    : 'Thanks for your clip, $senderDisplayName. Unfortunately, links posted by non-subs are deleted by one of our bots on this channel. We repost it for you: \1',
+  'level'     : 1
+},
+```
+The pattern used here makes Willowbot react to URLs leading to a Twitch clip. But there is something special in the pattern: the parentheses. It tells the bot to »save« the expression within them. You can then access those saved parts by typing `\1`, `\2`, `\3`, etc. in your answer to match the contents within the 1st, 2nd, 3rd, etc. pair of parentheses.
 
 
 ### 3.2 Timed commands
