@@ -173,7 +173,7 @@ class Message():
   def resolveCaptureGroups(self, pattern, replacement):
     try:
       replEncoded = re.sub( "\\\\x([0-9]{2})", r"\\\\g<\1>", replacement.encode('unicode_escape').decode() ).encode().decode('unicode_escape')
-      return re.sub(pattern, replEncoded, self.text)
+      return re.sub(pattern, replEncoded, replacement)
     except Exception as err:
       print("  Regex resolve error! " + str(err))
       return self.text
@@ -222,12 +222,14 @@ class Message():
     # If the command contains an answer key, process its value.
     reaction = commands[subset][match]
     if 'answer' in reaction:
-      if reaction['matchType'] == 'regex':
+      if 'matchType' in reaction and reaction['matchType'] == 'regex':
         answer = self.resolveCaptureGroups(match, reaction['answer'])
       else:
         answer = reaction['answer']
 
+      print("Answer after resolveCaptureGroups", answer)
       answer = self.resolveArguments(answer)
+      print("Answer after resolveArguments", answer)
       answer = self.resolvePlaceholders(answer).split('\n')
       if len(answer) > 1:
         if 'answerType' in reaction and reaction['answerType'] == 'random':
@@ -259,7 +261,7 @@ class Message():
 
     # If there is a debug message provided, output this on the console.
     if 'debug' in reaction:
-      if reaction['matchType'] == 'regex':
+      if 'matchType' in reaction and reaction['matchType'] == 'regex':
         answer = self.resolveCaptureGroups(match, reaction['debug'])
       else:
         answer = reaction['debug']
