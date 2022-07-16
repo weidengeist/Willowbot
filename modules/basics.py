@@ -222,12 +222,12 @@ def splitIntoGroupsOf(s, length):
     else:
       # Only check further if the first string does not match the full one.
       if first != s:
-        # If the first string contains spaces, just delete the last letters from this string.
+        # If the »first« string contains spaces (i. e. contains of multiple words), just delete the last letters from this string.
         if " " in first:
           first = re.sub("(.*) +[^ ]+$", r'\1', first)
         # Otherwise, the word is too long to fit the restrictions, so omit it by setting it an empty string.
         else:
-          first = "" 
+          first = ""
         
     # Only append the string of length at max 12 characters to the string if it actually exists.
     # Prevents infinite loops by words being longer than the character limit.
@@ -236,9 +236,11 @@ def splitIntoGroupsOf(s, length):
     else:
       # Delete the very first word in the remaining input string s if it is too long.
       first = re.sub("^([^ ]+).*", r'\1', s)
-      
-    s = re.sub("^" + first + " *", "", s)
     
+    # Escape parenthesis in the »first« string.
+    first = first.replace('(', '\(').replace(')', '\)')
+    s = re.sub("^" + first + " *", "", s)
+
   return finalStringsList
 
 # Convert Latin-like Cyrillic letters to real Latin ones to strike scam bots.

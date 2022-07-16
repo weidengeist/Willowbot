@@ -188,7 +188,7 @@ class Message():
 
     # If the command does not contain any arguments, but argument variables are used in the answer, …
     if len(argsMsg) == 0 and (len(argsAnswer) > 0 or re.match('.*\$arg@', answerText)):
-      # … return an empty string, i.e. prevent the bot from reacting with a message.
+      # … return the function-calling string with generic strings for non-resolvable arguments.
       return answerText.replace("$arg", "missingArg")
 
     else:
