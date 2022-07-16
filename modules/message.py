@@ -189,7 +189,7 @@ class Message():
     # If the command does not contain any arguments, but argument variables are used in the answer, …
     if len(argsMsg) == 0 and (len(argsAnswer) > 0 or re.match('.*\$arg@', answerText)):
       # … return an empty string, i.e. prevent the bot from reacting with a message.
-      return ""
+      return answerText.replace("$arg", "missingArg")
 
     else:
       answerText = answerText.replace("$arg@", " ".join(argsMsg))
@@ -255,6 +255,7 @@ class Message():
     if 'function' in reaction:
       func = self.resolveArguments(reaction['function'])
       func = self.resolvePlaceholders(func)
+      print("func", func, "←")
       eval(func)
 
     # If there is a debug message provided, output this on the console.
