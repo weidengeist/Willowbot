@@ -28,8 +28,9 @@ def poll_start(commands, irc, *args):
     if not a in commands['general']:
       print("Adding a poll option in the commands for " + a)
       commands['general'][a] = {
-        'debug'    : '$senderDisplayName added with vote ' + a,
-        'function' : 'poll_addUserVote(poll_results, "' + a + '", "$senderDisplayName")'
+        'debug'     : '$senderDisplayName added with vote ' + a,
+        'function'  : 'poll_addUserVote(poll_results, "' + a + '", "$senderDisplayName")',
+        'matchType' : 'is_caseInsensitive'
       }
     else:
       print("Vote option already defined. Poll not started.")
