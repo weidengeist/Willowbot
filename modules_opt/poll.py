@@ -32,7 +32,6 @@ def poll_start(commands, irc, *args):
         'function' : 'poll_addUserVote(poll_results, "' + a + '", "$senderDisplayName")'
       }
     else:
-      # To do. Finish the else branch and clear the commands from vote options.
       print("Vote option already defined. Poll not started.")
       del commands['timed']['willowbot_poll']
       for o in poll_options:

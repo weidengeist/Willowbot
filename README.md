@@ -79,7 +79,7 @@ commands = {
 ```
 Now you can trigger the bot’s answer by e.g. `!bsg @randomtwitchuser`. Note the comma at the end of the line with `answer`! The order of the key definition does not matter; `matchType` can be set before `answer` as well.
 
-The other `matchType` options available in Willowbot are `contains`, `endsWith`, `regex` (more on that later), and `contains_caseInsensitive`. The last one is mainly for convenience reasons, however, it is recommended to use regular expressions (option `regex`) instead.
+The other `matchType` options available in Willowbot are `is` (default value; not necessary to be set explicitly), `is_caseInsensitive`, `contains`, `endsWith`, `regex` (more on that later), and `contains_caseInsensitive`. The last one is mainly for convenience reasons, however, it is recommended to use regular expressions (option `regex`) instead.
 
 
 #### 3.1.2 Advanced matching: regular expressions
@@ -503,7 +503,7 @@ Feel free to use the code as an inspiration for your own IRC projects and to rep
     * exact level needed to trigger the command
 * `matchType`
     * type: string
-    * `is` [Default], `startsWith`, `contains`, `contains_caseInsensitive`, `endsWith`, `regex`
+    * `is` [Default], `is_caseInsensitive`, `startsWith`, `contains`, `contains_caseInsensitive`, `endsWith`, `regex`
 * `maxSubLevel`
     * type: integer
     * maximum subscription count needed to trigger the associated message

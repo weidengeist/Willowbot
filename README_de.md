@@ -78,7 +78,7 @@ commands = {
 ```
 Jetzt kann die Antwort des Bots z. B. durch `!bsg @randomtwitchuser` ausgelöst werden. Beachten Sie das Komma am Ende der Zeile mit `answer`! Die Reihenfolge der Schlüsseldefinitionen spielt keine Rolle; `matchType` kann ebensogut vor `answer` festgelegt werden.
 
-Die anderen verfügbaren `matchType`-Optionen, die Willowbot zur Verfügung stellt, sind `contains` (enthält), `endsWith` (endet mit), `regex` (mehr dazu später) und `contains_caseInsensitive` (enthält, aber ohne Berücksichtigung von Groß- und Kleinschreibung). Die letzte besteht hauptsächlich aufgrund von Bequemlichkeitserwägungen für den Endnutzer, allerdings sei nahegelegt, stattdessen Reguläre Ausdrücke (regular expressions, Option `regex`) zu verwenden.
+Die anderen verfügbaren `matchType`-Optionen, die Willowbot zur Verfügung stellt, sind `is` (ist genau; Standardwert; muss nicht explizit gesetzt werden), `is_caseInsensitive` (wie `is`, aber ohne Berücksichtigung von Groß- und Kleinschreibung), `contains` (enthält), `endsWith` (endet mit), `regex` (mehr dazu später) und `contains_caseInsensitive` (wie `contains`, aber ohne Berücksichtigung von Groß- und Kleinschreibung). Die letzte besteht hauptsächlich aufgrund von Bequemlichkeitserwägungen für den Endnutzer, allerdings sei nahegelegt, stattdessen Reguläre Ausdrücke (regular expressions, Option `regex`) zu verwenden.
 
 
 #### 3.1.2 Erweitertes Abgleichen: Reguläre Ausdrücke
@@ -504,7 +504,7 @@ Fühlen Sie sich frei, den Code als Inspiration für Ihre eigenen IRC-Projekte z
     * exakter benötigter Level, um das Kommando auszulösen
 * `matchType`
     * Typ: Zeichenkette (string)
-    * `is` [Standardwert], `startsWith`, `contains`, `contains_caseInsensitive`, `endsWith`, `regex`
+    * `is` [Standardwert], `is_caseInsensitive`, `startsWith`, `contains`, `contains_caseInsensitive`, `endsWith`, `regex`
 * `maxSubLevel`
     * Typ: Ganzzahl (integer)
     * maximale Abomonatszahl, die benötigt wird, um die zugehörige Nachricht auszulösen

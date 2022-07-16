@@ -227,9 +227,7 @@ class Message():
       else:
         answer = reaction['answer']
 
-      print("Answer after resolveCaptureGroups", answer)
       answer = self.resolveArguments(answer)
-      print("Answer after resolveArguments", answer)
       answer = self.resolvePlaceholders(answer).split('\n')
       if len(answer) > 1:
         if 'answerType' in reaction and reaction['answerType'] == 'random':
@@ -312,7 +310,7 @@ class Message():
             if not 'matchType' in commands['general'][c]:
               commands['general'][c]['matchType'] = "is"
             
-            if (commands['general'][c]['matchType'] == "startsWith" and self.startsWith(c)) or (commands['general'][c]['matchType'] == "contains" and self.contains(c)) or (commands['general'][c]['matchType'] == "contains_caseInsensitive" and self.contains_caseInsensitive(c)) or (commands['general'][c]['matchType'] == "endsWith" and self.endsWith(c)) or (commands['general'][c]['matchType'] == "regex" and self.matchesRegex(c)) or (commands['general'][c]['matchType'] == "is" and self.text == c):
+            if (commands['general'][c]['matchType'] == "startsWith" and self.startsWith(c)) or (commands['general'][c]['matchType'] == "contains" and self.contains(c)) or (commands['general'][c]['matchType'] == "contains_caseInsensitive" and self.contains_caseInsensitive(c)) or (commands['general'][c]['matchType'] == "endsWith" and self.endsWith(c)) or (commands['general'][c]['matchType'] == "regex" and self.matchesRegex(c)) or (commands['general'][c]['matchType'] == "is" and self.text == c) or (commands['general'][c]['matchType'] == "is_caseInsensitive" and self.text.lower() == c.lower()):
               match = c
       
       # If there was a match, all restrictions have been met and the reaction is free to be executed.
