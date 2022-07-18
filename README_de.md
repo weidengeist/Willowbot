@@ -444,6 +444,10 @@ Willowbot besteht aus diversen Kernmodulen. Allerdings können Situationen auftr
 
 Um alle Routinen und Variablen säuberlich sortiert zu halten und das Risiko des ungewollten Überschreibens bereits definierter Routinen/Variablen zu minimieren, wird empfohlen, sie jeweils mit dem Modulnamen als Präfix zu versehen. Wenn Sie also bspw. ein Modul namens `verschenken` schreiben, sollten Sie die Routinen und Variablen innerhalb des Moduls `verschenken_tueDinge()`, `verschenken_teilnehmer`, `verschenken_tueIrgendetwasAnderes()` und so weiter nennen.
 
+Diese optionalen Module können mittels einer Liste `activeModules`¹ aktiviert und deaktiviert werden. Willowbot wird nur die Module verwenden, die auf dieser Liste vertreten sind, also vergessen Sie nicht, Ihr Modul daraufzusetzen. Wenn Sie Schwierigkeiten mit einem bestimmten Modul haben (Fehler, unerwartetes Verhalten, Konflikte mit anderen Modulen etc.), müssen Sie es nicht vollständig aus der Liste oder gar dem `modules_opt`-Verzeichnis entfernen, sondern Sie können es einfach auskommentieren, indem Sie vor seinen Eintrag in `activeModules` ein `#` setzen. Diese auskommentieren Module werden nicht geladen, wenn Willowbot startet.
+
+¹ Achtung, Windowsnutzer! Diese Datei hat keine Dateierweiterung/-endung, kann jedoch mit einem beliebigen Texteditor (z. B. Notepad) geöffnet und bearbeitet werden. Stellen Sie sicher, dass sie auch weiterhin keine Endung hat, wenn Sie Ihre Änderungen daran speichern. Falls diese Designentscheidung ein Punkt, der besonderer Aufmerksamkeit bedarf, und eine häufige Fehlerquelle ist, teilen Sie mir dies bitte mit.
+
 
 ### 4.1 Auf eigene Module zugreifen: der `function`-Schlüssel
 
@@ -468,6 +472,20 @@ Bevor wir uns dem interessantesten Part zuwenden, fassen wir kurz die anderen Di
 Um nun tatsächlich eine Umfrage zu starten, würden Sie ein Kommando wie `!abstimmung 30 links rechts geradeaus` an den Chat senden. Dieses startet eine Abstimmung, die 30 Sekunden dauern und den Zuschauern erlauben wird, auszuwählen, wo es im derzeit gespielten Spiel als Nächstes langgehen soll – nach links, rechts oder geradeaus –, indem sie das passende Wort in den Chat schreiben. Eine entsprechende Nachricht wird im Chat erscheinen. Willowbot wird anschließend the Stimmen einsammeln und in einer Liste sammeln, die am Ende ausgewertet wird. Jeder Nutzer kann nur einmal abstimmen, jedoch seine Stimme ändern, indem er eine andere der verfügbaren Optionen in den Chat schreibt. Nachdem die Zeit, die dem `!abstimmung`-Kommando übergeben wurde, abgelaufen ist, wird die Abstimmung zusammengefasst und Willowbot schickt eine List mit den Ergebnissen an den Chat, angezeigt in Prozent und absteigender Reihenfolge, von der Option mit den meisten zu derjenigen mit den wenigsten Stimmen.
 
 Derzeit sind in diesem Modul nur deutsche Infotexte hinterlegt und eine Änderung zu einer anderen Sprache erfordert das direkte Bearbeiten des Moduls selbst.
+
+<!--
+### 4.3 `pyrDet` module (Pyramidenerkennung)
+
+Emotepyramiden im Chat sind besonders auf Twitch: Einige Streamer ermuntern dazu, andere verbieten sie. Willowbot enthält ein Modul, das in der Lage ist, beginnende Pyramiden zu erkennen und daraufhin eine beliebige Art und Anzahl von Reaktionen an den Chat zu senden.
+
+Die folgende Kommandodefinition wird einem Nutzer, der eine Pyramide in den Chat schreibt, einen Timeout geben und anschließend eine Nachricht im Chat anzeigen:
+```
+'.*' : {
+  'matchType' : 'regex',
+  'function'  : 'pyrDet_checkForPyramid(irc, "$msgText", "$senderName", "/timeout $senderName 10", "/me Wir bauen hier keine Pyramiden! peepoRiot")'
+}
+```
+Dieses Kommando wird von jeder einzelnen Nutzernachricht (`.*`) im Chat ausgelöst und reicht die vollständigen Nachrichtentext `$msgText` wie auch den Namen des Absenders `$senderName` an die `pyrDet_checkForPyramid`-Routine weiter. Wann immer eine Pyramide entdeckt wurde, verarbeitet `pyrDet_checkForPyramid` die übergebenen optionalen Argumente – in diesem Fall ein Timeout und ein hervorgehobener Infotext – als Chatnachricht.-->
 
 
 ## 5 Abschließende Worte
@@ -535,6 +553,7 @@ Variable für Botantworten, die ausgewertet werden, bevor Willowbot seine Antwor
 * `arg0`, `arg1`, `arg2` etc.<br>die Argumente, die an das Kommando übergeben werden
 * `arg0+`, `arg1+`, `arg2+` etc.<br>alle Argumente ab dem *n*ten werden zusammengeschlossen, getrennt durch Leerzeichen
 * `msgID`<br>ID der verarbeiteten Nachricht; benötigt, um gezielt Nachrichten zu löschen
+* `msgText` <br>der komplette Text der verarbeiteten Nachricht (hauptsächlich dazu gedacht, die Nachricht in Gänze an ein optionales Modul weiterreichen zu können)
 * `raidersChannel`<br>der Kanal, von dem die Raider kommen
 * `raidersCount`<br>Anzahl der Raider, die auf den Kanal kommen
 * `senderDisplayName`<br>Anzeigename des Verfassers der verarbeiteten Nachricht

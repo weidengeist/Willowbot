@@ -163,6 +163,7 @@ class Message():
       answerText = answerText.replace('$subGiftCount', self.getSubGiftCount())
     # Message is a user’s message.
     else:
+      answerText = answerText.replace('$msgText', self.text)
       answerText = answerText.replace('$msgID', self.getID())
       answerText = answerText.replace('$senderName', self.getSenderName())
       answerText = answerText.replace('$senderDisplayName', self.getSenderDisplayName())
@@ -172,8 +173,8 @@ class Message():
   
   def resolveCaptureGroups(self, pattern, replacement):
     try:
-      replEncoded = re.sub( "\\\\x([0-9]{2})", r"\\\\g<\1>", replacement.encode('unicode_escape').decode() ).encode().decode('unicode_escape')
-      return re.sub(pattern, replEncoded, replacement)
+      replEncoded = re.sub("\\\\x([0-9]{2})", r"\\\\g<\1>", replacement.encode('unicode_escape').decode() ).encode().decode('unicode_escape')
+      return re.sub(pattern, replEncoded, self.text)
     except Exception as err:
       print("  Regex resolve error! " + str(err))
       return self.text
@@ -224,6 +225,7 @@ class Message():
     if 'answer' in reaction:
       if 'matchType' in reaction and reaction['matchType'] == 'regex':
         answer = self.resolveCaptureGroups(match, reaction['answer'])
+        print("Answer after capture group resolving", answer)
       else:
         answer = reaction['answer']
 
@@ -255,7 +257,6 @@ class Message():
     if 'function' in reaction:
       func = self.resolveArguments(reaction['function'])
       func = self.resolvePlaceholders(func)
-      print("func", func, "←")
       eval(func)
 
     # If there is a debug message provided, output this on the console.

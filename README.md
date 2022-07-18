@@ -443,6 +443,10 @@ Willowbot consists of various core modules. However, there are situations that m
 
 To keep all routines and variables properly sorted and to minimize the risk of unintentionally overwriting already defined ones, it is recommended to prefix them with the module name, e.g. if you have a custom module named `giveaway`, you should name the routines and variables within this module `giveaway_doStuff()`, `giveaway_entries`, `giveaway_doSomeOtherThings()`, and so on.
 
+Those optional modules can be activated an deactivated via a list called `activeModules`¹. Willowbot will only use the optional modules that are present on that list, so don’t forget to put your module on it. If you get into trouble with a distinct module (error, unexpected behaviour, conflicts with other modules, etc.), you don’t have to completely delete it from the list or even from the `modules_opt` directory, but you can just uncomment it by preceding its entry in `activeModules` with `#`. Those uncommented modules won’t be loaded when Willowbot starts.
+
+¹ Windows users beware! This file has no extension, but it can be opened and edited with any text editor (e. g. Notepad). Make sure that it still has no file extension when you save your changes. If this design decision is an aspect to take very much care of and a common source of errors, please let me know.
+
 
 ### 4.1 Accessing custom modules: the `function` key
 
@@ -467,6 +471,20 @@ Before turning to the most interesting part, let’s quickly summarize what othe
 To actually start a poll, you would send a command like `!poll 30 left right forward` to the chat. This will initiate a poll that will last 30 seconds and allow the viewers to choose where to go next in the currently played game – left, right, or forward – by sending the appropriate word to the chat. An according message will appear in the chat. Willowbot will then gather the votes sent by the users and put them into a list that will eventually be evaluated. Every user can vote only once, but he/she may change his/her vote by just sending another of the available options to the chat. After the time passed to the `!poll` command has elapsed, the poll will be summarized and Willowbot sends a list of the results to the chat, shown in percentage terms and in descending order, from the option with the most to the one with the fewest votes.
 
 Currently, only German information messages are deposited in the module and changing them into another language requires modifying the module itself.
+
+<!--
+### 4.3 `pyrDet` module (pyramid detection)
+
+Emote pyramids in the chat are special on Twitch: Some streamers encourage them, others forbid them. Willowbot contains a module that is capable of detecting beginning pyramids and sending any kind and number of reactions to the chat.
+
+The following command definition will timeout a user posting a pyramid and show a message in the chat:
+```
+'.*' : {
+  'matchType' : 'regex',
+  'function'  : 'pyrDet_checkForPyramid(irc, "$msgText", "$senderName", "/timeout $senderName 10", "/me Pyramids are forbidden on this channel. peepoRiot")'
+}
+```
+This command will be triggered by every single user message in the chat (`.*`) and sends the full message text `$msgText` as well as the sender’s name `$senderName` to the `pyrDet_checkForPyramid` routine. Whenever a pyramid has been the detected, `pyrDet_checkForPyramid` will process the optional arguments passed to it – in this case a timeout and an emphasized info text – as chat messages.-->
 
 
 ## 5 Concluding words
@@ -534,6 +552,7 @@ Variables for bot answers, which are resolved before Willowbot sends its message
 * `arg0`, `arg1`, `arg2`, etc.<br>the arguments passed to the command
 * `arg0+`, `arg1+`, `arg2+`, etc.<br>concatenate all arguments from the *n*th one onwards, separated by blank spaces
 * `msgID`<br>ID of the processed message; needed for deleting specific messages
+* `msgText` <br>the full text of the processed message (mainly intended to be used for passing the message as a whole to an optional module)
 * `raidersChannel`<br>the channel which the raiders are coming from
 * `raidersCount`<br>quantity of raiders joining the channel
 * `senderDisplayName`<br>processed message sender’s display name

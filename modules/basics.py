@@ -237,9 +237,8 @@ def splitIntoGroupsOf(s, length):
       # Delete the very first word in the remaining input string s if it is too long.
       first = re.sub("^([^ ]+).*", r'\1', s)
     
-    # Escape parenthesis in the »first« string.
-    first = first.replace('(', '\(').replace(')', '\)')
-    s = re.sub("^" + first + " *", "", s)
+    # Use string.replace instead of re.sub to ensure replacement without stumbling over special regex patterns/characters.
+    s = re.sub("^ *", "", s.replace(first, ""))
 
   return finalStringsList
 
