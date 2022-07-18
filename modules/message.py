@@ -225,7 +225,6 @@ class Message():
     if 'answer' in reaction:
       if 'matchType' in reaction and reaction['matchType'] == 'regex':
         answer = self.resolveCaptureGroups(match, reaction['answer'])
-        print("Answer after capture group resolving", answer)
       else:
         answer = reaction['answer']
 
