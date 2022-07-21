@@ -211,12 +211,12 @@ class Message():
         answerText = answerText.replace(a, " ".join(argsMsg_tmp))
       
       # Resolve the single arguments.
-      if len(argsMsg) >= len(argsAnswer):
-        for i in range(0, len(argsAnswer)):
-          answerText = answerText.replace("$arg" + str(i), argsMsg[i])
-        return answerText
-      else:
-        return ""
+      for i in range(0, len(argsMsg)):
+        answerText = answerText.replace("$arg" + str(i), argsMsg[i])
+      
+      # All the remaining arguments used in the answer string but not provided by the command are renamed to »missingArg«
+      return answerText.replace("$arg", "$missingArg")
+
 
   # Added commands variable to the function as a »function« key might modify the commands.
   def reactToMessage(self, commands, subset, match, irc):
@@ -254,7 +254,9 @@ class Message():
       os.system(reaction['os-command'])
 
     if 'function' in reaction:
+      print("Func: ", reaction['function'])
       func = self.resolveArguments(reaction['function'])
+      print("Func, resolved", func)
       func = self.resolvePlaceholders(func)
       eval(func)
 
