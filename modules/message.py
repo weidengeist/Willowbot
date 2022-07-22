@@ -174,7 +174,7 @@ class Message():
   def resolveCaptureGroups(self, pattern, replacement):
     try:
       replEncoded = re.sub("\\\\x([0-9]{2})", r"\\\\g<\1>", replacement.encode('unicode_escape').decode() ).encode().decode('unicode_escape')
-      return re.sub(pattern, replEncoded, self.text)
+      return re.sub(pattern, replEncoded, replacement)
     except Exception as err:
       print("  Regex resolve error! " + str(err))
       return self.text
@@ -254,9 +254,7 @@ class Message():
       os.system(reaction['os-command'])
 
     if 'function' in reaction:
-      print("Func: ", reaction['function'])
       func = self.resolveArguments(reaction['function'])
-      print("Func, resolved", func)
       func = self.resolvePlaceholders(func)
       eval(func)
 
