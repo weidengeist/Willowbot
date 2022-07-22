@@ -174,7 +174,12 @@ class Message():
   def resolveCaptureGroups(self, pattern, replacement):
     try:
       replEncoded = re.sub("\\\\x([0-9]{2})", r"\\\\g<\1>", replacement.encode('unicode_escape').decode() ).encode().decode('unicode_escape')
-      return re.sub(pattern, replEncoded, replacement)
+      # If there are no capture usages in the answer string, just return the answer string itself.
+      if replEncoded == replacement:
+        return replacement
+      # Else capture the pattern from the sent message (self.text) and replace it with the answer string, including capture group replacement.
+      else:
+        return re.sub(pattern, replEncoded, self.text)
     except Exception as err:
       print("  Regex resolve error! " + str(err))
       return self.text
