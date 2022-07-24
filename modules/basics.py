@@ -216,7 +216,7 @@ def splitIntoGroupsOf(s, length):
     # Get the first $length characters.
     first = re.sub('^(.{0,' + str(length) + '}).*', r'\1', s)
     # If this string ends with a blank space or the the rest starts with a blank space, …
-    if re.match(".* $", first) or re.match("^ +", re.sub(first, "", s)) or first == s:
+    if re.match(".* $", first) or re.match("^ +", s.replace(first, "")) or first == s:
       # … delete the last (potentially present) blank space(s) from this string.
       first = re.sub("(.*) +$", r'\1', first)
     else:

@@ -92,7 +92,7 @@ class Message():
     return ";msg-id=raid;" in self.meta
 
   def isSub(self):
-    return (";msg-id=sub;" in self.meta) or (";msg-id=resub;" in self.meta)
+    return ((";msg-id=sub;" in self.meta) or (";msg-id=resub;" in self.meta)) and not ";msg-param-sub-plan=Prime;" in self.meta
 
   def isSubGiftAnon(self):
     return ";login=ananonymousgifter;" in self.meta and ";msg-id=subgift;" in self.meta
@@ -177,7 +177,7 @@ class Message():
       # If there are no capture usages in the answer string, just return the answer string itself.
       if replEncoded == replacement:
         return replacement
-      # Else capture the pattern from the sent message (self.text) and replace it with the answer string, including capture group replacement.
+      # Else capture the pattern from the sent message (self.text) and put it into the answer string, including capture group replacement.
       else:
         return re.sub(pattern, replEncoded, self.text)
     except Exception as err:
@@ -333,7 +333,8 @@ class Message():
             subLevel = float('inf') if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
             minSubLevel = float('inf') if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
             maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
-            if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
+            # The last check enables sub command definitions without any level specifications.
+            if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel) or (minSubLevel == float('inf') and subLevel == float('inf') and maxSubLevel == float('inf')):
               self.reactToMessage(commands, 'sub', m, irc)
 
       # Message indicates a Prime sub.
@@ -344,7 +345,8 @@ class Message():
             subLevel = float('inf') if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
             minSubLevel = float('inf') if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
             maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
-            if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel):
+            # The last check enables sub command definitions without any level specifications.
+            if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel) or (minSubLevel == float('inf') and subLevel == float('inf') and maxSubLevel == float('inf')):
               self.reactToMessage(commands, 'sub', m, irc)
 
       # Message indicates an anonymously gifted subscription.
