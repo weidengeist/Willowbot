@@ -3,7 +3,7 @@
 — [Switch to English version](https://github.com/weidengeist/Willowbot/blob/main/README.md)
 
 
-## Contents
+## Inhalt
 
 * [Einleitung](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#einleitung)
 * [1 Installation](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#1-installation)
