@@ -242,17 +242,26 @@ class Message():
           # Turn the answer into a list of chunks with a maximum of 500 characters.
           answer = splitIntoGroupsOf(answer, 500)
           for a in answer:
-            irc.send(a)
+            if len(sys.argv) == 3:
+              print("DEBUG MODE, Willowbot’s answer:\n    " + a)
+            else:
+              irc.send(a)
         else:
           # Defaults to »sequence«.
           for a in answer:
             chunkList = splitIntoGroupsOf(a, 500)
             for c in chunkList:
-              irc.send(c)
+              if len(sys.argv) == 3:
+                print("DEBUG MODE, Willowbot’s answer:\n    " + c)
+              else:
+                irc.send(c)
       else:
         answer = splitIntoGroupsOf(answer[0], 500)
         for a in answer:
-          irc.send(a)
+          if len(sys.argv) == 3:
+            print("DEBUG MODE, Willowbot’s answer:\n    " + a)
+          else:
+            irc.send(a)
 
     # Execute the string in »os-command« as a system command.
     if 'os-command' in reaction:
@@ -294,6 +303,7 @@ class Message():
 
   def processCommands(self, commands, message, irc):
     self.fullText = message
+    self.text = self.getText()
     self.meta = self.getMeta()
     msgTime = self.getTimeSent()
     msgTime = ("" if msgTime.tm_hour > 9 else "0") + str(msgTime.tm_hour) + ":" + ("" if msgTime.tm_min > 9 else "0") + str(msgTime.tm_min) + ":" + ("" if msgTime.tm_sec > 9 else "0") + str(msgTime.tm_sec)

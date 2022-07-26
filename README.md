@@ -112,7 +112,25 @@ Some commonly used bots on Twitch which are not as flexible as Willowbot automat
 The pattern used here makes Willowbot react to URLs leading to a Twitch clip. But there is something special in the pattern: the parentheses. It tells the bot to »save« the expression within them. You can then access those saved parts by typing `\1`, `\2`, `\3`, etc. in your answer to match the contents within the 1st, 2nd, 3rd, etc. pair of parentheses.
 
 
-### 3.2 Timed commands
+### 3.2 Aliases
+
+Knowing about regular expressions, we are now able to define aliases for our commands, i. e. multiple command triggers for one and the same reaction. A simple example should be enough to show how this works:
+```
+commands = {
+  "^!([Mm]ods?|[Ss]kyrim|[Gg]ame)" : {
+    "answer"    : "We are currently playing »Enderal: Forgotten Stories«, a total conversion mod for »The Elder Scrolls V: Skyrim«.",
+    "matchType" : "regex"
+  }
+}
+```
+As this command contains multiple different regex structures, let’s break this apart a little more detailed. At first, you can see that there is a chain of words enclosed in parentheses and separated by a vertical dash (`(a|b|c)`). This means that the defined answer can be triggered by either of those words.
+
+One section above, you have learned about character sets, and you can see those again in the command defined here. So you can trigger the answer either by `!mod`, `!Mod`, `!skyrim`, `!Skyrim`, `!game`, or `!Game`.
+
+»But wait! There is a question mark after `![Mm]ods`!«, you might interpose now. »What happened to the S in the list of commands in the paragraph before?« The question mark is a special character in the context of regular expressions. It means that the character before it is optional, i. e. you can not only trigger the answer by posting `!mod` or `!Mod`, but also by `!mods` and `!Mods`.
+
+
+### 3.3 Timed commands
 
 Of course, Willowbot also supports timed commands, i.e. sending a message automatically after a distinctive period of time has elapsed. In this case, there is no need to define an actual chat message that is supposed to trigger the command and you may name it whatever you like. Internally, Willowbot differentiates between timed and user-triggered commands, so it is not possible to use one command for both purposes, i.e. to execute a timed command manually.
 
@@ -141,7 +159,7 @@ commands = {
 Please note the comma in line 5 after `}`! The command definition blocks (`{…}`) inside your `commands` dictionary have to be separated by commas from each other.
 
 
-### 3.3 Cooldowns
+### 3.4 Cooldowns
 
 Implementing commands with cooldowns is just as simple as doing so for timed commands. You only have to replace `interval` with `cooldown`:
 ```
@@ -155,7 +173,7 @@ commands = {
 The code above will enable the command `!bsg` for your users and prevent the bot from reacting to it again before 30 seconds have elapsed.
 
 
-### 3.4 Level system
+### 3.5 Level system
 
 To limit the access to your commands, Willowbot provides a level system. Every user in the chat is assigned a level based on his/her role and chat experience. The following levels are implemented:
 
@@ -190,7 +208,7 @@ commands = {
 Besides a level definition, this command uses the regular expression `.*` to match messages containing *any* character (`.`) occuring 0 or more (`*`) times. We will have a closer look at such asterisk patterns and how to use them efficiently in the following section.
 
 
-### 3.5 Placeholder variables
+### 3.6 Placeholder variables
 
 Some messages might demand personalization. For such cases, Willowbot provides various variables that are resolved before the actual message is sent.
 
@@ -286,14 +304,14 @@ commands = {
 The command definition above will delete all Messages which contain the terms/emotes »Kappa«, »failFish«, or »LUL«. For this action we need the ID of the message you want to delete. That ID is represented by the placeholder variable `msgID`. The advantage of using this method instead of the Twitch blacklist: You and your moderators will be able to see the message and its problematic content and, if necessary, take further actions in case of severe discrimination or harassement, whereas messages with Twitch blacklist terms would be suppressed before any moderator can see it and have a chance to report the user to Twitch. In the section about answer types we will see how to extend this command and make it even more useful.
 
 
-### 3.6 Trigger types: raids and subscriptions
+### 3.7 Trigger types: raids and subscriptions
 
 The chat messages sent on Twitch all contain special meta data and can so – among others – be differentiated between user messages, subscriptions, and raids. In contrast to the user message commands, which you define by providing a word or pattern that has to be matched by a message, raid and subscription messages can have an arbitrary name. You tell Willowbot under which circumstances the reaction is supposed to be triggered by providing a `triggerType` key.
 
 Willowbot’s default behaviour is processing messages that appear in the chat as user messages. Invisible to the common user, special messages are sent in the background. Those contain information about raids and subscriptions, among others. If you want Willowbot to handle those, you have to include the appropriate `triggerType` value in your command definition.
 
 
-#### 3.6.1 Raids
+#### 3.7.1 Raids
 
 Let’s start off simple by defining a command that handles raids:
 ```
@@ -313,7 +331,7 @@ You can see two more placeholder variables in the answer: `raidersChannel` and `
 Commands with the `raid` type also support a `minRaidersCount` key. If this key is set, the according reaction will only be triggered if the raid consists of at least the specified quantity of people.
 
 
-#### 3.6.2 Subscriptions
+#### 3.7.2 Subscriptions
 
 Subscription handling is a little more complex than raid handling, as there are various types of subscriptions for each of which you may provide a special treatment.
 
@@ -388,7 +406,7 @@ Here you can see the various ways of using `subLevel`, `minSubLevel`, and `maxSu
     * `subGiftGifter`: the user gifting the subscriptions
 
 
-### 3.7 Answer types: sequential vs. random
+### 3.8 Answer types: sequential vs. random
 
 Willowbot’s default behaviour is just sending the string that is defined in the `answer` key of the respective matching reaction. However, Twitch has an internal message limit of 500 characters. Usually, this limit will not be exceeded by your answer strings, but what if you want to send more comprehensive information to the chat, e.g. a story recap for the currently played game? No, you will not have to define multiple commands for that, like `recap1`, `recap2`, etc. Instead, you just put your answer into one command definition, no matter how many characters. Willowbot has a built-in function that will split your answer string into chunks of at most 500 characters (less, if the last word in a chunk exceeds the 500th character or if, of course, there are not enough characters in the remaining string to reach the limit) and send one at a time with no considerable delay in between.
 
@@ -416,7 +434,7 @@ commands = {
 If user McFluffy triggers this command by sending `!loot someUser` to the chat, Willowbot will randomly pick one of the answers in the `answer` key separated by `\n` and show it in the chat, e.g. `McFluffy loots and old sock from someUser.`
 
 
-### 3.8 OS commands
+### 3.9 OS commands
 
 Besides sending messages to the chat, Willowbot allows you to execute any system command you like (unless the command requires root/administrative access to the system and Willowbot does not run with those privileges, which is *highly recommended*). You will mostly use this to play sounds or videos, but you could also make Willowbot log certain chat events to a file.
 
@@ -432,7 +450,7 @@ commands = {
 Whenever a user sends `!gg` to the chat (or another message that at least starts with that term), your system will play the sound located at `C:\the\path\to\my\soundfile.mp3`. Beware that the definition above will only work on Windows systems! Unix systems will need a command like `playsound /home/[user]/where/my/soundfiles/dwell.mp3`, depending on the software installed on your system. Such OS commands are processed in addition to `answer` strings, i.e. you may combine them and send a message to the chat as well as play a sound, log an action, play a video, or whatever you want to do in your OS command.
 
 
-### 3.9 Debug messages
+### 3.10 Debug messages
 
 If you want to check your command definitions, i.e. whether Willowbot will react to certain events/patterns the way you are intending, and need feedback about the reaction, but you don’t want to send messages to the chat for that purpose, you can use Willowbot’s `debug` key. The string in your `debug` key will behave as if it was an `answer`, however, it will not be sent to the chat but be output on the console. Resolving arguments and placeholder variables is also featured in the `debug` key. `answer` and `debug` (and `os-command`) are processed independently, so you may define those keys in any combination and for any purpose you like.
 
@@ -487,7 +505,24 @@ The following command definition will timeout a user posting a pyramid and show 
 This command will be triggered by every single user message in the chat (`.*`) and sends the full message text `$msgText` as well as the sender’s name `$senderName` to the `pyrDet_checkForPyramid` routine. Whenever a pyramid has been the detected, `pyrDet_checkForPyramid` will process the optional arguments passed to it – in this case a timeout and an emphasized info text – as chat messages.-->
 
 
-## 5 Concluding words
+## 5 Test/Debugging mode
+
+Willowbot allows you to test your command definitions either by providing it a message text or by passing `DEBUG` as a second argument when starting the bot, so you don’t have to wait for a specific message to appear in the chat to be able to check the correctness of your command sets. In this mode, no connection to the Twitch IRC will be established and the `answer` strings will be output on the console instead of being sent to the chat.
+
+The first case is triggered as follows:
+```
+python main_cli.py iamabot "!mod @anotherUser There you go."
+```
+What happens here is that Willowbot will load the command set for the channel `iamabot`, process the string `!mod @anotherUser There you go.` as if it had been a user message in the chat, and show you the reaction on the command line.
+
+If you want to test multiple message types, e. g. Prime subscriptions, announcements, gifted subscriptions, etc., you can enter the debug mode:
+```
+python main_cli.py iamabot DEBUG
+```
+By starting Willowbot this way, it will iterate over a bunch of predefined authentic full IRC messages with certain sets of (anonymized and generic) metadata which identify them as one of the various Twitch chat message types. A list of the supported message types can be found in the appendix.
+
+
+## 6 Concluding words
 
 Willowbot has been in development for months now and is extended piece by piece whenever new scenarios to be covered arise. By no means it should be considered feature complete, but it still is and probably will be for a long time under active development, including efforts to make Willowbot more accessible.
 
@@ -563,3 +598,24 @@ Variables for bot answers, which are resolved before Willowbot sends its message
 * `subGiftRecipient`<br>gift-receiving user’s display name
 * `subMonth`<br>number of months the user has already subscribed for
 * `subName`<br>subscribing user’s display name
+
+
+### List of debug message patterns
+
+(This list is still incomplete. More message patterns will be added soon.)
+
+Currently, the following message types are included in Willowbot’s debugging/testing mode:
+
+* Whisper
+* Subscription (resub, 99 months)
+* Message (moderator)
+* Message (ordinary user)
+* Message (ordinary user, first post ever)
+* Message (subscriber)
+* Action (/me)
+* Subscription (Prime)
+* Announcement
+* Raid (999 raiders)
+* Anonymous Gift
+
+
