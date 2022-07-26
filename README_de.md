@@ -2,6 +2,40 @@
 
 — [Switch to English version](https://github.com/weidengeist/Willowbot/blob/main/README.md)
 
+
+## Contents
+
+* [Einleitung](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#einleitung)
+* [1 Installation](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#1-installation)
+* [2 Ersteinrichtung](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#2-ersteinrichtung)
+* [3 Kommandosets erstellen](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#3-kommandosets-erstellen)
+    * [3.1 Nutzerausgelöste Kommandos](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#31-nutzerausgel%C3%B6ste-kommandos)
+        * [3.1.1 Einfaches Abgleichen](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#311-einfaches-abgleichen)
+        * [3.1.2 Erweitertes Abgleichen: Reguläre Ausdrücke](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#312-erweitertes-abgleichen-regul%C3%A4re-ausdr%C3%BCcke)
+    * [3.2 Aliasse](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#32-aliasse)
+    * [3.3 Zeitabhängige Kommandos](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#33-zeitabh%C3%A4ngige-kommandos)
+    * [3.4 Abklingzeiten](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#34-abklingzeiten)
+    * [3.5 Levelsystem](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#35-levelsystem)
+    * [3.6 Platzhaltervariable](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#36-platzhaltervariable)
+    * [3.7 Auslösertypen: Raids und Abonnements (Subs)](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#37-ausl%C3%B6sertypen-raids-und-abonnements-subs)
+        * [3.7.1 Raids](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#371-raids)
+        * [3.7.2 Abonnements (Subs)](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#372-abonnements-subs)
+    * [3.8 Antworttypen: sequentiell vs. zufällig](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#38-antworttypen-sequentiell-vs-zuf%C3%A4llig)
+    * [3.9 Betriebssystemkommandos](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#39-betriebssystemkommandos)
+    * [3.10 Nachrichten zur Fehlersuche (Debugging)](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#310-nachrichten-zur-fehlersuche-debugging)
+* [4 Optionale/Eigene Module](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#4-optionaleeigene-module)
+    * [4.1 Auf eigene Module zugreifen: der `function`-Schlüssel](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#41-auf-eigene-module-zugreifen-der-function-schl%C3%BCssel)
+    * [4.2 `poll`-Modul (Abstimmungen)](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#42-poll-modul-abstimmungen)
+* [5 Test-/Fehlerbehandlungsmodus](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#5-test-fehlerbehandlungsmodus)
+* [6 Abschließende Worte](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#6-abschlie%C3%9Fende-worte)
+* [Anhang](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#anhang)
+    * [Implementierte Schlüsselprüfungen](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#implementierte-schl%C3%BCsselpr%C3%BCfungen)
+    * [Liste der Platzhaltervariablen](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#liste-der-platzhaltervariablen)
+    * [Liste der Fehlerbehandlungsnachrichtenmuster](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#liste-der-fehlerbehandlungsnachrichtenmuster)
+
+
+## Einleitung
+
 Dies ist ein Chatbot, der für die Verwendung auf Twitch bestimmt ist. Er erlaubt die Konfiguration eigener Kommandos, optional auf Regulären Ausdrücken basierend, auf die der Bot reagieren soll – entweder durch eine Antwort im Chat oder das Ausführen eines Betriebssystembefehls. Ebenfalls werden zeitabhängige Kommandos unterstützt und ein Levelsystem zur Verfügung gestellt, womit sich die Benutzung von Kommandos auf unterschiedliche Nutzergruppen beschränken lässt.
 
 Die Anweisungen und Beschreibungen im Folgenden wurden speziell für Nichtprogrammierer verfasst, um Willowbot zugänglicher zu gestalten. Rückmeldungen für weitere Verbesserungen in dieser Hinsicht sind stets willkommen.

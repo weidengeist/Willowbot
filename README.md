@@ -2,6 +2,39 @@
 
 — [Zur deutschen Version wechseln](https://github.com/weidengeist/Willowbot/blob/main/README_de.md)
 
+## Contents
+
+* [Introduction](https://github.com/weidengeist/Willowbot#introduction)
+* [1 Installation](https://github.com/weidengeist/Willowbot#1-installation)
+* [2 Initial setup](https://github.com/weidengeist/Willowbot#2-initial-setup)
+* [3 Creating command sets](https://github.com/weidengeist/Willowbot#3-creating-command-sets)
+    * [3.1 User-triggered commands](https://github.com/weidengeist/Willowbot#31-user-triggered-commands)
+        * [3.1.1 Simple matching](https://github.com/weidengeist/Willowbot#311-simple-matching)
+        * [3.1.2 Advanced matching: regular expressions](https://github.com/weidengeist/Willowbot#312-advanced-matching-regular-expressions)
+    * [3.2 Aliases](https://github.com/weidengeist/Willowbot#32-aliases)
+    * [3.3 Timed commands](https://github.com/weidengeist/Willowbot#33-timed-commands)
+    * [3.4 Cooldowns](https://github.com/weidengeist/Willowbot#34-cooldowns)
+    * [3.5 Level system](https://github.com/weidengeist/Willowbot#35-level-system)
+    * [3.6 Placeholder variables](https://github.com/weidengeist/Willowbot#36-placeholder-variables)
+    * [3.7 Trigger types: raids and subscriptions](https://github.com/weidengeist/Willowbot#37-trigger-types-raids-and-subscriptions)
+        * [3.7.1 Raids](https://github.com/weidengeist/Willowbot#371-raids)
+        * [3.7.2 Subscriptions](https://github.com/weidengeist/Willowbot#372-subscriptions)
+    * [3.8 Answer types: sequential vs. random](https://github.com/weidengeist/Willowbot#38-answer-types-sequential-vs-random)
+    * [3.9 OS commands](https://github.com/weidengeist/Willowbot#39-os-commands)
+    * [3.10 Debug messages](https://github.com/weidengeist/Willowbot#310-debug-messages)
+* [4 Optional/Custom modules](https://github.com/weidengeist/Willowbot#4-optionalcustom-modules)
+    * [4.1 Accessing custom modules: the `function` key](https://github.com/weidengeist/Willowbot#41-accessing-custom-modules-the-function-key)
+    * [4.2 `poll` module](https://github.com/weidengeist/Willowbot#42-poll-module)
+* [5 Test/Debugging mode](https://github.com/weidengeist/Willowbot#5-testdebugging-mode)
+* [6 Concluding words](https://github.com/weidengeist/Willowbot#6-concluding-words)
+* [Appendix](https://github.com/weidengeist/Willowbot#appendix)
+    * [Implemented key checks](https://github.com/weidengeist/Willowbot#implemented-key-checks)
+    * [List of placeholder variables](https://github.com/weidengeist/Willowbot#list-of-placeholder-variables)
+    * [List of debug message patterns](https://github.com/weidengeist/Willowbot#list-of-debug-message-patterns)
+
+
+## Introduction
+
 This is a chat bot intended to be used on Twitch. It allows you to configure custom commands, optionally based on regular expressions, which the bot will react to – either with an answer in the chat or by executing an OS command. It also supports timed commands and has an integrated level system to limit the usage of commands to different user groups.
 
 
@@ -466,12 +499,12 @@ Those optional modules can be activated an deactivated via a list called `active
 ¹ Windows users beware! This file has no extension, but it can be opened and edited with any text editor (e. g. Notepad). Make sure that it still has no file extension when you save your changes. If this design decision is an aspect to take very much care of and a common source of errors, please let me know.
 
 
-### 4.1 Accessing custom modules: the `function` key
+### 5.1 Accessing custom modules: the `function` key
 
 Calling one of the routines provided by your custom module is achieved by using the `function` key in your command definition. The value for that key is a string with the routine name and the passed parameters where necessary. Since writing your own modules requires profound knowledge in Python programming, it is considered a technique for experienced users. Please be aware of that if you want to extend Willowbot.
 
 
-### 4.2 `poll` module
+### 5.2 `poll` module
 
 A first optional module is already provided in this repository and enables your viewers to take part in a quick poll, initiated simply by a chat command issued by moderators or the broadcaster. As mentioned in the introduction of this section, we use the poll-initiating routine provided by the module via using the `function` key in our command definition:
 ```
