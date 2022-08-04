@@ -295,7 +295,6 @@ class Message():
 
   def processCommands(self, commands, message, irc):
     self.fullText = message
-    print(self.fullText)
     self.text = self.getText()
     self.meta = self.getMeta()
     msgTime = self.getTimeSent()
