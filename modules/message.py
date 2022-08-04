@@ -204,17 +204,9 @@ class Message():
       argsAnswer_gathered = re.findall("\$arg[0-9]+\+", answerText)
       for a in argsAnswer_gathered:
         i = re.sub('\$arg([0-9]+)\+', r'\1', a)
-        # Copy the original message arguments to a new, temporary array.
-        # Simple assignment will not copy but link the variables to each other.
-        argsMsg_tmp = []
-        for arg in argsMsg:
-          argsMsg_tmp.append(arg)
-        k = 0
-        while len(argsMsg) > 0 and k < int(i):
-          del argsMsg_tmp[0]
-          k += 1
-        answerText = answerText.replace(a, " ".join(argsMsg_tmp))
-      
+        if int(i) < len(argsMsg):
+          answerText = answerText.replace(a, " ".join(argsMsg[int(i):]))
+
       # Resolve the single arguments.
       for i in range(0, len(argsMsg)):
         answerText = answerText.replace("$arg" + str(i), argsMsg[i])
@@ -303,6 +295,7 @@ class Message():
 
   def processCommands(self, commands, message, irc):
     self.fullText = message
+    print(self.fullText)
     self.text = self.getText()
     self.meta = self.getMeta()
     msgTime = self.getTimeSent()
@@ -399,6 +392,10 @@ class Message():
       else:
         print("\nUSERNOTICE\n")
         print(message)
+  
+    elif self.getType() == "CLEARMSG" or self.getType() == "CLEARCHAT":
+      print("\nCLEARMSG\n")
+      print("    Deleted message: " + message)
 
     elif self.getType() == "USERSTATE":
       print("\nUSERSTATE\n")
