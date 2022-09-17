@@ -641,14 +641,20 @@ Variable für Botantworten, die ausgewertet werden, bevor Willowbot seine Antwor
 
 Derzeit sind folgende Nachrichtentypen in Willowbots Test-/Fehlerbehandlungsmodus enthalten:
 
-* Whisper
-* Subscription (resub, 99 months)
+* Action (/me)
+* Announcement
+* Ban
+* Deleted message
 * Message (moderator)
 * Message (ordinary user)
 * Message (ordinary user, first post ever)
 * Message (subscriber)
-* Action (/me)
-* Subscription (Prime)
-* Announcement
+* Message (VIP user)
 * Raid (999 raiders)
-* Anonymous Gift
+* Subscription (Prime)
+* Subscription (resub, 99 months)
+* Subscription gift (anonymous)
+* Subscription gift (multi, 10 gifts, 50 gifts total)
+* Subscription gift (single, tier 1, 50 gifts total, month 35 for recipient)
+* Subscription gift (single, follow-up message for multi-subgift)
+* Whisper
