@@ -19,7 +19,9 @@ def timeElapsed(context, mode):
     else:
       # Commands with cooldowns can be triggered immediately.
       context['latestUseTime'] = 0
+
   if time.perf_counter() - context[mode] > context['latestUseTime']:
+    # Cooldown or interval time has elapsed and the command may be used/executed.
     context['latestUseTime'] = time.perf_counter()
     return 1
 
@@ -113,8 +115,9 @@ def getCommands(config):
     commandsModule = importlib.import_module(config['channel'])
     commands = commandsModule.commands
     
-    # Create a separate list for timed commands.
+    # Create separate lists for timed commands, subscription messages, and raid messages.
     for c in commands.keys():
+      # Check if the user’s regex in the command definition is correct.
       if 'matchType' in commands[c] and commands[c]['matchType'] == 'regex':
         try:
           re.compile(c)
@@ -148,6 +151,11 @@ def getCommands(config):
       del commands[c]
     for c in commands_raid:
       del commands[c]
+
+    # Set a default match type for all general commands, if none has been provided.
+    for c in commands:
+      if not 'matchType' in commands[c]:
+        commands[c]['matchType'] = "is"
 
   return {'general' : commands, 'timed' : commands_timed, 'sub' : commands_sub, 'raid' : commands_raid, 'status' : status}
   

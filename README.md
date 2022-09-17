@@ -15,6 +15,8 @@
     * [3.3 Timed commands](https://github.com/weidengeist/Willowbot#33-timed-commands)
     * [3.4 Cooldowns](https://github.com/weidengeist/Willowbot#34-cooldowns)
     * [3.5 Level system](https://github.com/weidengeist/Willowbot#35-level-system)
+        * [3.5.1 Base system](https://github.com/weidengeist/Willowbot#351-base-system)
+        * [3.5.2 Further restrictions](https://github.com/weidengeist/Willowbot#352-further-restrictions)
     * [3.6 Placeholder variables](https://github.com/weidengeist/Willowbot#36-placeholder-variables)
     * [3.7 Trigger types: raids and subscriptions](https://github.com/weidengeist/Willowbot#37-trigger-types-raids-and-subscriptions)
         * [3.7.1 Raids](https://github.com/weidengeist/Willowbot#371-raids)
@@ -36,7 +38,6 @@
 ## Introduction
 
 This is a chat bot intended to be used on Twitch. It allows you to configure custom commands, optionally based on regular expressions, which the bot will react to – either with an answer in the chat or by executing an OS command. It also supports timed commands and has an integrated level system to limit the usage of commands to different user groups.
-
 
 The instructions and descriptions below are written especially for non-programming users to make Willowbot more accessible. Feedback for further improvements in this regard is always welcome.
 
@@ -132,6 +133,17 @@ commands = {
 ```
 The symbol `^` means that the message starts with the pattern following it, so `^` in the `matchType` `regex` can replace `startsWith`. The so-called character set `[Mm]` means just what we want to achieve: Either of these two letters may introduce the command.
 
+What happens if there is a command `!multi` as well as `!multiplayer`? The command definition above would be triggered by a `!multi` command and by a `!multiplayer` command in the chat. So it is reasonable to tell Willowbot that the command is a distinct term which may not be arbitrarily extended into another word. This is realized by `( |$)`:
+```
+commands = {
+  "^![Mm]ulti( |$)" : {
+    "answer"    : "Today we are playing with someone very special.",
+    "matchType" : "regex"
+  }
+}
+```
+This construction means: React to chat input that starts with `!multi` or `!Multi` and continues with a blank space (in case a user wants to, e.g., add `@anotherUser` as a ping) or is then complete and ends the message (`$`).
+
 Willowbot’s regex feature also supports using so-called capture groups in its answers. That means that you can take out parts of the message that triggered the bot reaction to re-use them in your answer.
 
 Some commonly used bots on Twitch which are not as flexible as Willowbot automatically delete links posted by non-subscribers, even though it is a link to a clip created on Twitch itself. To correct this behaviour, you can teach Willowbot to extract the URL leading to the clip and repost it with moderator privileges:
@@ -160,7 +172,7 @@ As this command contains multiple different regex structures, let’s break this
 
 One section above, you have learned about character sets, and you can see those again in the command defined here. So you can trigger the answer either by `!mod`, `!Mod`, `!skyrim`, `!Skyrim`, `!game`, or `!Game`.
 
-»But wait! There is a question mark after `![Mm]ods`!«, you might interpose now. »What happened to the S in the list of commands in the paragraph before?« The question mark is a special character in the context of regular expressions. It means that the character before it is optional, i. e. you can not only trigger the answer by posting `!mod` or `!Mod`, but also by `!mods` and `!Mods`.
+»But wait! There is a question mark after `![Mm]ods`!«, you might interpose now. »And why is it `!mods` now instead of `!mod`?« The question mark is a special character in the context of regular expressions. It means that the character before it is optional, i. e. you can not only trigger the answer by posting `!mod` or `!Mod`, but also by `!mods` and `!Mods`.
 
 
 ### 3.3 Timed commands
@@ -208,6 +220,8 @@ The code above will enable the command `!bsg` for your users and prevent the bot
 
 ### 3.5 Level system
 
+#### 3.5.1 Base system
+
 To limit the access to your commands, Willowbot provides a level system. Every user in the chat is assigned a level based on his/her role and chat experience. The following levels are implemented:
 
 * 0: the user posts the very first time ever on this channel;
@@ -218,7 +232,7 @@ To limit the access to your commands, Willowbot provides a level system. Every u
 
 To make Willowbot check the user’s level before sending an answer, you have to use the keyword `level` or `minLevel`. A few examples shall explain this further.
 
-The most common scenario for the levels is to determine a minimal level that is required to issue a command. For a command that can only be used by the channel moderators and the broadcaster, you would have to use the `minLevel` option and set it to 3:
+The most common scenario for the levels is to determine a minimal level that is required to issue a command. For a command that can only be used by the channel moderators and the broadcaster, you have to use the `minLevel` option and set it to 3:
 ```
 commands = {
   "!issues" : {
@@ -238,7 +252,24 @@ commands = {
   }
 }
 ```
-Besides a level definition, this command uses the regular expression `.*` to match messages containing *any* character (`.`) occuring 0 or more (`*`) times. We will have a closer look at such asterisk patterns and how to use them efficiently in the following section.
+Besides a level definition, this command uses the regular expression `.*` to match messages containing *any* character (`.`) occuring 0 or more (`*`) times. We will have a closer look at such asterisk patterns and how to use them efficiently in the following section 3.6.
+
+
+#### 3.5.2 Further restrictions
+
+In addition to the aforementioned levels, a command can be restricted to be used by VIP users only by passing the key `needsVIP` and setting the boolean `true`.
+```
+commands = {
+  "^!vip( |$)" : {
+    "answer"    : "I am a VIP, so only I can use this command.",
+    "matchType" : "regex",
+    "needsVIP"  : true
+  }
+}
+```
+Note: Booleans (`true` und `false`) don’t have, unlike strings, quotation marks.
+
+If you want to build your own level system besided the roles assigned by Twitch, based upon subscription months, the keys `minSubLevel`, `subLevel`, and `maxSubLevel` are available. So you can determine that a minimal number of subscriptions months is needed to use certain commands (`minSubLevel`), restrict the usage to an interval of subscription months (`minSubLevel` in conjunction with `maxSubLevel`) or intend only one specific month for the command (`subLevel`). The values for those keys are integers, so like booleans they don’t use quotation marks in the command definition.
 
 
 ### 3.6 Placeholder variables
@@ -592,7 +623,7 @@ Feel free to use the code as an inspiration for your own IRC projects and to rep
     * `is` [Default], `is_caseInsensitive`, `startsWith`, `contains`, `contains_caseInsensitive`, `endsWith`, `regex`
 * `maxSubLevel`
     * type: integer
-    * maximum subscription count needed to trigger the associated message
+    * maximum subscription count needed to trigger the associated message; can be used for chat commands as well as for subscription messages
 * `minLevel`
     * type: integer
     * minimum level needed to trigger the command
@@ -601,13 +632,16 @@ Feel free to use the code as an inspiration for your own IRC projects and to rep
     * minimum count of raiders needed to trigger the associated message
 * `minSubLevel`
     * type: integer
-    * minimum subscription count needed to trigger the associated message
+    * minimum subscription count needed to trigger the associated message; can be used for chat commands as well as for subscription messages
+* `needsVIP`
+    * type: boolean
+    * restrict the command to be used by VIP users only
 * `os-command`
     * type: string
     * a system command that will be executed if the other conditions are met (level, cooldown, pattern, etc.)
 * `subLevel`
     * type: integer
-    * subscription count needed to trigger the associated message
+    * subscription count needed to trigger the associated message; can be used for chat commands as well as for subscription messages
 * `triggerType`
     * type: string
     * `raid`, `sub`, `subGiftAnon`, `subGiftContinued`, `subGiftMulti`, `subGiftSingle`, `subGiftSingleFollowup`, `subPrime`

@@ -16,6 +16,8 @@
     * [3.3 Zeitabhängige Kommandos](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#33-zeitabh%C3%A4ngige-kommandos)
     * [3.4 Abklingzeiten](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#34-abklingzeiten)
     * [3.5 Levelsystem](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#35-levelsystem)
+        * [3.5.1 Basissystem](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#351-basissystem)
+        * [3.5.2 Weitere Restriktionen](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#352-weitere-restriktionen)
     * [3.6 Platzhaltervariable](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#36-platzhaltervariable)
     * [3.7 Auslösertypen: Raids und Abonnements (Subs)](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#37-ausl%C3%B6sertypen-raids-und-abonnements-subs)
         * [3.7.1 Raids](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#371-raids)
@@ -122,7 +124,6 @@ Die meisten Einsatzzwecke sollten durch die einfachen Abgleichfunktionen abgedec
 Reguläre Ausdrücke sind ein sehr mächtiges Werkzeug und mögen deswegen zunächst ein wenig einschüchternd wirken, aber keine Sorge. Ihnen wird anhand sehr einfacher erster Beispiele gezeigt, wie Sie sie nutzen, und diese werden wahrscheinlich völlig ausreichen, um Ihnen alles beizubringen, was Sie benötigen, um Willowbot effizient benutzen zu können.
 
 Beispielsweise möchten Sie gern ein `!multi`-Kommando, um Ihren Zuschauern mitzuteilen, mit wem Sie aktuell spielen. Wenn Sie wollen, dass diese Nachricht auch angezeigt wird, wenn `!Multi` gesendet wird, könnten Sie natürlich einfach den gesamten `!multi`-Kommandoblock noch einmal eingeben und `m` durch `M` ersetzen. Eleganter geht es stattdessen mit einem Regulären Ausdruck:
-
 ```
 commands = {
   "^![Mm]ulti" : {
@@ -131,7 +132,18 @@ commands = {
   }
 }
 ```
-Das Symbol `^` bedeutet, dass die Nachricht mit dem Muster startet, das ihm folgt, also kann `^` mit Abgleichstyp `regex` die Verwendung von `startsWith` ersetzen. Das sogenannte Zeichenset (character set) `[Mm]` bedeutet genau das, was wir erreichen wollen: Jedwedes dieser beiden Zeichen darf das Kommando beginnen.
+Das Symbol `^` bedeutet, dass die Nachricht mit dem Muster startet, das ihm folgt, also kann `^` mit Abgleichstyp `regex` die Verwendung von `startsWith` ersetzen. Das sogenannte Zeichenset (character set) `[Mm]` bedeutet genau das, was wir erreichen wollen: Jedwedes dieser beiden Zeichen darf das Kommando beginnen. 
+
+Was passiert nun aber, wenn es bspw. sowohl ein Kommando `!multi` als auch `!multiplayer` gibt? Die obige Kommandodefinition würde bei der Eingabe von `!multi` in den Chat nicht nur diesen, sondern auch das `!multiplayer`-Kommando auslösen. Daher ist es sinnvoll, Willowbot mitzuzeilen, dass das Kommando genau dieser feststehende Begriff ist und auch nicht beliebig zu einem anderen Wort verlängert werden darf. Dies wird durch `( |$)` bewerkstelligt:
+```
+commands = {
+  "^![Mm]ulti( |$)" : {
+    "answer"    : "Heute spielen wir mit jemand ganz Besonderem.",
+    "matchType" : "regex"
+  }
+}
+```
+Diese Konstruktion bedeutet: Reagiere auf Chateingaben, die mit `!multi` oder `!Multi` beginnen und danach entweder ein Leerzeichen aufweisen (falls der Nutzer bspw. noch ein `@andererNutzer` als Ping hinzufügen möchte) oder aber damit vollständig und beendet sind (`$`).
 
 Willowbots Regexfunktion unterstützt auch die Verwendung sogenannter Treffergruppen (capture groups) in seinen Antworten. Das bedeutet, dass Sie einzelne Teile der Nachricht, den den Bot zu einer Reaktion veranlasst hat, herausnehmen und für Ihre Antwort verwenden können.
 
@@ -159,9 +171,9 @@ commands = {
 ```
 Da dieses Kommando mehrere verschiedene Regexstrukturen enthält, lassen Sie uns diese ein wenig detaillierter betrachten. Zunächst einmal können Sie sehen, dass wir hier eine Kette von Wörtern haben, die in runden Klammern eingeschlossen und durch senkrechte Striche voneinander getrennt sind (`(a|b|c)`). Dies bedeutet, dass die definierte Antwort durch jedes dieser Worte ausgelöst werden kann.
 
-Einen Abschnitt zuvor haben Sie Zeichensets kennengelernt, und ebendiese Sets können Sie im hier definierten Kommand erneut sehen. Sie können die Antwort also entweder durch `!mod`, `!Mod`, `!skyrim`, `!Skyrim`, `!game` oder `!Game` auslösen.
+Einen Abschnitt zuvor haben Sie Zeichensets kennengelernt, und ebendiese Sets können Sie im hier definierten Kommando erneut sehen. Sie können die Antwort also entweder durch `!mod`, `!Mod`, `!skyrim`, `!Skyrim`, `!game` oder `!Game` auslösen.
 
-»Aber Moment! Da ist ein Fragezeichen hinter `![Mm]ods`!«, mögen Sie jetzt einwerfen. »Was ist mit dem S in der Liste der Kommandos im verherigen Absatz passiert?« Das Fragezeichen ist ein spezielles Zeichen im Kontext regulärer Ausdrücke. Es bedeutet, dass das Zeichen vor ihm optional ist, d. h. Sie können die Antwort nicht nur über `!mod` or `!Mod`, sondern auch durch `!mods` und `!Mods` auslösen.
+»Aber Moment! Da ist ein Fragezeichen hinter `![Mm]ods`!«, mögen Sie jetzt einwerfen. »Und wieso heißt es jetzt `!mods` und nicht mehr `!mod`?« Das Fragezeichen ist ein spezielles Zeichen im Kontext regulärer Ausdrücke. Es bedeutet, dass das Zeichen vor ihm optional ist, d. h. Sie können die Antwort nicht nur über `!mod` or `!Mod`, sondern auch durch `!mods` und `!Mods` auslösen.
 
 
 ### 3.3 Zeitabhängige Kommandos
@@ -209,6 +221,8 @@ Der obige Code stellt Ihren Zuschauern das Kommando `!bsg` zur Verfügung und ve
 
 ### 3.5 Levelsystem
 
+#### 3.5.1 Basissystem
+
 Um den Zugang zu Kommandos einzuschränken, bietet Willowbot ein Levelsystem. Jedem Nutzer im Chat wird ein Level zugeordnet, basierend auf seiner Rolle und Chaterfahrung. Folgende Level sind implementiert:
 
 * 0: der Nutzer postet das allererste Mal auf diesem Kanal;
@@ -219,7 +233,7 @@ Um den Zugang zu Kommandos einzuschränken, bietet Willowbot ein Levelsystem. Je
 
 Damit Willowbot den Level des Nutzers prüft, bevor er eine Antwort sendet, müssen Sie das Schlüsselwort `level` oder `minLevel` benutzen. Ein paar Beispiele sollen das näher erläutern.
 
-Das häufigste Szenario für die Level ist es, einen minimalen Level zu ermitteln, der zum Ausführen eines Kommandos benötigt wird. Für ein Kommando, das nur von den Kanalmoderatoren und dem Streamer genutzt werden kann, müssten Sie die `minLevel`-Option benutzen und diese auf den Wert 3 festlegen:
+Das häufigste Szenario für die Level ist es, einen minimalen Level zu ermitteln, der zum Ausführen eines Kommandos benötigt wird. Für ein Kommando, das nur von den Kanalmoderatoren und dem Streamer genutzt werden kann, müssen Sie die `minLevel`-Option benutzen und diese auf den Wert 3 festlegen:
 ```
 commands = {
   "!issues" : {
@@ -239,7 +253,24 @@ commands = {
   }
 }
 ```
-Neben einer Leveldefinition benutzt dieses Kommando den Regulären Ausdruck `.*`, wodurch auf Nachrichten mit *jedem* beliebige Zeichen (`.`) reagiert wird, das 0mal oder öfter (`*`) vorkommt. Wir werden uns diese Asteriskenmuster und wie man sie effizient verwendet im folgenden Abschnitt genauer anschauen.
+Neben einer Leveldefinition benutzt dieses Kommando den Regulären Ausdruck `.*`, wodurch auf Nachrichten mit *jedem* beliebige Zeichen (`.`) reagiert wird, das 0mal oder öfter (`*`) vorkommt. Wir werden uns diese Asteriskenmuster und wie man sie effizient verwendet im folgenden Abschnitt 3.6 genauer anschauen.
+
+
+#### 3.5.2 Weitere Restriktionen
+
+Zusätzlich zu den genannten Leveln kann ein Kommando auf die ausschließliche Nutzung durch VIP-Chatteilnehmer beschränkt werden, indem der Schlüssel `needsVIP` übergeben und mit dem Wahrheitswert `true` versehen wird.
+```
+commands = {
+  "^!vip( |$)" : {
+    "answer"    : "Ich bin VIP und deswegen darf nur ich dieses Kommando nutzen.",
+    "matchType" : "regex",
+    "needsVIP"  : true
+  }
+}
+```
+Hier zu beachten: Wahrheitswerte (`true` und `false`) besitzen anders als Zeichenketten keine Anführungszeichen.
+
+Möchten Sie neben den durch Twitch vergebenen Rollen ihr eigenes, auf Abonnementmonaten basierendes Levelsystem aufbauen, stehen Ihnen dafür die Schlüssel `minSubLevel`, `subLevel` sowie `maxSubLevel` zur Verfügung. Sie können also festlegen, dass eine minimale Anzahl von Abomonaten notwendig ist, um bestimmte Kommandos benutzen zu dürfen (`minLevel`), die Nutzung auf ein Intervall an Abomonaten beschränken (`minSubLevel` und `maxSubLevel`) oder nur einen bestimmten Monat für ein Kommando vorsehen (`subLevel`). Die Werte für diese Schlüssel werden jeweils als Ganzzahl (integer) angegeben und besitzen daher, wie Wahrheitswerte, keine Anführungszeichen in der Kommandodefinition.
 
 
 ### 3.6 Platzhaltervariable
@@ -594,7 +625,7 @@ Fühlen Sie sich frei, den Code als Inspiration für Ihre eigenen IRC-Projekte z
     * `is` [Standardwert], `is_caseInsensitive`, `startsWith`, `contains`, `contains_caseInsensitive`, `endsWith`, `regex`
 * `maxSubLevel`
     * Typ: Ganzzahl (integer)
-    * maximale Abomonatszahl, die benötigt wird, um die zugehörige Nachricht auszulösen
+    * maximale Abomonatszahl, die benötigt wird, um die zugehörige Nachricht auszulösen; kann für Chatbefehle sowie für Abonnementnachrichten verwendet werden
 * `minLevel`
     * Typ: Ganzzahl (integer)
     * minimaler Level, der benötigt wird, um das Kommando auszulösen
@@ -603,13 +634,16 @@ Fühlen Sie sich frei, den Code als Inspiration für Ihre eigenen IRC-Projekte z
     * minimale Anzahl an Raidern, die benötigt wird, um die zugehörige Nachricht auszulösen
 * `minSubLevel`
     * Typ: Ganzzahl (integer)
-    * minimale Abomonatszahl, die benötigt wird, um die zugehörige Nachricht auszulösen
+    * minimale Abomonatszahl, die benötigt wird, um die zugehörige Nachricht auszulösen; kann für Chatbefehle sowie für Abonnementnachrichten verwendet werden
+* `needsVIP`
+    * Typ: Wahrheitswert (boolean)
+    * beschränkt den Befehl auf die Nutzung durch VIP-Nutzer
 * `os-command`
     * Typ: Zeichenkette (string)
     * ein Betriebssystemkommando, das ausgeführt wird, falls die anderen Bedingungen erfüllt sind (Level, Abklingzeit, Muster etc.)
 * `subLevel`
     * Typ: Ganzzahl (integer)
-    * exakte Abomonatszahl, die benötigt wird, um die zugehörige Nachricht auszulösen
+    * exakte Abomonatszahl, die benötigt wird, um die zugehörige Nachricht auszulösen; kann für Chatbefehle sowie für Abonnementnachrichten verwendet werden
 * `triggerType`
     * Typ: Zeichenkette (string)
     * `raid`, `sub`, `subGiftAnon`, `subGiftContinued`, `subGiftMulti`, `subGiftSingle`, `subGiftSingleFollowup`, `subPrime`

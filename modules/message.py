@@ -69,11 +69,14 @@ class Message():
   def getSubGiftRecipient(self):
     return re.sub(".+?;msg-param-recipient-display-name=([^;]+).*", r'\1', self.meta)
 
-  def getSubMonth(self):
+  def getSubMonth_current(self):
+    return re.sub("^\@badge[^/]+/([0-9]+);.*", r'\1', self.meta)
+  
+  def getSubMonth_new(self):
     return re.sub(".+?;msg-param-cumulative-months=([^;]+).*", r'\1', self.meta)
   
   def getText(self):
-    return re.sub(".+?[A-Z]+ #[^ ]+ :(.+)", r'\1', self.fullText)
+    return re.sub(".+?tmi\.twitch\.tv [A-Z]+ [^:]+:(.+)", r'\1', self.fullText)
 
   def getTimeSent(self):
     t_msg = re.findall(".+?;tmi-sent-ts=([0-9]+)[0-9]{3}.*", self.fullText)
@@ -123,10 +126,13 @@ class Message():
     return "badges=broadcaster" in self.meta
 
   def senderIsMod(self):
-    return ";mod=1;" in self.meta
+    return ";mod=1" in self.meta
 
   def senderIsSubscriber(self):
-    return ";subscriber=1;" in self.meta
+    return ";subscriber=1" in self.meta
+
+  def senderIsVIP(self):
+    return ";vip=1" in self.meta
 
   def startsWith(self, string):
     return re.match("^" + string, self.text)  
@@ -142,7 +148,7 @@ class Message():
       answerText = answerText.replace('$raidersCount', self.getRaidersCount())
     # Message is a regular or Prime subscription.
     elif self.isSub() or self.isSubPrime():
-      answerText = answerText.replace('$subMonth', self.getSubMonth())
+      answerText = answerText.replace('$subMonth', self.getSubMonth_new())
       answerText = answerText.replace('$subName', self.getSenderDisplayName())
     # Message is an anonymous subscription.
     elif self.isSubGiftAnon():
@@ -295,6 +301,7 @@ class Message():
 
   def processCommands(self, commands, message, irc):
     self.fullText = message
+    print(self.fullText)
     self.text = self.getText()
     self.meta = self.getMeta()
     msgTime = self.getTimeSent()
@@ -307,29 +314,54 @@ class Message():
       senderLevel = self.getSenderLevel()
       print(self.getSenderDisplayName() + " (lvl " + str(senderLevel) + ", " + msgTime + ")\n" + self.text + "\n———————")
 
-      # Check for a match with the commands defined for this channel.
-      match = ''
+      # Iterate over all commands defined for this channel.
       for c in commands['general']:
-        # Check if the command has no cooldown or if its cooldown has already elapsed. If so, proceed evaluating.
-        if not ('cooldown' in commands['general'][c] and not timeElapsed(commands['general'][c], 'cooldown')):
-          # Check if the level restrictions for the command are met.
-          if ('level' in commands['general'][c] and senderLevel == commands['general'][c]['level']) or ('minLevel' in commands['general'][c] and senderLevel >= commands['general'][c]['minLevel']) or (not 'level' in commands['general'][c] and not 'minLevel' in commands['general'][c]):
-            # Set a default value for the match type if none is provided.
-            if not 'matchType' in commands['general'][c]:
-              commands['general'][c]['matchType'] = "is"
-            
-            if (commands['general'][c]['matchType'] == "startsWith" and self.startsWith(c)) or (commands['general'][c]['matchType'] == "contains" and self.contains(c)) or (commands['general'][c]['matchType'] == "contains_caseInsensitive" and self.contains_caseInsensitive(c)) or (commands['general'][c]['matchType'] == "endsWith" and self.endsWith(c)) or (commands['general'][c]['matchType'] == "regex" and self.matchesRegex(c)) or (commands['general'][c]['matchType'] == "is" and self.text == c) or (commands['general'][c]['matchType'] == "is_caseInsensitive" and self.text.lower() == c.lower()):
-              match = c
-      
-      # If there was a match, all restrictions have been met and the reaction is free to be executed.
-      if match != '':
-        self.reactToMessage(commands, 'general', match, irc)
+        # The following chain of checks will be either successful (»pass« in each check instance) or break at some point and »continue« with respectively jump to the next item in the commands loop. 
+        
+        # Check if the most recent chat message matches the command currently being processed as well as its matching type.
+        if (commands['general'][c]['matchType'] == "startsWith" and self.startsWith(c)) or (commands['general'][c]['matchType'] == "contains" and self.contains(c)) or (commands['general'][c]['matchType'] == "contains_caseInsensitive" and self.contains_caseInsensitive(c)) or (commands['general'][c]['matchType'] == "endsWith" and self.endsWith(c)) or (commands['general'][c]['matchType'] == "regex" and self.matchesRegex(c)) or (commands['general'][c]['matchType'] == "is" and self.text == c) or (commands['general'][c]['matchType'] == "is_caseInsensitive" and self.text.lower() == c.lower()):
+          pass
+        else:
+          continue
+
+        # Check if the command has no cooldown or if its cooldown has already elapsed.
+        if not 'cooldown' in commands['general'][c] or ('cooldown' in commands['general'][c] and timeElapsed(commands['general'][c], 'cooldown')):
+          pass
+        else:
+          continue
+        
+        # Check if the user has the necessary level to use the command.
+        if (not 'level' in commands['general'][c] and not 'minLevel' in commands['general'][c]) or ('level' in commands['general'][c] and senderLevel == commands['general'][c]['level']) or ('minLevel' in commands['general'][c] and senderLevel >= commands['general'][c]['minLevel']):
+          pass
+        else:
+          continue
+
+        # Check if the command is user-restricted and if the sender’s name matches this restriction.
+        if (not 'senderName' in commands['general'][c] and not 'senderDisplayName' in commands['general'][c]) or ('senderName' in commands['general'][c] and commands['general'][c]['senderName'] == self.getSenderName()) or ('senderDisplayName' in commands['general'][c] and commands['general'][c]['senderDisplayName'] == self.getSenderDisplayName()):
+          pass
+        else:
+          continue
+
+        # Check if the command is VIP-restricted and if the sender is indeed a VIP.
+        if not 'needsVIP' in commands['general'][c] or ('needsVIP' in commands['general'][c] and commands['general'][c]['needsVIP']):
+          pass
+        else:
+          continue
+
+        # Checks if the command is subscription-level-restricted and if the sender meets those requirements.
+        if (not 'subLevel' in commands['general'][c] and not 'minSubLevel' in commands['general'][c]) or ('subLevel' in commands['general'][c] and commands['general'][c]['subLevel'] == int(self.getSubMonth_current())) or ('minSubLevel' in commands['general'][c] and commands['general'][c]['minSubLevel'] >= self.int(getSubMonth_current())):
+          pass
+        else:
+          continue
+
+        # If all restrictions above have been met, the reaction is free to be executed. This point is not reached otherwise.
+        self.reactToMessage(commands, 'general', c, irc)
 
     elif self.getType() == "USERNOTICE":
 
       # Message indicates a regular subscription.
       if self.isSub():
-        subMonth = int(self.getSubMonth())
+        subMonth = int(self.getSubMonth_new())
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'sub':
             subLevel = float('inf') if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
@@ -341,7 +373,7 @@ class Message():
 
       # Message indicates a Prime sub.
       elif self.isSubPrime():
-        subMonth = int(self.getSubMonth())
+        subMonth = int(self.getSubMonth_new())
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'subPrime':
             subLevel = float('inf') if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
@@ -392,17 +424,29 @@ class Message():
         print("\nUSERNOTICE\n")
         print(message)
   
-    elif self.getType() == "CLEARMSG" or self.getType() == "CLEARCHAT":
+    elif self.getType() == "CLEARCHAT":
+      print("\nCLEARCHAT\n")
+      print("    Message: " + message)
+
+    elif self.getType() == "CLEARMSG":
       print("\nCLEARMSG\n")
       print("    Deleted message: " + message)
+
+    elif self.getType() == "NOTICE":
+      print("\nNOTICE\n")
+      print(message)
+
+    elif self.getType() == "RECONNECT":
+      print("\nRECONNECT\n")
+      print(message)
 
     elif self.getType() == "USERSTATE":
       print("\nUSERSTATE\n")
       print(message)
 
-    elif self.getType() == "NOTICE":
-      print("\nNOTICE\n")
-      print(message)
+    elif self.getType() == "WHISPER":
+      print("\nWHISPER\n")
+      print(self.text)
 
     else:
       if not re.match('^PING :tmi\.twitch\.tv$', self.meta) and not re.match("^:.*", self.meta):
