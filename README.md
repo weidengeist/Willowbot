@@ -267,9 +267,9 @@ commands = {
   }
 }
 ```
-Note: Booleans (`true` und `false`) don’t have, unlike strings, quotation marks.
+Note: Booleans (`true` and `false`) don’t have, unlike strings, quotation marks.
 
-If you want to build your own level system besided the roles assigned by Twitch, based upon subscription months, the keys `minSubLevel`, `subLevel`, and `maxSubLevel` are available. So you can determine that a minimal number of subscriptions months is needed to use certain commands (`minSubLevel`), restrict the usage to an interval of subscription months (`minSubLevel` in conjunction with `maxSubLevel`) or intend only one specific month for the command (`subLevel`). The values for those keys are integers, so like booleans they don’t use quotation marks in the command definition.
+If you want to build your own level system besides the roles assigned by Twitch, based upon subscription months, the keys `minSubLevel`, `subLevel`, and `maxSubLevel` are available. So you can determine that a minimal number of subscriptions months is needed to use certain commands (`minSubLevel`), restrict the usage to an interval of subscription months (`minSubLevel` in conjunction with `maxSubLevel`) or intend only one specific month for the command (`subLevel`). The values for those keys are integers, so like booleans they don’t use quotation marks in the command definition.
 
 
 ### 3.6 Placeholder variables
@@ -307,7 +307,7 @@ commands = {
   }
 }
 ```
-»Why would we want to do this?«, you might ask. `$arg1+` does not only catch the second word after `!give` like `$arg1` would do, but it gathers all words from the second one onwards. So in contrast to the version shown before, our new `!give` command will now catch more than just two arguments. In our first `!give` version, we could only give McFluffy »some blanket to feel cozy«. With the new command we can `!give McFluffy a very warm blanket` to feel cozy. Just a blanket is still possible, though.
+»Why would we want to do this?«, you might ask. `$arg1+` does not only catch the second word after `!give` like `$arg1` would do, but it gathers all words from the second one onward. So in contrast to the version shown before, our new `!give` command will now catch more than just two arguments. In our first `!give` version, we could only give McFluffy »some blanket to feel cozy«. With the new command we can `!give McFluffy a very warm blanket` to feel cozy. Just a blanket is still possible, though.
 
 Do you want to spread some love in your chat? Enable your viewers to virtually hug each other by defining a command for that action:
 ```
@@ -365,7 +365,7 @@ commands = {
   }
 }
 ```
-The command definition above will delete all Messages which contain the terms/emotes »Kappa«, »failFish«, or »LUL«. For this action we need the ID of the message you want to delete. That ID is represented by the placeholder variable `msgID`. The advantage of using this method instead of the Twitch blacklist: You and your moderators will be able to see the message and its problematic content and, if necessary, take further actions in case of severe discrimination or harassement, whereas messages with Twitch blacklist terms would be suppressed before any moderator can see it and have a chance to report the user to Twitch. In the section about answer types we will see how to extend this command and make it even more useful.
+The command definition above will delete all Messages which contain the terms/emotes »Kappa«, »failFish«, or »LUL«. For this action we need the ID of the message you want to delete. That ID is represented by the placeholder variable `msgID`. The advantage of using this method instead of the Twitch blacklist: You and your moderators will be able to see the message and its problematic content and, if necessary, take further actions in case of severe discrimination or harassment, whereas messages with Twitch blacklist terms would be suppressed before any moderator can see it and have a chance to report the user to Twitch. In the section about answer types we will see how to extend this command and make it even more useful.
 
 
 ### 3.7 Trigger types: raids and subscriptions
@@ -465,7 +465,7 @@ Here you can see the various ways of using `subLevel`, `minSubLevel`, and `maxSu
 * `subGiftSingleFollowup`:
     * see `subGiftSingle`
 * `subGiftMulti`
-    * `subGiftCount`: the quantity of subscriptions beeing gifted by the user
+    * `subGiftCount`: the quantity of subscriptions being gifted by the user
     * `subGiftCountTotal`: the total amount of already gifted subscriptions by this user on this channel
     * `subGiftGifter`: the user gifting the subscriptions
 
@@ -652,7 +652,7 @@ Feel free to use the code as an inspiration for your own IRC projects and to rep
 Variables for bot answers, which are resolved before Willowbot sends its message:
 
 * `arg0`, `arg1`, `arg2`, etc.<br>the arguments passed to the command
-* `arg0+`, `arg1+`, `arg2+`, etc.<br>concatenate all arguments from the *n*th one onwards, separated by blank spaces
+* `arg0+`, `arg1+`, `arg2+`, etc.<br>concatenate all arguments from the *n*th one onward, separated by blank spaces
 * `msgID`<br>ID of the processed message; needed for deleting specific messages
 * `msgText` <br>the full text of the processed message (mainly intended to be used for passing the message as a whole to an optional module)
 * `raidersChannel`<br>the channel which the raiders are coming from
@@ -669,7 +669,7 @@ Variables for bot answers, which are resolved before Willowbot sends its message
 
 ### List of debug message patterns
 
-(This list is still incomplete. More message patterns will be added soon.)
+(If you see the necessity for more message patterns to check, please feel free to suggest.)
 
 Currently, the following message types are included in Willowbot’s debugging/testing mode:
 

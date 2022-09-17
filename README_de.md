@@ -50,7 +50,7 @@ Um Willowbot benutzen zu können, muss [Python in wenigstens Version 3](https://
 
 ## 2 Ersteinrichtung
 
-Öffnen Sie eine Konsole (unter Windows: starten Sie `cmd`; unter Linux/Mac: drücken Sie Strg+Alt+T (unter den meisten Desktopumgebungen) or suchen Sie nach `Terminal` in Ihrem Anwendungsmenü). Navigieren Sie in das Verzeichnis, wo sich Willowbot befindet, indem Sie `cd` eintippen, gefolgt von einem Leerzeichen und dem Willowbotverzeichnis, z. B. `cd C:\Programme\Willowbot` unter Windows oder `cd /home/dasbinich/Willowbot` unter Linux/Mac. Starten Sie nun den Bot, indem Sie `python main_cli.py` eintippen und die Entertaste drücken. Sofern alles korrekt installiert ist, sollte Ihnen nun die Nachricht des Willowbots, dass für seine Verbindung keine Konfigurationsdatei vorliegt, angezeigt werden. Er wird eine Datei mit einer Konfigurationsvorlage in einem passenden Verzeichnis, das Willowbot Ihnen in dieser Nachricht mitteilen wird, für Sie anlegen. Die Standardverzeichnisse für die Konfigurationsdatei `config.py` sind die folgenden:
+Öffnen Sie eine Konsole (unter Windows: starten Sie `cmd`; unter Linux/Mac: drücken Sie Strg+Alt+T (unter den meisten Desktopumgebungen) oder suchen Sie nach `Terminal` in Ihrem Anwendungsmenü). Navigieren Sie in das Verzeichnis, wo sich Willowbot befindet, indem Sie `cd` eintippen, gefolgt von einem Leerzeichen und dem Willowbotverzeichnis, z. B. `cd C:\Programme\Willowbot` unter Windows oder `cd /home/dasbinich/Willowbot` unter Linux/Mac. Starten Sie nun den Bot, indem Sie `python main_cli.py` eintippen und die Entertaste drücken. Sofern alles korrekt installiert ist, sollte Ihnen nun die Nachricht des Willowbots, dass für seine Verbindung keine Konfigurationsdatei vorliegt, angezeigt werden. Er wird eine Datei mit einer Konfigurationsvorlage in einem passenden Verzeichnis, das Willowbot Ihnen in dieser Nachricht mitteilen wird, für Sie anlegen. Die Standardverzeichnisse für die Konfigurationsdatei `config.py` sind die folgenden:
 
 * Windows: `%appdata%\twitch\willowbot\`
 * MacOS: `/home/[user]/Library/Preferences/twitch/willowbot/`
@@ -73,7 +73,7 @@ Natürlich müssen Sie `myownchannel` durch den passenden Kanalnamen ersetzen, a
 
 ## 3 Kommandosets erstellen
 
-Neben einem Verzeichnis für die allgemeine Willowbot-/IRC-Konfiguration wird dieses Programm ein Unterverzeichnis namens `commands` in diesem Konfigurationsverzeichnis anlegen. Sie können Kommandosets für mehrere Kanäle anlegen; jedes Set ist eine gesonderte Datei, die nach dem Kanal benannt ist, auf dem sie benutzt werden soll. (Das ist besonders nützlich, wenn Sie Moderator auf mehr als einem Kanal sind.) Ab jetzt nehmen wir, dass Ihr Bot IchBinEinBot heißt, d. h. den Twitchlogin ichbineinbot verwendet. Um Ihre Kommandos zu testen, ist es stengstens empfohlen, den Kanal des Bots zu verwenden, also lassen Sie uns jetzt für diesen ein Kommandoset anlegen.
+Neben einem Verzeichnis für die allgemeine Willowbot-/IRC-Konfiguration wird dieses Programm ein Unterverzeichnis namens `commands` in diesem Konfigurationsverzeichnis anlegen. Sie können Kommandosets für mehrere Kanäle anlegen; jedes Set ist eine gesonderte Datei, die nach dem Kanal benannt ist, auf dem sie benutzt werden soll. (Das ist besonders nützlich, wenn Sie Moderator auf mehr als einem Kanal sind.) Ab jetzt nehmen wir, dass Ihr Bot IchBinEinBot heißt, d. h. den Twitchlogin ichbineinbot verwendet. Um Ihre Kommandos zu testen, ist es strengstens empfohlen, den Kanal des Bots zu verwenden, also lassen Sie uns jetzt für diesen ein Kommandoset anlegen.
 
 Die Kommandosets selbst sind kleine Skripte, die in der Programmiersprache Python geschrieben sind und nichts weiter tun, als der Variablen `commands` ein sogenanntes Wörterbuch ([dictionary](https://docs.python.org/3/tutorial/datastructures.html#dictionaries)) zuzuordnen, worin all Ihre Kommandoinformationen gespeichert sind. Erstellen Sie eine Datei namens `ichbineinbot.py` (da dies der Kanal ist, wo wir einige Tests durchführen wollen; beachten Sie: nur Kleinbuchstaben verwenden!), worin Sie Ihre Kommandoprüfungen und Botreaktionen ablegen können.
 
@@ -134,7 +134,7 @@ commands = {
 ```
 Das Symbol `^` bedeutet, dass die Nachricht mit dem Muster startet, das ihm folgt, also kann `^` mit Abgleichstyp `regex` die Verwendung von `startsWith` ersetzen. Das sogenannte Zeichenset (character set) `[Mm]` bedeutet genau das, was wir erreichen wollen: Jedwedes dieser beiden Zeichen darf das Kommando beginnen. 
 
-Was passiert nun aber, wenn es bspw. sowohl ein Kommando `!multi` als auch `!multiplayer` gibt? Die obige Kommandodefinition würde bei der Eingabe von `!multi` in den Chat nicht nur diesen, sondern auch das `!multiplayer`-Kommando auslösen. Daher ist es sinnvoll, Willowbot mitzuzeilen, dass das Kommando genau dieser feststehende Begriff ist und auch nicht beliebig zu einem anderen Wort verlängert werden darf. Dies wird durch `( |$)` bewerkstelligt:
+Was passiert nun aber, wenn es bspw. sowohl ein Kommando `!multi` als auch `!multiplayer` gibt? Die obige Kommandodefinition würde bei der Eingabe von `!multi` in den Chat nicht nur diesen, sondern auch das `!multiplayer`-Kommando auslösen. Daher ist es sinnvoll, Willowbot mitzuteilen, dass das Kommando genau dieser feststehende Begriff ist und auch nicht beliebig zu einem anderen Wort verlängert werden darf. Dies wird durch `( |$)` bewerkstelligt:
 ```
 commands = {
   "^![Mm]ulti( |$)" : {
@@ -355,7 +355,7 @@ commands = {
   }
 }
 ```
-Egal, ob der Nutzer, der versucht, Sie zu betrügen, seine Nachricht mit »Wanto to« oder »Wanna« beginnt (`^`) oder ob er »famous« mit oder ohne »u« schreibt: Er wird mit der obigen Kommandodefinition sofort Ihres Kanals verbannt.
+Egal, ob der Nutzer, der versucht, Sie zu betrügen, seine Nachricht mit »Want to« oder »Wanna« beginnt (`^`) oder ob er »famous« mit oder ohne »u« schreibt: Er wird mit der obigen Kommandodefinition sofort Ihres Kanals verbannt.
 
 Willowbots Fähigkeiten erlauben Ihnen ebenfalls, Ihre eigene Liste verbotener Wörter/Wendungen zu definieren und Nachrichten, die sie verwenden, sofort zu löschen:
 ```
@@ -366,8 +366,7 @@ commands = {
   }
 }
 ```
-Obige Kommandodefinition löscht alle Nachrichten, die die Worte/Emotes »Kappa«, »failFish« oder »LUL« enthalten. Für diese Aktion brauchen wir die ID der Nachricht, die Sie löschen möchten. Diese ID steckt hinter der Platzhaltervariablen `msgID`.
-Der Vorteil, diese Methode zu verwenden anstelle der Twitchblacklist: Sie und Ihre Moderatoren werden die Nachricht und ihren problematischen Inhalt sehen können und, falls erforderlich, weitere Schritte unternehmen, sofern es sich um schwere Fälle von Diskriminierung oder Belästigung handelt, wohingegen Nachrichten mit Twitchblacklistbegriffen nur unterdrückt werden würden, bevor ein Moderator sie sehen und ggf. den Nutzer an Twitch melden kann. Im Abschnitt über Antworttypen werden wir sehen, wie wir dieses Kommando erweitern und so sogar noch nützlicher gestalten können.
+Obige Kommandodefinition löscht alle Nachrichten, die die Worte/Emotes »Kappa«, »failFish« oder »LUL« enthalten. Für diese Aktion brauchen wir die ID der Nachricht, die Sie löschen möchten. Diese ID steckt hinter der Platzhaltervariablen `msgID`. Der Vorteil, diese Methode zu verwenden anstelle der Twitchblacklist: Sie und Ihre Moderatoren werden die Nachricht und ihren problematischen Inhalt sehen können und, falls erforderlich, weitere Schritte unternehmen, sofern es sich um schwere Fälle von Diskriminierung oder Belästigung handelt, wohingegen Nachrichten mit Twitchblacklistbegriffen nur unterdrückt werden würden, bevor ein Moderator sie sehen und ggf. den Nutzer an Twitch melden kann. Im Abschnitt über Antworttypen werden wir sehen, wie wir dieses Kommando erweitern und so sogar noch nützlicher gestalten können.
 
 
 ### 3.7 Auslösertypen: Raids und Abonnements (Subs)
@@ -523,7 +522,7 @@ Möchten Sie Ihre Kommandos prüfen, d. h. eruieren, ob Willowbot auf bestimmte 
 
 ## 4 Optionale/Eigene Module
 
-Willowbot besteht aus diversen Kernmodulen. Allerdings können Situationen auftreten, die etwas komplexere Aktionen als das Reagieren auf eine Chatnachricht durch das Absenden einer anderen Nachricht erfordern. Hier kommen dann eigene Module ins Spiel. Diese sind ebenfalls Pythonskripte und stellen Ihnen so Pythons komplettes Potential zur Verfügung, um Willowbots Funtionalität zu erweitern.
+Willowbot besteht aus diversen Kernmodulen. Allerdings können Situationen auftreten, die etwas komplexere Aktionen als das Reagieren auf eine Chatnachricht durch das Absenden einer anderen Nachricht erfordern. Hier kommen dann eigene Module ins Spiel. Diese sind ebenfalls Pythonskripte und stellen Ihnen so Pythons komplettes Potential zur Verfügung, um Willowbots Funktionalität zu erweitern.
 
 Um alle Routinen und Variablen säuberlich sortiert zu halten und das Risiko des ungewollten Überschreibens bereits definierter Routinen/Variablen zu minimieren, wird empfohlen, sie jeweils mit dem Modulnamen als Präfix zu versehen. Wenn Sie also bspw. ein Modul namens `verschenken` schreiben, sollten Sie die Routinen und Variablen innerhalb des Moduls `verschenken_tueDinge()`, `verschenken_teilnehmer`, `verschenken_tueIrgendetwasAnderes()` und so weiter nennen.
 
@@ -581,7 +580,7 @@ python main_cli.py iamabot "!mod @einandererNutzer Bitte schön."
 ```
 Was hier geschieht, ist, dass Willowbot das Kommandoset für den Kanal `iamabot` lädt, die Zeichenkette `!mod @einandererNutzer Bitte schön.` verarbeitet, als wäre sie eine Nutzernachricht im Chat gewesen, und Ihnen die Reaktion auf der Kommandozeile anzeigt.
 
-Falls Sie mehrere Nachrichtentypen testen möchten, z. B. Primeabonnements, Ankündigungen, verschenkte Abonnements etc., können Sie den Fehlerbehebungsmodus verwenden:
+Falls Sie mehrere Nachrichtentypen testen möchten, z. B. Primeabonnements, Ankündigungen, verschenkte Abonnements etc., können Sie den Fehlerbehandlungsmodus verwenden:
 ```
 python main_cli.py iamabot DEBUG
 ```
@@ -671,7 +670,7 @@ Variable für Botantworten, die ausgewertet werden, bevor Willowbot seine Antwor
 
 ### Liste der Fehlerbehandlungsnachrichtenmuster
 
-(Diese Liste ist noch unvollständig. Mehr Nachrichtenmuster werden bald hinzugefügt.)
+(Sollten Sie die Notwendigkeit für weitere Nachrichtenmuster sehen, schlagen Sie diese gern vor.)
 
 Derzeit sind folgende Nachrichtentypen in Willowbots Test-/Fehlerbehandlungsmodus enthalten:
 
