@@ -655,6 +655,7 @@ Variable für Botantworten, die ausgewertet werden, bevor Willowbot seine Antwor
 * `arg0`, `arg1`, `arg2` etc.<br>die Argumente, die an das Kommando übergeben werden
 * `arg0+`, `arg1+`, `arg2+` etc.<br>alle Argumente ab dem *n*ten werden zusammengeschlossen, getrennt durch Leerzeichen
 * `msgID`<br>ID der verarbeiteten Nachricht; benötigt, um gezielt Nachrichten zu löschen
+* `msgMeta` <br>die Metadaten der verarbeiteten Nachricht (hauptsächlich dazu gedacht, diese Daten an ein optionales Modul weiterreichen zu können)
 * `msgText` <br>der komplette Text der verarbeiteten Nachricht (hauptsächlich dazu gedacht, die Nachricht in Gänze an ein optionales Modul weiterreichen zu können)
 * `raidersChannel`<br>der Kanal, von dem die Raider kommen
 * `raidersCount`<br>Anzahl der Raider, die auf den Kanal kommen

@@ -170,6 +170,7 @@ class Message():
     # Message is a user’s message.
     else:
       answerText = answerText.replace('$msgText', self.text)
+      answerText = answerText.replace('$msgMeta', self.meta)
       answerText = answerText.replace('$msgID', self.getID())
       answerText = answerText.replace('$senderName', self.getSenderName())
       answerText = answerText.replace('$senderDisplayName', self.getSenderDisplayName())

@@ -654,6 +654,7 @@ Variables for bot answers, which are resolved before Willowbot sends its message
 * `arg0`, `arg1`, `arg2`, etc.<br>the arguments passed to the command
 * `arg0+`, `arg1+`, `arg2+`, etc.<br>concatenate all arguments from the *n*th one onward, separated by blank spaces
 * `msgID`<br>ID of the processed message; needed for deleting specific messages
+* `msgMeta` <br>the metadata of the processed message (mainly intended to be used for passing those data to an optional module)
 * `msgText` <br>the full text of the processed message (mainly intended to be used for passing the message as a whole to an optional module)
 * `raidersChannel`<br>the channel which the raiders are coming from
 * `raidersCount`<br>quantity of raiders joining the channel
