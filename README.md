@@ -530,12 +530,12 @@ Those optional modules can be activated an deactivated via a list called `active
 ¹ Windows users beware! This file has no extension, but it can be opened and edited with any text editor (e. g. Notepad). Make sure that it still has no file extension when you save your changes. If this design decision is an aspect to take very much care of and a common source of errors, please let me know.
 
 
-### 5.1 Accessing custom modules: the `function` key
+### 4.1 Accessing custom modules: the `function` key
 
 Calling one of the routines provided by your custom module is achieved by using the `function` key in your command definition. The value for that key is a string with the routine name and the passed parameters where necessary. Since writing your own modules requires profound knowledge in Python programming, it is considered a technique for experienced users. Please be aware of that if you want to extend Willowbot.
 
 
-### 5.2 `poll` module
+### 4.2 `poll` module
 
 A first optional module is already provided in this repository and enables your viewers to take part in a quick poll, initiated simply by a chat command issued by moderators or the broadcaster. As mentioned in the introduction of this section, we use the poll-initiating routine provided by the module via using the `function` key in our command definition:
 ```
