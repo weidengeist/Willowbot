@@ -687,6 +687,6 @@ Currently, the following message types are included in Willowbot’s debugging/t
 * Subscription (resub, 99 months)
 * Subscription gift (anonymous)
 * Subscription gift (multi, 10 gifts, 50 gifts total)
-* Subscription gift (single, tier 1, 50 gifts total, month 35 for recipient)
 * Subscription gift (single, follow-up message for multi-subgift)
+* Subscription gift (single, tier 1, 50 gifts total, month 35 for recipient)
 * Whisper

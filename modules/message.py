@@ -70,7 +70,7 @@ class Message():
     return re.sub(".+?;msg-param-recipient-display-name=([^;]+).*", r'\1', self.meta)
 
   def getSubMonth_current(self):
-    return re.sub("^\@badge[^/]+/([0-9]+);.*", r'\1', self.meta)
+    return 0 if ";subscriber=0" else re.sub("^\@badge[^/]+/([0-9]*);.*", r'\1', self.meta)
   
   def getSubMonth_new(self):
     return re.sub(".+?;msg-param-cumulative-months=([^;]+).*", r'\1', self.meta)
@@ -349,7 +349,7 @@ class Message():
           continue
 
         # Checks if the command is subscription-level-restricted and if the sender meets those requirements.
-        if (not 'subLevel' in commands['general'][c] and not 'minSubLevel' in commands['general'][c]) or ('subLevel' in commands['general'][c] and commands['general'][c]['subLevel'] == int(self.getSubMonth_current())) or ('minSubLevel' in commands['general'][c] and commands['general'][c]['minSubLevel'] >= self.int(getSubMonth_current())):
+        if (not 'subLevel' in commands['general'][c] and not 'minSubLevel' in commands['general'][c]) or ('subLevel' in commands['general'][c] and commands['general'][c]['subLevel'] == int(self.getSubMonth_current())) or ('minSubLevel' in commands['general'][c] and commands['general'][c]['minSubLevel'] >= int(self.getSubMonth_current())):
           pass
         else:
           continue
