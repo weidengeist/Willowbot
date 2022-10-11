@@ -48,6 +48,6 @@ debugList = {
   'Subscription gift (single, tier 1, 50 gifts total, month 35 for recipient)':
     '@badge-info=subscriber/25;badges=subscriber/2024,bits/25000;color=#FF0000;display-name=WillowbotDebugTester;emotes=;flags=;id=12345msgID54321-98765msgID56789-123-4u5v6w7x8y9z;login=willowbotdebugtester;mod=0;msg-id=subgift;msg-param-gift-months=1;msg-param-months=35;msg-param-origin-id=this\sis\san\sorigin\sID;msg-param-recipient-display-name=WillowbotGiftRecipient;msg-param-recipient-id=74734078;msg-param-recipient-user-name=willowbotgiftrecipient;msg-param-sender-count=50;msg-param-sub-plan-name=A\ssubscription\sname\sfor\sWillowbot\sDebug\sTester;msg-param-sub-plan=1000;room-id=123456789;subscriber=1;system-msg=WillowbotDebugTester\sgifted\sa\sTier\s1\ssub\sto\sWillowbotGiftRecipient!\sThey\shave\sgiven\s50\sGift\sSubs\sin\sthe\schannel!;tmi-sent-ts=1658754900000;user-id=98765432;user-type= :tmi.twitch.tv USERNOTICE #willowbotchannel',
 
-  'Whisper':
+  'Whispers':
     '@badges=glitchcon2020/1;color=#FF0000;display-name=WillowbotDebugTester;emotes=;message-id=1;thread-id=12345678_987654321;turbo=0;user-id=98765432;user-type= :willowbotdebugtester!willowbotdebugtester@willowbotdebugtester.tmi.twitch.tv WHISPER willowbotwhisperrecipient :This is a whisper message from WillowbotDebugTester to WillowbotWhisperRecipient.',
 }
