@@ -52,7 +52,7 @@ def loadOptionalModules(verbose):
     activeModulesFile.close()
 
 # Initially load optional modules.
-loadOptionalModules(True)
+loadOptionalModules(False)
 
 
 def getConfig():

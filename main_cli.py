@@ -4,11 +4,11 @@ import sys
 sys.path.append('modules')
 sys.path.append('modules_opt')
 
-from basics import checkTimedCommands # Import various general functions from the basics(.py) module in ./modules.
-from basics import getCommands        
-from basics import getConfig
-from irc import IRC                   # Import the IRC class from the irc(.py) module in ./modules.
-from message import Message           # Import the Message class.
+from modules.basics import checkTimedCommands # Import various general functions from the basics(.py) module in ./modules.
+from modules.basics import getCommands        
+from modules.basics import getConfig
+from modules.irc import IRC                   # Import the IRC class from the irc(.py) module in ./modules.
+from modules.message import Message           # Import the Message class.
 
 
 CONFIG = getConfig()                  # Load configuration files. 
