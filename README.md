@@ -640,11 +640,11 @@ Feel free to use the code as an inspiration for your own IRC projects and to rep
     * type: string
     * a system command that will be executed if the other conditions are met (level, cooldown, pattern, etc.)
 * `senderName`
-    * type: string
-    * only execute the command when the user with the specified login name has sent the triggering message
+    * type: list
+    * only execute the command if the list contains the login name of the user who has sent the triggering message
 * `senderDisplayName`
-    * type: string
-    * only execute the command when the user with the specified display name has sent the triggering message
+    * type: list
+    * only execute the command if the list contains the display name of the user who has sent the triggering message
 * `subLevel`
     * type: integer
     * subscription count needed to trigger the associated message; can be used for chat commands as well as for subscription messages

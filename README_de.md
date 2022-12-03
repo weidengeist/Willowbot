@@ -641,11 +641,11 @@ Fühlen Sie sich frei, den Code als Inspiration für Ihre eigenen IRC-Projekte z
     * Typ: Zeichenkette (string)
     * ein Betriebssystemkommando, das ausgeführt wird, falls die anderen Bedingungen erfüllt sind (Level, Abklingzeit, Muster etc.)
 * `senderName`
-    * Typ: Zeichenkette (string)
-    * führt den Befehl nur aus, wenn der Nutzer mit dem angegebenen Loginnamen die auslösende Nachricht gesendet hat
+    * Typ: Liste (list)
+    * führt den Befehl nur aus, wenn einer der in der Liste enthaltenen Nutzer mit dem angegebenen Loginnamen die auslösende Nachricht gesendet hat
 * `senderDisplayName`
-    * Typ: Zeichenkette (string)
-    * führt den Befehl nur aus, wenn der Nutzer mit dem angegebenen Anzeigenamen die auslösende Nachricht gesendet hat
+    * Typ: Liste (list)
+    * führt den Befehl nur aus, wenn einer der in der Liste enthaltenen Nutzer mit dem angegebenen Anzeigenamen die auslösende Nachricht gesendet hat
 * `subLevel`
     * Typ: Ganzzahl (integer)
     * exakte Abomonatszahl, die benötigt wird, um die zugehörige Nachricht auszulösen; kann für Chatbefehle sowie für Abonnementnachrichten verwendet werden

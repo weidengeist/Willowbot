@@ -331,13 +331,13 @@ class Message():
           continue
 
         # Check if the message that has to be reacted to has been sent by the specified user (login name), if any.
-        if not 'senderName' in commands['general'][c] or ('senderName' in commands['general'][c] and commands['general'][c]['senderName'] == self.getSenderName()):
+        if not 'senderName' in commands['general'][c] or ('senderName' in commands['general'][c] and self.getSenderName() in commands['general'][c]['senderName']):
           pass
         else:
           continue
 
         # Check if the message that has to be reacted to has been sent by the specified user (display name), if any.
-        if not 'senderDisplayName' in commands['general'][c] or ('senderDisplayName' in commands['general'][c] and commands['general'][c]['senderDisplayName'] == self.getSenderDisplayName()):
+        if not 'senderDisplayName' in commands['general'][c] or ('senderDisplayName' in commands['general'][c] and self.getSenderDisplayName() in commands['general'][c]['senderDisplayName']):
           pass
         else:
           continue
