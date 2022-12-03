@@ -258,17 +258,17 @@ Neben einer Leveldefinition benutzt dieses Kommando den Regulären Ausdruck `.*`
 
 #### 3.5.2 Weitere Restriktionen
 
-Zusätzlich zu den genannten Leveln kann ein Kommando auf die ausschließliche Nutzung durch VIP-Chatteilnehmer beschränkt werden, indem der Schlüssel `needsVIP` übergeben und mit dem Wahrheitswert `true` versehen wird.
+Zusätzlich zu den genannten Leveln kann ein Kommando auf die ausschließliche Nutzung durch VIP-Chatteilnehmer beschränkt werden, indem der Schlüssel `needsVIP` übergeben und mit dem Wahrheitswert `True` versehen wird.
 ```
 commands = {
   "^!vip( |$)" : {
     "answer"    : "Ich bin VIP und deswegen darf nur ich dieses Kommando nutzen.",
     "matchType" : "regex",
-    "needsVIP"  : true
+    "needsVIP"  : True
   }
 }
 ```
-Hier zu beachten: Wahrheitswerte (`true` und `false`) besitzen anders als Zeichenketten keine Anführungszeichen.
+Hier zu beachten: Wahrheitswerte (`True` und `False`) besitzen anders als Zeichenketten keine Anführungszeichen.
 
 Möchten Sie neben den durch Twitch vergebenen Rollen ihr eigenes, auf Abonnementmonaten basierendes Levelsystem aufbauen, stehen Ihnen dafür die Schlüssel `minSubLevel`, `subLevel` sowie `maxSubLevel` zur Verfügung. Sie können also festlegen, dass eine minimale Anzahl von Abomonaten notwendig ist, um bestimmte Kommandos benutzen zu dürfen (`minLevel`), die Nutzung auf ein Intervall an Abomonaten beschränken (`minSubLevel` und `maxSubLevel`) oder nur einen bestimmten Monat für ein Kommando vorsehen (`subLevel`). Die Werte für diese Schlüssel werden jeweils als Ganzzahl (integer) angegeben und besitzen daher, wie Wahrheitswerte, keine Anführungszeichen in der Kommandodefinition.
 
@@ -640,6 +640,12 @@ Fühlen Sie sich frei, den Code als Inspiration für Ihre eigenen IRC-Projekte z
 * `os-command`
     * Typ: Zeichenkette (string)
     * ein Betriebssystemkommando, das ausgeführt wird, falls die anderen Bedingungen erfüllt sind (Level, Abklingzeit, Muster etc.)
+* `senderName`
+    * Typ: Zeichenkette (string)
+    * führt den Befehl nur aus, wenn der Nutzer mit dem angegebenen Loginnamen die auslösende Nachricht gesendet hat
+* `senderDisplayName`
+    * Typ: Zeichenkette (string)
+    * führt den Befehl nur aus, wenn der Nutzer mit dem angegebenen Anzeigenamen die auslösende Nachricht gesendet hat
 * `subLevel`
     * Typ: Ganzzahl (integer)
     * exakte Abomonatszahl, die benötigt wird, um die zugehörige Nachricht auszulösen; kann für Chatbefehle sowie für Abonnementnachrichten verwendet werden

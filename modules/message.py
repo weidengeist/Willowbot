@@ -320,6 +320,7 @@ class Message():
       i = 0
       while i < len(list(commands['general'].keys())):
         c = list(commands['general'].keys())[i]
+        i += 1
         
         # The following chain of checks will be either successful (»pass« in each check instance) or break at some point and »continue« with respectively jump to the next item in the commands loop. 
         
@@ -327,48 +328,53 @@ class Message():
         if (commands['general'][c]['matchType'] == "startsWith" and self.startsWith(c)) or (commands['general'][c]['matchType'] == "contains" and self.contains(c)) or (commands['general'][c]['matchType'] == "contains_caseInsensitive" and self.contains_caseInsensitive(c)) or (commands['general'][c]['matchType'] == "endsWith" and self.endsWith(c)) or (commands['general'][c]['matchType'] == "regex" and self.matchesRegex(c)) or (commands['general'][c]['matchType'] == "is" and self.text == c) or (commands['general'][c]['matchType'] == "is_caseInsensitive" and self.text.lower() == c.lower()):
           pass
         else:
-          i = i + 1
+          continue
+
+        # Check if the message that has to be reacted to has been sent by the specified user (login name), if any.
+        if not 'senderName' in commands['general'][c] or ('senderName' in commands['general'][c] and commands['general'][c]['senderName'] == self.getSenderName()):
+          pass
+        else:
+          continue
+
+        # Check if the message that has to be reacted to has been sent by the specified user (display name), if any.
+        if not 'senderDisplayName' in commands['general'][c] or ('senderDisplayName' in commands['general'][c] and commands['general'][c]['senderDisplayName'] == self.getSenderDisplayName()):
+          pass
+        else:
           continue
 
         # Check if the command has no cooldown or if its cooldown has already elapsed.
         if not 'cooldown' in commands['general'][c] or ('cooldown' in commands['general'][c] and timeElapsed(commands['general'][c], 'cooldown')):
           pass
         else:
-          i = i + 1
           continue
         
         # Check if the user has the necessary level to use the command.
         if (not 'level' in commands['general'][c] and not 'minLevel' in commands['general'][c]) or ('level' in commands['general'][c] and senderLevel == commands['general'][c]['level']) or ('minLevel' in commands['general'][c] and senderLevel >= commands['general'][c]['minLevel']):
           pass
         else:
-          i = i + 1
           continue
 
         # Check if the command is user-restricted and if the sender’s name matches this restriction.
         if (not 'senderName' in commands['general'][c] and not 'senderDisplayName' in commands['general'][c]) or ('senderName' in commands['general'][c] and commands['general'][c]['senderName'] == self.getSenderName()) or ('senderDisplayName' in commands['general'][c] and commands['general'][c]['senderDisplayName'] == self.getSenderDisplayName()):
           pass
         else:
-          i = i + 1
           continue
 
         # Check if the command is VIP-restricted and if the sender is indeed a VIP.
         if not 'needsVIP' in commands['general'][c] or ('needsVIP' in commands['general'][c] and commands['general'][c]['needsVIP']):
           pass
         else:
-          i = i + 1
           continue
 
         # Checks if the command is subscription-level-restricted and if the sender meets those requirements.
         if (not 'subLevel' in commands['general'][c] and not 'minSubLevel' in commands['general'][c]) or ('subLevel' in commands['general'][c] and commands['general'][c]['subLevel'] == int(self.getSubMonth_current())) or ('minSubLevel' in commands['general'][c] and commands['general'][c]['minSubLevel'] >= int(self.getSubMonth_current())):
           pass
         else:
-          i = i + 1
           continue
 
         # If all restrictions above have been met, the reaction is free to be executed. This point is not reached otherwise.
         self.reactToMessage(commands, 'general', c, irc)
-        i = i + 1
-
+        
     elif self.getType() == "USERNOTICE":
 
       # Message indicates a regular subscription.

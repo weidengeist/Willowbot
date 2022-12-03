@@ -257,17 +257,17 @@ Besides a level definition, this command uses the regular expression `.*` to mat
 
 #### 3.5.2 Further restrictions
 
-In addition to the aforementioned levels, a command can be restricted to be used by VIP users only by passing the key `needsVIP` and setting the boolean `true`.
+In addition to the aforementioned levels, a command can be restricted to be used by VIP users only by passing the key `needsVIP` and setting the boolean `True`.
 ```
 commands = {
   "^!vip( |$)" : {
     "answer"    : "I am a VIP, so only I can use this command.",
     "matchType" : "regex",
-    "needsVIP"  : true
+    "needsVIP"  : True
   }
 }
 ```
-Note: Booleans (`true` and `false`) don’t have, unlike strings, quotation marks.
+Note: Booleans (`True` and `False`) don’t have, unlike strings, quotation marks.
 
 If you want to build your own level system besides the roles assigned by Twitch, based upon subscription months, the keys `minSubLevel`, `subLevel`, and `maxSubLevel` are available. So you can determine that a minimal number of subscriptions months is needed to use certain commands (`minSubLevel`), restrict the usage to an interval of subscription months (`minSubLevel` in conjunction with `maxSubLevel`) or intend only one specific month for the command (`subLevel`). The values for those keys are integers, so like booleans they don’t use quotation marks in the command definition.
 
@@ -639,6 +639,12 @@ Feel free to use the code as an inspiration for your own IRC projects and to rep
 * `os-command`
     * type: string
     * a system command that will be executed if the other conditions are met (level, cooldown, pattern, etc.)
+* `senderName`
+    * type: string
+    * only execute the command when the user with the specified login name has sent the triggering message
+* `senderDisplayName`
+    * type: string
+    * only execute the command when the user with the specified display name has sent the triggering message
 * `subLevel`
     * type: integer
     * subscription count needed to trigger the associated message; can be used for chat commands as well as for subscription messages
