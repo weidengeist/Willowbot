@@ -253,7 +253,7 @@ def splitIntoGroupsOf(s, length):
 # Convert Latin-like Cyrillic letters to real Latin ones to strike scam bots.
 # Only apply those replacements in case of a mixture of Latin and Cyrillic letters.
 def cyrillicToLatin(s):
-  if re.match(".*[A-Za-z]+.*"):
+  if re.match(".*[A-Za-z]+.*", s):
     return s.replace("а", "a").replace("е", "e").replace("о", "o").replace("р", "p").replace("с", "c").replace("ѕ", "s").replace("і", "i").replace("ј", "j")
   else:
     return s

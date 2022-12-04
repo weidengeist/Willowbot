@@ -354,12 +354,6 @@ class Message():
         else:
           continue
 
-        # Check if the command is user-restricted and if the sender’s name matches this restriction.
-        if (not 'senderName' in commands['general'][c] and not 'senderDisplayName' in commands['general'][c]) or ('senderName' in commands['general'][c] and commands['general'][c]['senderName'] == self.getSenderName()) or ('senderDisplayName' in commands['general'][c] and commands['general'][c]['senderDisplayName'] == self.getSenderDisplayName()):
-          pass
-        else:
-          continue
-
         # Check if the command is VIP-restricted and if the sender is indeed a VIP.
         if not 'needsVIP' in commands['general'][c] or ('needsVIP' in commands['general'][c] and commands['general'][c]['needsVIP']):
           pass
