@@ -355,7 +355,7 @@ class Message():
           continue
 
         # Check if the command is VIP-restricted and if the sender is indeed a VIP.
-        if not 'needsVIP' in commands['general'][c] or ('needsVIP' in commands['general'][c] and commands['general'][c]['needsVIP']):
+        if not 'needsVIP' in commands['general'][c] or ('needsVIP' in commands['general'][c] and commands['general'][c]['needsVIP'] and self.senderIsVIP()):
           pass
         else:
           continue
