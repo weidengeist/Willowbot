@@ -44,7 +44,7 @@ The instructions and descriptions below are written especially for non-programmi
 
 ## 1 Installation
 
-You need to have installed an interpreter for the programming language [Python in at least version 3](https://www.python.org/downloads/) (the latest version is recommended) to use Willowbot. The recommended option for Windows users is the Windows installer (64 bit) as it will do most of the configuration for you without any difficulties to surmount. After having successfully installed Python, download the Willowbot package and unzip it to a location to your liking.
+You need to have installed an interpreter for the programming language [Python in at least version 3.9](https://www.python.org/downloads/) (the latest version is recommended) to use Willowbot. The recommended option for Windows users is the Windows installer (64 bit) as it will do most of the configuration for you without any difficulties to surmount. After having successfully installed Python, download the Willowbot package and unzip it to a location to your liking.
 
 
 ## 2 Initial setup
@@ -57,8 +57,23 @@ Open a console (on Windows: start `cmd`; on Linux/Mac: press Ctrl+Alt+T (on most
 
 **Beware!** Aforementioned procedure has only been tested on Linux. If any information about the steps needed on Windows is incorrect and/or does not work, please let me know.
 
-Now edit the configuration file template. Merely two values have to be changed: `botname` and `oauth`. `botname` equals your bot’s account name (which means that using the bot requires a dedicated Twitch account for it, but you may also use it with your broadcaster account); `oauth` is [an access token for Twitch](https://twitchapps.com/tmi/) you must have generated.
+Now edit the configuration file template. Merely two values have to be changed: `botname` and `oauth`. `botname` equals your bot’s account name (which means that using the bot requires a dedicated Twitch account for it, but you may also use it with your broadcaster account); `oauth` is a unique identifier that, in combination with the `clientID`, links your bot account using Willowbot to Twitch.
 
+In order to get an access token, you have to start Willowbot with the `TOKEN_GET` option:
+```
+python main_cli.py TOKEN_GET
+```
+This will open your default web browser and allow you to generate a token. Simply click »Authorize« and check the URL you are redirected to. It will look like this:
+```
+https://localhost:3000/token/#access_token=[This is your token]&scope=[…]
+```
+Copy your token from the URL and put it into your configuration file as the value of the `oauth` key.
+
+If, for some reason, you want to or have to revoke your current access token, simply start Willowbot with the `TOKEN_REVOKE` option:
+```
+python main_cli.py TOKEN_REVOKE
+
+```
 After having edited the configuration file accordingly, start the bot again the way described above and it should now successfully connect to your bot’s own Twitch channel. In practice, you will want Willowbot to run on your broadcaster channel or – if you are a moderator – on some other channel where you have moderator privileges. In this case, you just pass that channel as the first argument when running Willowbot, meaning that you extend the line
 ```
 python main_cli.py
@@ -68,6 +83,13 @@ to
 python main_cli.py myownchannel
 ```
 Of course, you have to replace `myownchannel` with the appropriate channel name where you want Willowbot to do its duty and run a specific set of commands.
+
+
+### Hints on migrations
+
+If you have used Willowbot before (earlier than March 2023), you have to change a few things in your commands to ensure that they will still work with the new Twitch API. You may still use the chat commands `/ban` and `/timeout`; they have been mapped to the new API endpoints. However, their argument is no longer `$senderName`, but `$senderID`.
+
+Moreover, Willowbot now supports API shoutouts and API announcements. To use them, simply use the legacy commands `/shoutout` or `/announce`.
 
 
 ## 3 Creating command sets
@@ -324,7 +346,7 @@ Another very useful purpose for placeholders is timeouting or banning scam bots 
 ```
 commands = {
   "Buy followers" : {
-    "answer"    : "/ban $senderName",
+    "answer"    : "/ban $senderID",
     "matchType" : "startsWith",
     "level"     : 0
   }
@@ -336,7 +358,7 @@ Of course, the command above can be improved by using regular expressions:
 ```
 commands = {
   "^Buy.*followers" : {
-    "answer"    : "/ban $senderName",
+    "answer"    : "/ban $senderID",
     "matchType" : "regex",
     "level"     : 0
   }
@@ -348,7 +370,7 @@ Another fancy example for banning scam bots:
 ```
 commands = {
   "^(Wanna|Want to) become famou?s" : {
-    "answer"    : "/ban $senderName",
+    "answer"    : "/ban $senderID",
     "matchType" : "regex",
     "level"     : 0
   }
@@ -663,8 +685,10 @@ Variables for bot answers, which are resolved before Willowbot sends its message
 * `msgMeta` <br>the metadata of the processed message (mainly intended to be used for passing those data to an optional module)
 * `msgText` <br>the full text of the processed message (mainly intended to be used for passing the message as a whole to an optional module)
 * `raidersChannel`<br>the channel which the raiders are coming from
+* `raidersChannelID`<br>the ID of the channel the raiders are coming from
 * `raidersCount`<br>quantity of raiders joining the channel
 * `senderDisplayName`<br>processed message sender’s display name
+* `senderID`<br>processed message sender’s ID number
 * `senderName`<br>processed message sender’s login name
 * `subGiftCount`<br>amount of subscriptions gifted in one gift action
 * `subGiftCountTotal`<br>total amount of subscriptions a user has already gifted
@@ -684,16 +708,16 @@ Currently, the following message types are included in Willowbot’s debugging/t
 * Announcement
 * Ban
 * Deleted message
-* Message (moderator)
-* Message (ordinary user)
-* Message (ordinary user, first post ever)
-* Message (subscriber)
-* Message (VIP user)
+* Message, moderator
+* Message, ordinary user
+* Message, ordinary user, first post ever
+* Message, subscriber
+* Message, VIP user
 * Raid (999 raiders)
-* Subscription (Prime)
-* Subscription (resub, 99 months)
-* Subscription gift (anonymous)
-* Subscription gift (multi, 10 gifts, 50 gifts total)
-* Subscription gift (single, follow-up message for multi-subgift)
-* Subscription gift (single, tier 1, 50 gifts total, month 35 for recipient)
+* Subscription, Prime
+* Subscription, resub, 99 months
+* Subscription gift, anonymous
+* Subscription gift, multi, 10 gifts, 50 gifts total
+* Subscription gift, single, follow-up message for multi-subgift
+* Subscription gift, single, tier 1, 50 gifts total, month 35 for recipient
 * Whisper

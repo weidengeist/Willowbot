@@ -2,7 +2,6 @@
 
 — [Switch to English version](https://github.com/weidengeist/Willowbot/blob/main/README.md)
 
-
 ## Inhalt
 
 * [Einleitung](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#einleitung)
@@ -45,7 +44,7 @@ Die Anweisungen und Beschreibungen im Folgenden wurden speziell für Nichtprogra
 
 ## 1 Installation
 
-Um Willowbot benutzen zu können, muss [Python in wenigstens Version 3](https://www.python.org/downloads/) installiert sein (die neueste Version wird empfohlen). Die für Windowsnutzer empfohlene Variante ist der Windows-Installer (64 Bit), da er den Großteil der Konfiguration ohne zu überwindende Schwierigkeiten selbständig vornehmen wird. Nachdem Python erfolgreich installiert wurde, laden Sie das Willowbotpaket herunter und entpacken Sie das Archiv in einem Verzeichnis Ihrer Wahl.
+Um Willowbot benutzen zu können, muss [Python in wenigstens Version 3.9](https://www.python.org/downloads/) installiert sein (die neueste Version wird empfohlen). Die für Windowsnutzer empfohlene Variante ist der Windows-Installer (64 Bit), da er den Großteil der Konfiguration ohne zu überwindende Schwierigkeiten selbständig vornehmen wird. Nachdem Python erfolgreich installiert wurde, laden Sie das Willowbotpaket herunter und entpacken Sie das Archiv in einem Verzeichnis Ihrer Wahl.
 
 
 ## 2 Ersteinrichtung
@@ -58,8 +57,23 @@ Um Willowbot benutzen zu können, muss [Python in wenigstens Version 3](https://
 
 **Achtung!** Das soeben beschriebene Vorgehen wurde nur unter Linux getestet. Falls irgendwelche der Informationen über die unter Windows benötigten Schritte inkorrekt sein oder nicht funktionieren sollten, lassen Sie es mich bitte wissen.
 
-Bearbeiten Sie nun die Konfigurationsvorlage. Lediglich zwei Werte müssen verändert werden: `botname` und `oauth`. `botname` entspricht dem Accountnamen Ihres Bots (was bedeutet, dass die Benutzung des Bots einen dafür bestimmten Twitchaccount erfordert, aber Sie können ihn ebenso in Verbindung mit Ihrem Streameraccount verwenden); `oauth` ist [ein Zugangsschlüssel (Token) für Twitch](https://twitchapps.com/tmi/), den Sie erstellen lassen müssen.
+Bearbeiten Sie nun die Konfigurationsvorlage. Lediglich zwei Werte müssen verändert werden: `botname` und `oauth`. `botname` entspricht dem Accountnamen Ihres Bots (was bedeutet, dass die Benutzung des Bots einen dafür bestimmten Twitchaccount erfordert, aber Sie können ihn ebenso in Verbindung mit Ihrem Streameraccount verwenden); `oauth` ist ein eindeutiger Identifikator, der in Kombination mit `clientID` Ihren Botaccount, der sich Willowbot bedient, mit Twitch verbindet.
 
+Um einen solchen Identifikator (auch Zugangsschlüssel/Token genannt) zu bekommen, müssen Sie Willowbot mit der `TOKEN_GET`-Option starten:
+```
+python main_cli.py TOKEN_GET
+```
+Dies öffnet ihren Standardwebbrowser und erlaubt Ihnen, einen Token zu erstellen. Klicken Sie dazu einfach auf »Authorize« und werfen Sie einen Blick auf die URL (in der Adresszeile), zu der Sie weitergeleitet wurden. Sie wird etwa dergestalt aussehen:
+```
+https://localhost:3000/token/#access_token=[Dies ist Ihr Token]&scope=[…]
+```
+Kopieren Sie Ihren Token aus der Adresszeile und hinterlegen Sie ihn in Ihrer Konfigurationsdatei als Wert für den Schlüssel `oauth`.
+
+Sollten Sie aus irgendeinem Grund Ihren Token einmal zurückziehen/deaktivieren wollen oder müssen, starten Sie Willowbot schlicht mit der `TOKEN_REVOKE`-Option:
+```
+python main_cli.py TOKEN_REVOKE
+
+```
 Nachdem die Konfigurationsdatei entsprechend angepasst wurde, starten Sie den Bot auf die oben beschriebene Weise erneut und er sollte sich nun erfolgeich mit seinem eigenen Kanal verbinden. In der Praxis werden Sie Willowbot auf Ihrem Streamerkanal oder – falls Sie Moderator sind – auf einem anderen Kanal, wo Sie Moderatorenrechte besitzen, laufen lassen wollen. In diesem Fall übergeben Sie jenen Kanal als erstes Argument, wenn Sie Willowbot starten, d. h. Sie erweitern die Zeile
 ```
 python main_cli.py
@@ -69,6 +83,13 @@ zu
 python main_cli.py meineigenerkanal
 ```
 Natürlich müssen Sie `myownchannel` durch den passenden Kanalnamen ersetzen, auf dem Willowbot seinen Dienst antreten und die von Ihnen definierten Befehle ausführen soll.
+
+
+### Migrationshinweise
+
+Sollten Sie Willowbot zuvor schon einmal verwendet haben (vor März 2023), müssen Sie ggf. ein paar Ihrer Kommandos anpassen, um sicherzustellen, dass sie mit der neuen Twitch-API weiterhin funktionieren. Die Chatkommandos `/ban` sowie `/timeout` können weiterhin verwendet werden; sie werden auf die entsprechenden API-Endpunkte umgeleitet. Jedoch werden sie nicht mehr mit dem Argument `$senderName`, sondern mit `$senderID` aufgerufen.
+
+Des Weiteren unterstützt Willowbot nun API-Shoutouts und -Ankündigungen. Um sie zu nutzen, verwenden Sie einfach die bekannten Kommandos `/shoutout` oder `/announce`.
 
 
 ## 3 Kommandosets erstellen
@@ -325,7 +346,7 @@ Ein weiterer nützlicher Zweck für Platzhalter ist das Timeouten und Bannen von
 ```
 commands = {
   "Buy followers" : {
-    "answer"    : "/ban $senderName",
+    "answer"    : "/ban $senderID",
     "matchType" : "startsWith",
     "level"     : 0
   }
@@ -337,7 +358,7 @@ Natürlich kann obiges Kommando durch die Verwendung von Regulären Ausdrücken 
 ```
 commands = {
   "^Buy.*followers" : {
-    "answer"    : "/ban $senderName",
+    "answer"    : "/ban $senderID",
     "matchType" : "regex",
     "level"     : 0
   }
@@ -349,7 +370,7 @@ Ein weiteres raffiniertes Beispiel, um Scambots zu bannen:
 ```
 commands = {
   "^(Wanna|Want to) become famou?s" : {
-    "answer"    : "/ban $senderName",
+    "answer"    : "/ban $senderID",
     "matchType" : "regex",
     "level"     : 0
   }
@@ -664,8 +685,10 @@ Variable für Botantworten, die ausgewertet werden, bevor Willowbot seine Antwor
 * `msgMeta` <br>die Metadaten der verarbeiteten Nachricht (hauptsächlich dazu gedacht, diese Daten an ein optionales Modul weiterreichen zu können)
 * `msgText` <br>der komplette Text der verarbeiteten Nachricht (hauptsächlich dazu gedacht, die Nachricht in Gänze an ein optionales Modul weiterreichen zu können)
 * `raidersChannel`<br>der Kanal, von dem die Raider kommen
+* `raidersChannelID`<br>die ID-Nummer des Kanals, von dem die Raider kommen
 * `raidersCount`<br>Anzahl der Raider, die auf den Kanal kommen
 * `senderDisplayName`<br>Anzeigename des Verfassers der verarbeiteten Nachricht
+* `senderID`<br>ID-Nummer des Verfassers der verarbeiteten Nachricht
 * `senderName`<br>Accountname des Verfassers der verarbeiteten Nachricht
 * `subGiftCount`<br>Anzahl der verschenkten Abonnements bei einem Verschenkeereignis
 * `subGiftCountTotal`<br>Gesamtzahl der vom verschenkenden Nutzer bereits verschenkten Abonnements
@@ -685,16 +708,16 @@ Derzeit sind folgende Nachrichtentypen in Willowbots Test-/Fehlerbehandlungsmodu
 * Announcement
 * Ban
 * Deleted message
-* Message (moderator)
-* Message (ordinary user)
-* Message (ordinary user, first post ever)
-* Message (subscriber)
-* Message (VIP user)
+* Message, moderator
+* Message, ordinary user
+* Message, ordinary user, first post ever
+* Message, subscriber
+* Message, VIP user
 * Raid (999 raiders)
-* Subscription (Prime)
-* Subscription (resub, 99 months)
-* Subscription gift (anonymous)
-* Subscription gift (multi, 10 gifts, 50 gifts total)
-* Subscription gift (single, follow-up message for multi-subgift)
-* Subscription gift (single, tier 1, 50 gifts total, month 35 for recipient)
+* Subscription, Prime
+* Subscription, resub, 99 months
+* Subscription gift, anonymous
+* Subscription gift, multi, 10 gifts, 50 gifts total
+* Subscription gift, single, follow-up message for multi-subgift
+* Subscription gift, single, tier 1, 50 gifts total, month 35 for recipient
 * Whisper

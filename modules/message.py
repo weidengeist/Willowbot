@@ -8,6 +8,7 @@ from time import localtime
 from basics import *
 loadOptionalModules(True) # False; do not list the imported modules or other debug information. This is already done in the basics module.
 
+CONFIG = getConfig(feedback = False)
 
 class Message():
 
@@ -56,6 +57,9 @@ class Message():
 
   def getSenderDisplayName(self):
     return re.sub(".+?;display-name=([^;]+).*", r'\1', self.meta)
+
+  def getSenderID(self):
+    return re.sub(".+?;user-id=([^;]+).*", r'\1', self.meta)
 
   def getSenderName(self):
     return re.sub('.+?@(.*?).tmi\.twitch\.tv PRIVMSG #.*', r'\1', self.meta)
@@ -145,6 +149,7 @@ class Message():
     # Message is a raid notification.
     if self.isRaid():
       answerText = answerText.replace('$raidersChannel', self.getSenderDisplayName())
+      answerText = answerText.replace('$raidersChannelID', self.getSenderID())
       answerText = answerText.replace('$raidersCount', self.getRaidersCount())
     # Message is a regular or Prime subscription.
     elif self.isSub() or self.isSubPrime():
@@ -174,6 +179,7 @@ class Message():
       answerText = answerText.replace('$msgID', self.getID())
       answerText = answerText.replace('$senderName', self.getSenderName())
       answerText = answerText.replace('$senderDisplayName', self.getSenderDisplayName())
+      answerText = answerText.replace('$senderID', self.getSenderID())
 
     return answerText
 
@@ -222,6 +228,71 @@ class Message():
       return answerText.replace("$arg", "$missingArg")
 
 
+  def resolveChatCommands(self, answerText):
+    if re.match("^/announce ", answerText):
+      announcement = re.sub("^/announce +", "", answerText)
+      response = requests.post(\
+        CONFIG['URL_API'] + "chat/announcements",\
+        params = {'broadcaster_id' : CONFIG['broadcasterID'], 'moderator_id' : CONFIG['moderatorID']},\
+        headers = {"Authorization" : "Bearer " + CONFIG['oauth'], "Client-Id" : CONFIG['clientID'], 'Content-Type' : 'application/json'},\
+        json = {"message" : announcement, "color" : "primary"}\
+      )
+      if not response.ok:
+        print("WARNING! Could not announce!", response.json())
+
+    elif re.match("^/ban ", answerText):
+      args = re.findall("[^ ]+", answerText) # 0: /ban; 1: [user-id]; 2: [optional reason]
+      banReason = args[2] if len(args) > 2 else ""
+      response = requests.post(\
+        CONFIG['URL_API'] + "moderation/bans",\
+        params = {'broadcaster_id' : CONFIG['broadcasterID'], 'moderator_id' : CONFIG['moderatorID']},\
+        headers = {"Authorization" : "Bearer " + CONFIG['oauth'], "Client-Id" : CONFIG['clientID'], 'Content-Type' : 'application/json'},\
+        json = {"user_id" : args[1], "reason" : banReason}\
+      )
+      if not response.ok:
+        print("WARNING! Could not ban!", response.json())
+  
+    elif re.match("^/delete ", answerText):
+      args = re.findall("[^ ]+", answerText) # 0: /delete; 1: [msgID]
+      response = requests.delete(\
+        CONFIG['URL_API'] + "moderation/chat",\
+        params = {'broadcaster_id' : CONFIG['broadcasterID'], 'moderator_id' : CONFIG['moderatorID'], 'message_id' : args[1]},\
+        headers = {"Authorization" : "Bearer " + CONFIG['oauth'], "Client-Id" : CONFIG['clientID']}\
+      )
+      if not response.ok:
+        print("WARNING! Could not delete message!", response.json())
+    
+    elif re.match("^/shoutout ", answerText):
+      args = re.findall("[^ ]+", answerText) # 0: /shoutout; 1: [raidersChannelID]
+      response = requests.post(\
+        CONFIG['URL_API'] + "chat/shoutouts",\
+        params = {'from_broadcaster_id' : CONFIG['broadcasterID'], 'to_broadcaster_id' : args[1], 'moderator_id' : CONFIG['moderatorID']},\
+        headers = {"Authorization" : "Bearer " + CONFIG['oauth'], "Client-Id" : CONFIG['clientID']}\
+      )
+      if not response.ok:
+        print("WARNING! Could not shoutout!", response.json())
+    
+    elif re.match("^/timeout ", answerText):
+      args = re.findall("[^ ]+", answerText) # 0: /timeout; 1: [userID]; 2: [optional duration]
+      timeoutDuration = args[2] if len(args) > 2 else 10 # 10 seconds of fallback/default timeout duration.
+      response = requests.post(\
+        CONFIG['URL_API'] + "moderation/bans",\
+        params = {'broadcaster_id' : CONFIG['broadcasterID'], 'moderator_id' : CONFIG['moderatorID']},\
+        headers = {"Authorization" : "Bearer " + CONFIG['oauth'], "Client-Id" : CONFIG['clientID'], 'Content-Type' : 'application/json'},\
+        json = {"user_id" : args[1], "duration" : timeoutDuration}\
+      )
+      if not response.ok:
+        print("WARNING! Could not timeout!", response.json())
+
+    else:
+      print("Could not resolve the chat command.")
+
+    # Remove the triggering chat command from the answer text and return the remaining message.
+    # This is empty unless it is a random-answer response or a multi-answer response.
+    answerText = re.sub("^[^\n]+\n?", "", answerText)
+    return answerText
+
+
   # Added commands variable to the function as a »function« key might modify the commands.
   def reactToMessage(self, commands, subset, match, irc):
     # If the command contains an answer key, process its value.
@@ -231,13 +302,18 @@ class Message():
         answer = self.resolveCaptureGroups(match, reaction['answer'])
       else:
         answer = reaction['answer']
-
+      
       answer = self.resolveArguments(answer)
-      answer = self.resolvePlaceholders(answer).split('\n')
+      answer = self.resolvePlaceholders(answer)
+
+      # Prepare the answer for multi-answer responses or random answers.
+      answer = answer.split('\n')
       if len(answer) > 1:
         if 'answerType' in reaction and reaction['answerType'] == 'random':
           # Choose a random answer to send.
           answer = answer[randint(0, len(answer) - 1)]
+          if re.match("^/[^ ]+", answer):
+            answer = self.resolveChatCommands(answer)
           # Turn the answer into a list of chunks with a maximum of 500 characters.
           answer = splitIntoGroupsOf(answer, 500)
           for a in answer:
@@ -248,6 +324,8 @@ class Message():
         else:
           # Defaults to »sequence«.
           for a in answer:
+            if re.match("^/[^ ]+", a):
+              a = self.resolveChatCommands(a)
             chunkList = splitIntoGroupsOf(a, 500)
             for c in chunkList:
               if len(sys.argv) == 3:

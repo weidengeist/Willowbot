@@ -55,9 +55,10 @@ def loadOptionalModules(verbose):
 loadOptionalModules(False)
 
 
-def getConfig():
+def getConfig(feedback = True):
   # Check the user’s operating system and set the configuration path.
   CONFIG = {}
+  CONFIG['URL_API'] = "https://api.twitch.tv/helix/"
   userOS = platform.system()
   if userOS == "Linux":
     CONFIG['dir'] = os.path.join(os.path.expanduser("~"), ".config", "twitch", "willowbot")
@@ -73,7 +74,7 @@ def getConfig():
   if os.path.exists(os.path.join(CONFIG['dir'], "config.py")):  
     configFromFile = importlib.import_module("config").config
     # Check if the configuration set is complete.
-    if 'port' in configFromFile and 'botname' in configFromFile and 'server' in configFromFile and 'oauth' in configFromFile:
+    if 'port' in configFromFile and 'botname' in configFromFile and 'server' in configFromFile and 'oauth' in configFromFile and 'clientID' in configFromFile:
       CONFIG = CONFIG | configFromFile
       CONFIG['status'] = 0
     else:
@@ -87,14 +88,30 @@ def getConfig():
     # Create an empty file …
     configFile = open(os.path.join(CONFIG['dir'], "config.py"), 'w')
     # … and write a configuration template to it.
-    configFile.write('config = {\n  "server"           : "irc.chat.twitch.tv",\n  "port"             : 6697,\n  "botname"          : "IHaveNoName",\n  "oauth"            : "1a2b3c4d5e6f7g8h9i",\n  "connectionRetries": 10\n}')
+    configFile.write('config = {\n  "botname"          : "IHaveNoName",\n  "clientID"         : "e5kdpgd2bbnbj1u5gbjpzeq7vsgwup",\n  "connectionRetries": 10,\n  "oauth"            : "1a2b3c4d5e6f7g8h9i",\n  "port"             : 6697,\n  "server"           : "irc.chat.twitch.tv"\n}')
     configFile.close()
 
   # Channel where the bot is supposed to be used. Bot’s own channel as fallback (i.e. no argument passed).
   # 'channel' default may be set in the config.py file.
   if not 'channel' in CONFIG:
     CONFIG['channel'] = len(sys.argv) > 1 and sys.argv[1].lower() or ('botname' in CONFIG and CONFIG['botname'].lower())
-  
+
+  # Set some more config fields for enabling the bot to use Twitch API commands.
+  # LEGACY: Check, if there is a clientID key (added on 2023-03-06) in the current configuration.
+  if 'clientID' in CONFIG:
+    response = requests.get(CONFIG['URL_API'] + "users" + "?login=" + CONFIG['botname'] + "&login=" + CONFIG['channel'], headers = {'Authorization' : 'Bearer ' + CONFIG['oauth'], 'Client-Id' : CONFIG['clientID']})
+    if response.ok:
+      CONFIG['moderatorID'] = response.json()['data'][0]['id']
+      if len(response.json()['data']) > 1:
+        CONFIG['broadcasterID'] = response.json()['data'][1]['id']
+      else:
+        CONFIG['broadcasterID'] = CONFIG['moderatorID']
+      feedback and print("✔ Successfully retrieved\n    moderator (" + CONFIG['botname'] + ") ID: " + CONFIG['moderatorID'] + " and \n    broadcaster (" + CONFIG['channel'] + ") ID: " + CONFIG['broadcasterID'] + ".")
+    else:
+      feedback and print("✖ WARNING! Could not retrieve moderator and broadcaster IDs, so processing chat commands (beginning with a slash) is not available!")
+  else:
+    feedback and print("✖ WARNING! Could not retrieve moderator and broadcaster IDs because of a missing client ID in your configuration, so processing chat commands (beginning with a slash) is not available! Please renew your access token by starting Willowbot with the option TOKEN_REVOKE to revoke your current one and start it again with the option TOKEN_GET to generate a new one. Willowbot will continue now in its limited state.")
+
   return CONFIG
 
 

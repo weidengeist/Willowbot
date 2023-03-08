@@ -1,4 +1,10 @@
+import requests
 import sys
+
+# For automatically opening the Twitch OAuth token generation page. 
+import webbrowser
+
+URL_TOKEN = "https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=e5kdpgd2bbnbj1u5gbjpzeq7vsgwup&redirect_uri=http://localhost:3000&scope=channel:manage:moderators+channel:read:subscriptions+channel:manage:vips+chat:edit+moderator:manage:announcements+user:read:follows+user:manage:whispers+whispers:read+channel:moderate+channel:read:redemptions+channel_editor+channel_commercial+moderator:manage:chat_settings+channel:manage:raids+channel:manage:broadcast+whispers:edit+moderator:manage:automod+moderator:manage:blocked_terms+moderator:manage:chat_messages+moderator:manage:banned_users+user:manage:chat_color+chat:read+moderator:read:blocked_terms+moderator:manage:shoutouts"
 
 # Subdirectories containing routines, class definitions and other important data.
 sys.path.append('modules')
@@ -10,39 +16,67 @@ from modules.basics import getConfig
 from modules.irc import IRC                   # Import the IRC class from the irc(.py) module in ./modules.
 from modules.message import Message           # Import the Message class.
 
+CONFIG = getConfig(feedback = True)           # Load configuration files. 
 
-CONFIG = getConfig()                  # Load configuration files. 
 
 # Check if a configuration could be loaded.
 if CONFIG['status'] == 0:
-  print("Successfully loaded the IRC configuration file!")
+  print("✔ Successfully loaded the IRC configuration file!")
 else:
   if CONFIG['status'] == 1:
-    print("The configuration file at " + CONFIG['dir'] + " is incomplete. Please check.")
+    print("ERROR! The configuration file at " + CONFIG['dir'] + " is incomplete. Please check.")
   elif CONFIG['status'] == 2:
-    print("There is no configuration file for this bot yet. An empty configuration file has been created at " + CONFIG['dir'] + ". Please modify it and enter valid data to be able to use the bot.\n\nFor a valid access token, go to https://twitchapps.com/tmi/ and login to your bot’s account. Copy the generated token into the configuration file as value of the »oauth« key and change the value of the »botname« key to your bot’s account name.")
+    print("There is no configuration file for this bot yet. An empty configuration file has been created at " + CONFIG['dir'] + ". Please modify it and enter valid data to be able to use the bot.\n")
+    input("If you press [Enter] now, your default browser will open https://id.twitch.tv/oauth2/authorize and let you create an access token. Afterwards, return to this window.")
+    webbrowser.open(URL_TOKEN)
+    print("Now copy the generated token (can be found in the URL bar of your browser; it’s the string after »#access_token=«: …#access_token=[Your access token]&scope=…) into the configuration file as value of the »oauth« key and change the value of the »botname« key to your bot’s account name.\n\nThe program will exit now. Modify your configuration accordingly and restart Willowbow.")
   exit()
-  
+
+
 # Load the commands for the specified channel.
 # Returns a dictionary with the keys 'general', 'timed', 'sub', and 'raid'.
 commands = getCommands(CONFIG)
 
+
+# Options for revoking and getting access tokens.
+if len(sys.argv) == 2 and sys.argv[1] == "TOKEN_REVOKE":
+  if 'clientID' in CONFIG:
+    response = requests.post(\
+      "https://id.twitch.tv/oauth2/revoke",\
+      headers = {"Content-Type" : "application/x-www-form-urlencoded"},\
+      params = {"client_id" : CONFIG['clientID'], 'token': CONFIG['oauth']}\
+    )
+    if response.ok:
+      print("Successfully revoked your access token.")
+    else:
+      print("An error occurred while trying to revoke your token!", response.json())
+  else:
+    print("Your current token does not contain a client ID, so you don’t have to revoke it. Simply create a new one.")
+  exit()
+
+if len(sys.argv) == 2 and sys.argv[1] == "TOKEN_GET":
+  webbrowser.open(URL_TOKEN)
+  exit()
+
+
 if commands['status'] == 0:
-  print("Successfully loaded commands for channel " + CONFIG['channel'] + ".")
+  print("✔ Successfully loaded commands for channel " + CONFIG['channel'] + ".")
 else:
-  print("No commands available for channel " + CONFIG['channel'] + ".")
+  print("✖ FAILED! No commands available for channel " + CONFIG['channel'] + ".")
 
 # Create an instance of the IRC class with the loaded configuration, …
 irc = IRC(CONFIG)
 # … and show feedback information to the user.
 if CONFIG['port'] == 6667:
-  print("Connecting INSECURELY to " + CONFIG['server'] + " …")
+  print("  Will try to connect INSECURELY to " + CONFIG['server'] + " on port " + str(CONFIG['port']) + " after having retrieved more data …")
 elif CONFIG['port'] == 6697:
-  print("Connecting securely to " + CONFIG['server'] + " on port " + str(CONFIG['port']) + " …")
+  print("  Will try to connect securely to " + CONFIG['server'] + " on port " + str(CONFIG['port']) + " after having retrieved more data …")
 
 
 chatMsg = Message()
 chatMsg.channel = CONFIG['channel']
+
+
 
 # If plain IRC messages are provided as arguments, enter debug mode, do not connect, but process the messages as if Willowbot was connected.
 if len(sys.argv) == 3:

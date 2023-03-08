@@ -30,11 +30,11 @@ class IRC:
     if port == 6667:      
       self.irc.connect((server, port)) # Connects to the server.
       self.irc.send(bytes("PASS oauth:" + oauth + "\n", "UTF-8")) # User authentication.
-      print("Pass sent successfully.")
+      print("✔ Pass sent successfully.")
       self.irc.send(bytes("NICK " + botname + "\n", "UTF-8"))
-      print("Bot account name " + botname + " sent successfully.")
+      print("✔ Bot account name " + botname + " sent successfully.")
       self.irc.send(bytes("JOIN #" + self.config['channel'] + "\n", "UTF-8"))  # Join the channel.
-      print("Entered channel " + self.config['channel'] + ".")
+      print("✔ Successfully entered channel " + self.config['channel'] + ".")
       self.irc.send(bytes("CAP REQ :twitch.tv/tags" + "\n", "UTF-8"))
       self.irc.send(bytes("CAP REQ :twitch.tv/commands" + "\n", "UTF-8"))
     elif port == 6697:
@@ -42,11 +42,11 @@ class IRC:
       self.irc = ssl.wrap_socket(self.irc, ssl_version=ssl.PROTOCOL_TLS)      
       self.irc.connect((server, port)) # Connects to the server.
       self.irc.send(bytes("PASS oauth:" + oauth + "\n", "UTF-8")) # User authentication.
-      print("Pass sent successfully")
+      print("✔ Pass sent successfully")
       self.irc.send(bytes("NICK " + botname + "\n", "UTF-8"))
-      print("Bot account name " + botname + " sent successfully.")
+      print("✔ Bot account name " + botname + " sent successfully.")
       self.irc.send(bytes("JOIN #" + self.config['channel'] + "\n", "UTF-8")) # Join the channel.
-      print("Entered channel " + self.config['channel'] + ".")
+      print("✔ Successfully connected to channel\n    " + self.config['channel'] + ".")
       self.irc.send(bytes("CAP REQ :twitch.tv/tags" + "\n", "UTF-8"))
       self.irc.send(bytes("CAP REQ :twitch.tv/commands" + "\n", "UTF-8"))
 
@@ -93,7 +93,7 @@ class IRC:
     del text[-1]
 
     if not self.isConnected and len(text) > 0:
-      print("Connected successfully. Waiting for messages on the server.")
+      print("✔ Connected successfully. Waiting for messages on the server.")
       self.isConnected = True
       # Reset the trials and the timeout.
       self.retries_curr = 0
