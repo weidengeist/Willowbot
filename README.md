@@ -517,7 +517,7 @@ commands = {
   }
 }
 ```
-If user McFluffy triggers this command by sending `!loot someUser` to the chat, Willowbot will randomly pick one of the answers in the `answer` key separated by `\n` and show it in the chat, e.g. `McFluffy loots and old sock from someUser.`
+If user McFluffy triggers this command by sending `!loot someUser` to the chat, Willowbot will randomly pick one of the answers in the `answer` key separated by `\n` and show it in the chat, e.g. `McFluffy loots an old sock from someUser.`
 
 
 ### 3.9 OS commands
