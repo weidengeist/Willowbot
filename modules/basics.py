@@ -2,6 +2,7 @@ import importlib # For importing other python files, especially configuration.
 import os.path   # Needed for various system path operations.
 import platform  # Import module »platform« to be able to get the user’s operating system.
 import re        # Regular expressions.
+import requests  # Web requests.
 import sys       
 import time
 
@@ -26,7 +27,7 @@ def timeElapsed(context, mode):
     return 1
 
 
-def loadOptionalModules(verbose):
+def loadOptionalModules(feedback = False):
   if os.path.exists("./modules_opt/activeModules"):
     activeModulesFile = open("./modules_opt/activeModules", "r")
     while True:
@@ -35,7 +36,7 @@ def loadOptionalModules(verbose):
         line = re.findall("^[^#\n ]+", line)
         line = line[0] if len(line) > 0 else ""
         if line != "":
-          verbose and print("Trying to import module " + line + ".")
+          feedback and print("Trying to import module " + line + ".")
           if os.path.exists("./modules_opt/" + line + ".py"):
             module = importlib.import_module(line)
             # Determine a list of names to copy to the current name space
@@ -44,15 +45,15 @@ def loadOptionalModules(verbose):
             g = globals()
             for name in names:
               g[name] = getattr(module, name)
-            verbose and print("  " + line + " loaded successfully " + ".")
+            feedback and print("  " + line + " loaded successfully " + ".")
           else:
-            verbose and print("  Could not load " + line + ". Not found.")
+            feedback and print("  Could not load " + line + ". Not found.")
       else:
         break
     activeModulesFile.close()
 
 # Initially load optional modules.
-loadOptionalModules(False)
+loadOptionalModules(feedback = False)
 
 
 def getConfig(feedback = True):

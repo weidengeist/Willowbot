@@ -6,7 +6,7 @@ from time import localtime
 
 # Import all (*) variables and functions; needed to get all functions from optional modules loaded in the basics module.
 from basics import *
-loadOptionalModules(True) # False; do not list the imported modules or other debug information. This is already done in the basics module.
+loadOptionalModules(feedback = True) # False; do not list the imported modules or other debug information. This is already done in the basics module.
 
 CONFIG = getConfig(feedback = False)
 
