@@ -18,6 +18,9 @@ class IRC:
   def send(self, msg):
     self.irc.send(bytes("PRIVMSG #" + self.config['channel'] + " :" + msg + "\n", "UTF-8"))
 
+  def sendPlain(self, text):
+    self.irc.send(bytes(text + "\n", "UTF-8"))
+
   def sendPrototype(self, msg):
     self.irc.send(bytes(msg, "UTF-8"))
 
@@ -29,26 +32,26 @@ class IRC:
 
     if port == 6667:      
       self.irc.connect((server, port)) # Connects to the server.
-      self.irc.send(bytes("PASS oauth:" + oauth + "\n", "UTF-8")) # User authentication.
+      self.sendPlain("PASS oauth:" + oauth) # User authentication.
       print("✔ Pass sent successfully.")
-      self.irc.send(bytes("NICK " + botname + "\n", "UTF-8"))
+      self.sendPlain("NICK " + botname)
       print("✔ Bot account name " + botname + " sent successfully.")
-      self.irc.send(bytes("JOIN #" + self.config['channel'] + "\n", "UTF-8"))  # Join the channel.
+      self.sendPlain("JOIN #" + self.config['channel'])  # Join the channel.
       print("✔ Successfully entered channel " + self.config['channel'] + ".")
-      self.irc.send(bytes("CAP REQ :twitch.tv/tags" + "\n", "UTF-8"))
-      self.irc.send(bytes("CAP REQ :twitch.tv/commands" + "\n", "UTF-8"))
+      self.sendPlain("CAP REQ :twitch.tv/tags")
+      self.sendPlain("CAP REQ :twitch.tv/commands")
     elif port == 6697:
       # Wrap the socket.
       self.irc = ssl.wrap_socket(self.irc, ssl_version=ssl.PROTOCOL_TLS)      
       self.irc.connect((server, port)) # Connects to the server.
-      self.irc.send(bytes("PASS oauth:" + oauth + "\n", "UTF-8")) # User authentication.
+      self.sendPlain("PASS oauth:" + oauth) # User authentication.
       print("✔ Pass sent successfully")
-      self.irc.send(bytes("NICK " + botname + "\n", "UTF-8"))
+      self.sendPlain("NICK " + botname)
       print("✔ Bot account name " + botname + " sent successfully.")
-      self.irc.send(bytes("JOIN #" + self.config['channel'] + "\n", "UTF-8")) # Join the channel.
+      self.sendPlain("JOIN #" + self.config['channel']) # Join the channel.
       print("✔ Successfully connected to channel\n    " + self.config['channel'] + ".")
-      self.irc.send(bytes("CAP REQ :twitch.tv/tags" + "\n", "UTF-8"))
-      self.irc.send(bytes("CAP REQ :twitch.tv/commands" + "\n", "UTF-8"))
+      self.sendPlain("CAP REQ :twitch.tv/tags")
+      self.sendPlain("CAP REQ :twitch.tv/commands")
 
 
   def getResponse(self):
