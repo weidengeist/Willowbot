@@ -72,7 +72,6 @@ Kopieren Sie Ihren Token aus der Adresszeile und hinterlegen Sie ihn in Ihrer Ko
 Sollten Sie aus irgendeinem Grund Ihren Token einmal zurückziehen/deaktivieren wollen oder müssen, starten Sie Willowbot schlicht mit der `TOKEN_REVOKE`-Option:
 ```
 python main_cli.py TOKEN_REVOKE
-
 ```
 Nachdem die Konfigurationsdatei entsprechend angepasst wurde, starten Sie den Bot auf die oben beschriebene Weise erneut und er sollte sich nun erfolgeich mit seinem eigenen Kanal verbinden. In der Praxis werden Sie Willowbot auf Ihrem Streamerkanal oder – falls Sie Moderator sind – auf einem anderen Kanal, wo Sie Moderatorenrechte besitzen, laufen lassen wollen. In diesem Fall übergeben Sie jenen Kanal als erstes Argument, wenn Sie Willowbot starten, d. h. Sie erweitern die Zeile
 ```
@@ -403,7 +402,7 @@ Beginnen wir, indem wir ein Kommando definieren, das Raids verarbeitet:
 ```
 commands = {
   "meineRaids" : {
-    "answer"      : "$raidersChannel besucht uns mit $raidersCount Raidern. Habt Spaß!",
+    "answer"      : "$raidersChannelName besucht uns mit $raidersCount Raidern. Habt Spaß!",
     "triggerType" : "raid"
   }
 }
@@ -412,7 +411,7 @@ Es ist wichtig, in dieser Definition als `triggerType` `raid` einzutragen. Ander
 
 Wie weiter oben bereits erwähnt wurde, ist es nicht erforderlich, für diese Art der Nachrichten ein bestimmtes Signalwort oder Muster anzugeben. Allerdings *müssen* Sie einen eindeutigen Identifikator (in diesem Fall `meineRaids`) für diese Art der Nachrichtenverarbeitung festlegen. Nicht eindeutige, d. h. mehrfach vergebene Identifikatoren überschreiben die bereits angelegten Kommandos mit selbem Identifikator/Muster, so dass nur das zuletzt definierte existieren und auch verarbeitet werden können wird.
 
-In der Antwort sehen Sie zwei weitere Platzhaltervariable: `raidersChannel` und `raidersCount`. Sobald ein Raid festgestellt wird, werden diese Platzhalter durch den Kanal, der Ihnen seine Zuschauer schickt, respektive die Anzahl der herübergeschickten Zuschauer ersetzt.
+In der Antwort sehen Sie zwei weitere Platzhaltervariable: `raidersChannelName` und `raidersCount`. Sobald ein Raid festgestellt wird, werden diese Platzhalter durch den Kanal, der Ihnen seine Zuschauer schickt, respektive die Anzahl der herübergeschickten Zuschauer ersetzt.
 
 Kommandos mit dem  `raid`-Typ unterstützen auch den `minRaidersCount`-Schlüssel. Wenn dieser Schlüssel gesetzt wurde, wird die entsprechende Reaktion nur ausgelöst, wenn der Raid aus mindestens der angegebenen Anzahl von Leuten besteht.
 
@@ -684,8 +683,8 @@ Variable für Botantworten, die ausgewertet werden, bevor Willowbot seine Antwor
 * `msgID`<br>ID der verarbeiteten Nachricht; benötigt, um gezielt Nachrichten zu löschen
 * `msgMeta` <br>die Metadaten der verarbeiteten Nachricht (hauptsächlich dazu gedacht, diese Daten an ein optionales Modul weiterreichen zu können)
 * `msgText` <br>der komplette Text der verarbeiteten Nachricht (hauptsächlich dazu gedacht, die Nachricht in Gänze an ein optionales Modul weiterreichen zu können)
-* `raidersChannel`<br>der Kanal, von dem die Raider kommen
 * `raidersChannelID`<br>die ID-Nummer des Kanals, von dem die Raider kommen
+* `raidersChannelName`<br>der Kanal, von dem die Raider kommen
 * `raidersCount`<br>Anzahl der Raider, die auf den Kanal kommen
 * `senderDisplayName`<br>Anzeigename des Verfassers der verarbeiteten Nachricht
 * `senderID`<br>ID-Nummer des Verfassers der verarbeiteten Nachricht

@@ -72,7 +72,6 @@ Copy your token from the URL and put it into your configuration file as the valu
 If, for some reason, you want to or have to revoke your current access token, simply start Willowbot with the `TOKEN_REVOKE` option:
 ```
 python main_cli.py TOKEN_REVOKE
-
 ```
 After having edited the configuration file accordingly, start the bot again the way described above and it should now successfully connect to your bot’s own Twitch channel. In practice, you will want Willowbot to run on your broadcaster channel or – if you are a moderator – on some other channel where you have moderator privileges. In this case, you just pass that channel as the first argument when running Willowbot, meaning that you extend the line
 ```
@@ -403,7 +402,7 @@ Let’s start off simple by defining a command that handles raids:
 ```
 commands = {
   "myRaid" : {
-    "answer"      : "$raidersChannel joins us with $raidersCount viewers. Have fun!",
+    "answer"      : "$raidersChannelName joins us with $raidersCount viewers. Have fun!",
     "triggerType" : "raid"
   }
 }
@@ -412,7 +411,7 @@ It is important to set `triggerType` `raid` in this definition. Otherwise, Willo
 
 As it has been mentioned above, it is not necessary to provide a special pattern for this kind of message handlers. However, you *have* to provide a unique identifier (in this case: `myRaid`) for the handler. Non-unique, i.e. multiply used identifiers, will overwrite other already defined commands with the same identifier/pattern so that only the one defined last will exist and be able to be processed.
 
-You can see two more placeholder variables in the answer: `raidersChannel` and `raidersCount`. As soon as an incoming raid is detected, those placeholders will be replaced with the channel that sends you its viewers and the number of viewers, respectively.
+You can see two more placeholder variables in the answer: `raidersChannelName` and `raidersCount`. As soon as an incoming raid is detected, those placeholders will be replaced with the channel that sends you its viewers and the number of viewers, respectively.
 
 Commands with the `raid` type also support a `minRaidersCount` key. If this key is set, the according reaction will only be triggered if the raid consists of at least the specified quantity of people.
 
@@ -684,8 +683,8 @@ Variables for bot answers, which are resolved before Willowbot sends its message
 * `msgID`<br>ID of the processed message; needed for deleting specific messages
 * `msgMeta` <br>the metadata of the processed message (mainly intended to be used for passing those data to an optional module)
 * `msgText` <br>the full text of the processed message (mainly intended to be used for passing the message as a whole to an optional module)
-* `raidersChannel`<br>the channel which the raiders are coming from
 * `raidersChannelID`<br>the ID of the channel the raiders are coming from
+* `raidersChannelName`<br>the channel which the raiders are coming from
 * `raidersCount`<br>quantity of raiders joining the channel
 * `senderDisplayName`<br>processed message sender’s display name
 * `senderID`<br>processed message sender’s ID number
