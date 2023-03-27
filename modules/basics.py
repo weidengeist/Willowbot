@@ -6,6 +6,7 @@ import requests  # Web requests.
 import sys       
 import time
 
+from cliOptions import getLanguage
 
 # Check for elapsed command time.
 # Context: the dictionary entry with the command/string that triggers the answer.
@@ -27,7 +28,23 @@ def timeElapsed(context, mode):
     return 1
 
 
-def loadOptionalModules(feedback = False):
+def indentedWithWidth(text, indent = 0, width = 80):
+  indentedText = ""
+  maxLineWidth = width - indent
+  remainingText = re.sub(" +$", "", re.sub("^ +", "", text))
+  while len(remainingText) > 0:
+    chunk = remainingText[0:maxLineWidth]
+    if re.match(".*[^ ]$", chunk) and " " in chunk and len(chunk) == maxLineWidth:
+      chunk = re.sub("[^ ]+$", "", chunk)
+    # Use .replace instead of re.sub here to prevent failure due to regex patterns in the chunk.
+    remainingText = remainingText.replace(chunk, "", 1)
+    remainingText = re.sub("^ *", "", remainingText)
+    indentedText += " " * indent + chunk + "\n"
+  return indentedText
+
+
+def loadOptionalModules(lang = 'en', feedback = False):
+  langDict = importlib.import_module("lang.en").langDict | importlib.import_module("lang." + getLanguage()).langDict
   if os.path.exists("./modules_opt/activeModules"):
     activeModulesFile = open("./modules_opt/activeModules", "r")
     while True:
@@ -36,29 +53,80 @@ def loadOptionalModules(feedback = False):
         line = re.findall("^[^#\n ]+", line)
         line = line[0] if len(line) > 0 else ""
         if line != "":
-          feedback and print("Trying to import module " + line + ".")
+          feedback and print(" " + langDict['optModules_importTrial'].format(module = line))
           if os.path.exists("./modules_opt/" + line + ".py"):
             module = importlib.import_module(line)
-            # Determine a list of names to copy to the current name space
+            # Determine a list of names to copy to the current namespace.
             names = getattr(module, '__all__', [n for n in dir(module) if not n.startswith('_')])
-            # Copy those names into the current name space
+            # Copy those names into the current namespace.
             g = globals()
             for name in names:
               g[name] = getattr(module, name)
-            feedback and print("  " + line + " loaded successfully " + ".")
+            feedback and print("     ✔ " + langDict['optModules_loadingSuccessful'].format(module = line))
           else:
-            feedback and print("  Could not load " + line + ". Not found.")
+            feedback and print("     ╳ " + langDict['optModules_loadingFailed'].format(module = line))
       else:
         break
     activeModulesFile.close()
 
-# Initially load optional modules.
+
 loadOptionalModules(feedback = False)
 
 
-def getConfig(feedback = True):
+def getLogins(feedback = False):
+  langDict = importlib.import_module("lang.en").langDict | importlib.import_module("lang." + getLanguage()).langDict
+  # Check the user’s operating system and set the configuration path.
+  LOGINS = {}
+  userOS = platform.system()
+  if userOS == "Linux":
+    loginsDir = os.path.join(os.path.expanduser("~"), ".config", "twitch", "willowbot")
+  elif userOS == "Windows":
+    loginsDir = os.path.join(os.getenv("APPDATA"), "twitch", "willowbot")
+  elif userOS == "Darwin":
+    loginsDir = os.path.join(os.path.expanduser("~"), "Library", "Preferences", "twitch", "willowbot")
+  
+  # Add the configuration path to the system paths to enable python to load configuration modules in this location.
+  sys.path.append(loginsDir)
+  
+  # Load the logins file from the according path …
+  if os.path.exists(os.path.join(loginsDir, "logins.py")):  
+    loginsFromFile = importlib.import_module("logins").logins
+    LOGINS = LOGINS | loginsFromFile
+    feedback and print(" ✔ " + langDict['logins_loadingSuccessful'].format(dir = loginsDir))
+  # … or create an empty one if none exists yet.
+  else:
+    feedback and print(" ╳ " + langDict['logins_loadingFailed'].format(dir = loginsDir))
+    exit()
+  
+  return LOGINS
+
+
+def getRoleIDs(CONFIG, feedback = False):
+  langDict = importlib.import_module("lang.en").langDict | importlib.import_module("lang." + getLanguage()).langDict
+  # Set some more config fields for enabling the bot to use Twitch API commands.
+  # LEGACY: Check, if there is a clientID key (added on 2023-03-06) in the current configuration. Might be deleted in the long term.
+  if 'clientID' in CONFIG:
+    response = requests.get(CONFIG['URL_API'] + "users" + "?login=" + CONFIG['botname'] + "&login=" + CONFIG['channel'], headers = {'Authorization' : 'Bearer ' + CONFIG['oauth'], 'Client-Id' : CONFIG['clientID']})
+    if response.ok:
+      CONFIG['moderatorID'] = response.json()['data'][0]['id']
+      if len(response.json()['data']) > 1:
+        CONFIG['broadcasterID'] = response.json()['data'][1]['id']
+      else:
+        CONFIG['broadcasterID'] = CONFIG['moderatorID']
+      feedback and print(" ✔ " + langDict['roles_retrievingSuccessful'].format(botname = CONFIG['botname'], moderatorID = CONFIG['moderatorID'], channel = CONFIG['channel'], broadcasterID = CONFIG['broadcasterID']))
+    else:
+      feedback and print(" ╳ " + langDict['roles_retrievingFailed'], response.json())
+  else:
+    feedback and print(" ╳ " + langDict['roles_missingClientID'])
+
+  return CONFIG
+
+
+def getConfig(feedback = False):
+  langDict = importlib.import_module("lang.en").langDict | importlib.import_module("lang." + getLanguage()).langDict
   # Check the user’s operating system and set the configuration path.
   CONFIG = {}
+  CONFIG['language'] = getLanguage()
   CONFIG['URL_API'] = "https://api.twitch.tv/helix/"
   userOS = platform.system()
   if userOS == "Linux":
@@ -77,46 +145,56 @@ def getConfig(feedback = True):
     # Check if the configuration set is complete.
     if 'port' in configFromFile and 'botname' in configFromFile and 'server' in configFromFile and 'oauth' in configFromFile and 'clientID' in configFromFile:
       CONFIG = CONFIG | configFromFile
-      CONFIG['status'] = 0
+      feedback and print(" ✔ " + langDict['config_loadingSuccessful'])
     else:
-      CONFIG['status'] = 1
+      print(langDict['config_loadingFailed_incomplete'].format(dir = CONFIG['dir']))
+      exit()
   # … or create an empty one if none exists yet.
   else:
-    CONFIG['status'] = 2
-    if not os.path.exists(CONFIG['dir']):
-      os.makedirs(CONFIG['dir'])
-      os.makedirs(os.path.join(CONFIG['dir'], 'commands'))
-    # Create an empty file …
-    configFile = open(os.path.join(CONFIG['dir'], "config.py"), 'w')
-    # … and write a configuration template to it.
-    configFile.write('config = {\n  "botname"          : "IHaveNoName",\n  "clientID"         : "e5kdpgd2bbnbj1u5gbjpzeq7vsgwup",\n  "connectionRetries": 10,\n  "oauth"            : "1a2b3c4d5e6f7g8h9i",\n  "port"             : 6697,\n  "server"           : "irc.chat.twitch.tv"\n}')
-    configFile.close()
+    print(" ╳ " + langDict['config_loadingFailed_missing'].format(dir = CONFIG['dir']))
+    exit()
 
-  # Channel where the bot is supposed to be used. Bot’s own channel as fallback (i.e. no argument passed).
-  # 'channel' default may be set in the config.py file.
-  if not 'channel' in CONFIG:
-    CONFIG['channel'] = len(sys.argv) > 1 and sys.argv[1].lower() or ('botname' in CONFIG and CONFIG['botname'].lower())
+  
+  LOGINS = getLogins(feedback = False)
 
-  # Set some more config fields for enabling the bot to use Twitch API commands.
-  # LEGACY: Check, if there is a clientID key (added on 2023-03-06) in the current configuration.
-  if 'clientID' in CONFIG:
-    response = requests.get(CONFIG['URL_API'] + "users" + "?login=" + CONFIG['botname'] + "&login=" + CONFIG['channel'], headers = {'Authorization' : 'Bearer ' + CONFIG['oauth'], 'Client-Id' : CONFIG['clientID']})
-    if response.ok:
-      CONFIG['moderatorID'] = response.json()['data'][0]['id']
-      if len(response.json()['data']) > 1:
-        CONFIG['broadcasterID'] = response.json()['data'][1]['id']
-      else:
-        CONFIG['broadcasterID'] = CONFIG['moderatorID']
-      feedback and print("✔ Successfully retrieved\n    moderator (" + CONFIG['botname'] + ") ID: " + CONFIG['moderatorID'] + " and \n    broadcaster (" + CONFIG['channel'] + ") ID: " + CONFIG['broadcasterID'] + ".")
+  if '-l' in sys.argv or '--login' in sys.argv:
+    potentialBotAccount = sys.argv[sys.argv.index("-l" in sys.argv and "-l" or "--login") + 1].lower()
+    if potentialBotAccount in LOGINS:
+      CONFIG['botname'] = potentialBotAccount
+      CONFIG['oauth'] = LOGINS[potentialBotAccount]
     else:
-      feedback and print("✖ WARNING! Could not retrieve moderator and broadcaster IDs, so processing chat commands (beginning with a slash) is not available!")
-  else:
-    feedback and print("✖ WARNING! Could not retrieve moderator and broadcaster IDs because of a missing client ID in your configuration, so processing chat commands (beginning with a slash) is not available! Please renew your access token by starting Willowbot with the option TOKEN_REVOKE to revoke your current one and start it again with the option TOKEN_GET to generate a new one. Willowbot will continue now in its limited state.")
+      if potentialBotAccount != CONFIG['botname']:
+        feedback and print(" ╳ " + langDict['config_loginFailed_noOauth_tryDefault'].format(botname = potentialBotAccount))
+        potentialBotAccount = CONFIG['botname']
+      if potentialBotAccount in LOGINS:
+        CONFIG['botname'] = potentialBotAccount
+        CONFIG['oauth'] = LOGINS[potentialBotAccount]
+        feedback and print(" ✔ " + langDict['config_loginSuccessful'].format(botname = potentialBotAccount))
+      else:
+        feedback and print(" ╳ " + langDict['config_loginFailed'].format(botname = potentialBotAccount))
+        exit()
+  
+  if '-c' in sys.argv or '--channel' in sys.argv:
+    channelIndex = sys.argv.index("-c" in sys.argv and "-c" or "--channel") + 1
+    CONFIG['channel'] = len(sys.argv) > channelIndex and sys.argv[channelIndex].lower() or 'channel' in CONFIG and CONFIG['channel'].lower()
 
+  CONFIG['channel'] = 'channel' in CONFIG and CONFIG['channel'] != "" and CONFIG['channel'] or CONFIG['botname'].lower()
+
+  CONFIG = getRoleIDs(CONFIG, feedback = feedback)
+
+  if CONFIG['channel'] != CONFIG['botname']:
+    if CONFIG['channel'] in LOGINS:
+      CONFIG['channelOauth'] = LOGINS[CONFIG['channel']]
+      feedback and print(" ✔ " + langDict['config_channelOauthFound'].format(channel = CONFIG['channel']))
+    else:
+      feedback and print(" ╳ " + langDict['config_channelOauthMissing'].format(channel = CONFIG['channel']))
+  
   return CONFIG
 
 
-def getCommands(config):
+def getCommands(config, feedback = False):
+  langDict = importlib.import_module("lang.en").langDict | importlib.import_module("lang." + getLanguage()).langDict
+
   commands = {}
   commands_timed = {}
   commands_sub = {}
@@ -155,10 +233,10 @@ def getCommands(config):
           commands_raid[c][k] = commands[c][k]
     
     if len(regexErrors) > 0:
-      print("There are errors in your following regular expressions:")
+      print(langDict['regexError_listPrefix'])
       for e in regexErrors:
-        print("  — " + e[0] + "\n    Error: " + str(e[1]))
-      print("\nWillowbot can only be run with correct patterns. Exit.")
+        print(langDict['regexError_listItem'].format(expression = e[0], error = str(e[1])))
+      print(langDict['regexError_exitMessage'])
       exit()
 
     # Delete the various commands from the general commands list.
@@ -175,10 +253,14 @@ def getCommands(config):
       if not 'matchType' in commands[c]:
         commands[c]['matchType'] = "is"
 
+    feedback and print(" ✔ " + langDict['commands_loadingSuccessful'].format(channel = config['channel']))
+  else:
+    feedback and print(" ╳ " + langDict['commands_loadingFailed'].format(channel = config['channel']))
+
   return {'general' : commands, 'timed' : commands_timed, 'sub' : commands_sub, 'raid' : commands_raid, 'status' : status}
   
 
-def checkTimedCommands(commands, commands_timed, irc):
+def checkTimedCommands(commands, commands_timed, irc):  
   # Check for elapsed intervals in timed commands.
   for c in list(commands_timed.keys()):
     if timeElapsed(commands_timed[c], 'interval'):

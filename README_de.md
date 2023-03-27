@@ -27,12 +27,14 @@
 * [4 Optionale/Eigene Module](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#4-optionaleeigene-module)
     * [4.1 Auf eigene Module zugreifen: der `function`-Schlüssel](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#41-auf-eigene-module-zugreifen-der-function-schl%C3%BCssel)
     * [4.2 `poll`-Modul (Abstimmungen)](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#42-poll-modul-abstimmungen)
+    * [4.3 `modChannelInfo`-Modul (Kanalinformationen bearbeiten)](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#43-modchannelinfo-modul-kanalinformationen-bearbeiten)
 * [5 Test-/Fehlerbehandlungsmodus](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#5-test-fehlerbehandlungsmodus)
 * [6 Abschließende Worte](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#6-abschlie%C3%9Fende-worte)
 * [Anhang](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#anhang)
     * [Implementierte Schlüsselprüfungen](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#implementierte-schl%C3%BCsselpr%C3%BCfungen)
     * [Liste der Platzhaltervariablen](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#liste-der-platzhaltervariablen)
     * [Liste der Fehlerbehandlungsnachrichtenmuster](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#liste-der-fehlerbehandlungsnachrichtenmuster)
+    * [Liste der Kommandozeilenoptionen](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#liste-der-kommandozeilenoptionen)
 
 
 ## Einleitung
@@ -49,7 +51,21 @@ Um Willowbot benutzen zu können, muss [Python in wenigstens Version 3.9](https:
 
 ## 2 Ersteinrichtung
 
-Öffnen Sie eine Konsole (unter Windows: starten Sie `cmd`; unter Linux/Mac: drücken Sie Strg+Alt+T (unter den meisten Desktopumgebungen) oder suchen Sie nach `Terminal` in Ihrem Anwendungsmenü). Navigieren Sie in das Verzeichnis, wo sich Willowbot befindet, indem Sie `cd` eintippen, gefolgt von einem Leerzeichen und dem Willowbotverzeichnis, z. B. `cd C:\Programme\Willowbot` unter Windows oder `cd /home/dasbinich/Willowbot` unter Linux/Mac. Starten Sie nun den Bot, indem Sie `python main_cli.py` eintippen und die Entertaste drücken. Sofern alles korrekt installiert ist, sollte Ihnen nun die Nachricht des Willowbots, dass für seine Verbindung keine Konfigurationsdatei vorliegt, angezeigt werden. Er wird eine Datei mit einer Konfigurationsvorlage in einem passenden Verzeichnis, das Willowbot Ihnen in dieser Nachricht mitteilen wird, für Sie anlegen. Die Standardverzeichnisse für die Konfigurationsdatei `config.py` sind die folgenden:
+Öffnen Sie eine Konsole (unter Windows: starten Sie `cmd`; unter Linux/Mac: drücken Sie Strg+Alt+T (unter den meisten Desktopumgebungen) oder suchen Sie nach `Terminal` in Ihrem Anwendungsmenü). Navigieren Sie in das Verzeichnis, wo sich Willowbot befindet, indem Sie `cd` eintippen, gefolgt von einem Leerzeichen und dem Willowbotverzeichnis, z. B.
+```
+cd C:\Programme\Willowbot
+```
+unter Windows oder
+```
+cd /home/dasbinich/Willowbot
+```
+unter Linux/Mac. Starten Sie nun den Bot, indem Sie
+```
+python main_cli.py --configure
+```
+eintippen und die Entertaste drücken. Je nach Installationsroutine ist es möglich, dass Sie unter Windows statt `python` `py` zum Aufrufen von Python nutzen müssen.
+
+Sofern alles korrekt installiert ist, sollte Ihnen Willowbot nun mitteilen, dass und wo er eine Konfigurations- sowie eine Logindatei für Sie angelegt hat. Die Standardverzeichnisse für diese Dateien (`config.py` und `logins.py`) sind die folgenden:
 
 * Windows: `%appdata%\twitch\willowbot\`
 * MacOS: `/home/[user]/Library/Preferences/twitch/willowbot/`
@@ -57,38 +73,28 @@ Um Willowbot benutzen zu können, muss [Python in wenigstens Version 3.9](https:
 
 **Achtung!** Das soeben beschriebene Vorgehen wurde nur unter Linux getestet. Falls irgendwelche der Informationen über die unter Windows benötigten Schritte inkorrekt sein oder nicht funktionieren sollten, lassen Sie es mich bitte wissen.
 
-Bearbeiten Sie nun die Konfigurationsvorlage. Lediglich zwei Werte müssen verändert werden: `botname` und `oauth`. `botname` entspricht dem Accountnamen Ihres Bots (was bedeutet, dass die Benutzung des Bots einen dafür bestimmten Twitchaccount erfordert, aber Sie können ihn ebenso in Verbindung mit Ihrem Streameraccount verwenden); `oauth` ist ein eindeutiger Identifikator, der in Kombination mit `clientID` Ihren Botaccount, der sich Willowbot bedient, mit Twitch verbindet.
+Erzeugen Sie nun einen Zugangsschlüssel für Willowbot. Dazu rufen Sie Willowbot mit der `--token`-Option und dem Schlüsselwort `get` auf:
+```
+python main_cli.py --token get
+```
+Ihr Standardbrowser sollte sich nun öffnen und Ihnen Twitchs Autorisierungsseite für Zugangsschlüssel präsentieren. Loggen Sie sich mit dem Konto Ihres Bots ein und wählen Sie »Authorize«. Sie werden anschließend auf eine Seite weitergeleitet, die Ihnen erklärt, wie Sie den soeben erzeugten Schlüssel Ihrer Logindatei hinzufügen. Folgen Sie diesen Anweisungen.
 
-Um einen solchen Identifikator (auch Zugangsschlüssel/Token genannt) zu bekommen, müssen Sie Willowbot mit der `TOKEN_GET`-Option starten:
-```
-python main_cli.py TOKEN_GET
-```
-Dies öffnet ihren Standardwebbrowser und erlaubt Ihnen, einen Token zu erstellen. Klicken Sie dazu einfach auf »Authorize« und werfen Sie einen Blick auf die URL (in der Adresszeile), zu der Sie weitergeleitet wurden. Sie wird etwa dergestalt aussehen:
-```
-https://localhost:3000/token/#access_token=[Dies ist Ihr Token]&scope=[…]
-```
-Kopieren Sie Ihren Token aus der Adresszeile und hinterlegen Sie ihn in Ihrer Konfigurationsdatei als Wert für den Schlüssel `oauth`.
-
-Sollten Sie aus irgendeinem Grund Ihren Token einmal zurückziehen/deaktivieren wollen oder müssen, starten Sie Willowbot schlicht mit der `TOKEN_REVOKE`-Option:
-```
-python main_cli.py TOKEN_REVOKE
-```
-Nachdem die Konfigurationsdatei entsprechend angepasst wurde, starten Sie den Bot auf die oben beschriebene Weise erneut und er sollte sich nun erfolgeich mit seinem eigenen Kanal verbinden. In der Praxis werden Sie Willowbot auf Ihrem Streamerkanal oder – falls Sie Moderator sind – auf einem anderen Kanal, wo Sie Moderatorenrechte besitzen, laufen lassen wollen. In diesem Fall übergeben Sie jenen Kanal als erstes Argument, wenn Sie Willowbot starten, d. h. Sie erweitern die Zeile
+Nachdem Ihr Schlüssel hinzugefügt wurde, starten Sie den Bot via
 ```
 python main_cli.py
 ```
-zu
+und er wird sich mit seinem eigenen Kanal verbinden. In der Praxis werden Sie Willowbot natürlich auf Ihrem Streamerkanal oder – falls Sie Moderator sind – auf einem anderen Kanal, wo Sie Moderatorenrechte besitzen, laufen lassen wollen. Dafür starten Sie Willowbot mit der `--channel`-Option, gefolgt vom Namen des Kanals, dem Willowbot beitreten soll:
 ```
-python main_cli.py meineigenerkanal
+python main_cli.py --channel meineigenerkanal
 ```
-Natürlich müssen Sie `myownchannel` durch den passenden Kanalnamen ersetzen, auf dem Willowbot seinen Dienst antreten und die von Ihnen definierten Befehle ausführen soll.
+Natürlich müssen Sie `meineigenerkanal` durch den Namen des passenden Kanals, auf dem Willowbot seinen Dienst antreten und die von Ihnen definierten Befehle ausführen soll, ersetzen.
 
 
-### Migrationshinweise
+### Migrationshinweise (Erstnutzer können diesen Part überspringen)
 
 Sollten Sie Willowbot zuvor schon einmal verwendet haben (vor März 2023), müssen Sie ggf. ein paar Ihrer Kommandos anpassen, um sicherzustellen, dass sie mit der neuen Twitch-API weiterhin funktionieren. Die Chatkommandos `/ban` sowie `/timeout` können weiterhin verwendet werden; sie werden auf die entsprechenden API-Endpunkte umgeleitet. Jedoch werden sie nicht mehr mit dem Argument `$senderName`, sondern mit `$senderID` aufgerufen.
 
-Des Weiteren unterstützt Willowbot nun API-Shoutouts und -Ankündigungen. Um sie zu nutzen, verwenden Sie einfach die bekannten Kommandos `/shoutout` oder `/announce`.
+Des Weiteren unterstützt Willowbot nun API-Shoutouts und -Ankündigungen. Um sie zu nutzen, verwenden Sie einfach die bekannten Kommandos `/shoutout` oder `/announce` in den `answer`-Schlüsseln ihrer Kommandodefinitionen.
 
 
 ## 3 Kommandosets erstellen
@@ -575,19 +581,52 @@ Um nun tatsächlich eine Umfrage zu starten, würden Sie ein Kommando wie `!abst
 
 Derzeit sind in diesem Modul nur deutsche Infotexte hinterlegt und eine Änderung zu einer anderen Sprache erfordert das direkte Bearbeiten des Moduls selbst.
 
-<!--
-### 4.3 `pyrDet` module (Pyramidenerkennung)
 
-Emotepyramiden im Chat sind besonders auf Twitch: Einige Streamer ermuntern dazu, andere verbieten sie. Willowbot enthält ein Modul, das in der Lage ist, beginnende Pyramiden zu erkennen und daraufhin eine beliebige Art und Anzahl von Reaktionen an den Chat zu senden.
+### 4.3 `modChannelInfo`-Modul (Kanalinformationen bearbeiten)
 
-Die folgende Kommandodefinition wird einem Nutzer, der eine Pyramide in den Chat schreibt, einen Timeout geben und anschließend eine Nachricht im Chat anzeigen:
+Dieses Modul erlaubt dem Bot, sowohl den Titel als auch die Kategorie eines Kanals abzurufen und zu bearbeiten. Die Voraussetzung dafür – zumindest für das Bearbeiten – ist jedoch, dass Willowbot über einen Zugangsschlüssel für den Kanal, dessen Daten er ändern möchte, verfügt. Fehlt ein solcher Schlüssel beim Betreten eines Kanals, wird Willowbot beim Verbindungsaufbau mit einer Meldung darauf hinweisen.
+
+Sind Sie Moderator auf einem nicht von Ihnen betreuten Kanal, möchten Willowbots Funktion zum Ändern der Kanaldaten jedoch dort nutzen, benötigen Sie also einen Willowbotzugangsschlüssel des Streamers. <b>Dies ist mit einem gewissen Risiko verbunden!</b> Ein Moderator, der über einen anderen Zugangsschlüssel als seinen eigenen verfügt, kann Willowbot mit fremder Identität nutzen und so bspw. andere Nutzer in Misskredit bringen. Tauschen Sie Schlüssel also nur mit Personen aus, denen Sie genügend vertrauen. Bei Verdacht auf Missbrauch eines Schlüssels sollte dieser umgehend zurückgerufen und damit invalidiert werden (`--token revoke`)!
+
+Dem in diesem Kapitel empfohlenen Namensschema für optionale Module folgend, sind die Namen der Routinen, die das `modChannelInfo`-Modul bereitstellt:
+
+* `modChannelInfo_title_get`
+* `modChannelInfo_title_set`
+* `modChannelInfo_category_get`
+* `modChannelInfo_category_set`
+
+Jede dieser Routinen benötigt eine Instanz einer IRC-Verbindung sowie die Willowbotkonfiguration als obligatorische Argumente. Die optionalen Argumente sind jeweils eine Meldung bei erfolgreicher Anfrage, eine bei fehlgeschlagener Anfrage und bei den `set`-Routinen der gewünschte Titel bzw. die Kategorie.
+
+Die folgenden Kommandodefinitionen stellen jeweils ein Beispiel für das Bearbeiten bzw. Abfragen eines Titels respektive einer Kategorie dar:
 ```
-'.*' : {
+'^!title( |$)' : {
   'matchType' : 'regex',
-  'function'  : 'pyrDet_checkForPyramid(irc, "$msgText", "$senderName", "/timeout $senderName 10", "/me Wir bauen hier keine Pyramiden! peepoRiot")'
+  'function'  : 'modChannelInfo_title_get(irc, CONFIG, "Der aktuelle Titel ist »$return«.", "Konnte Titelinfo nicht abrufen.")',
+},
+'^!title-set( |$)' : {
+  'matchType' : 'regex',
+  'function'  : 'modChannelInfo_title_set(irc, CONFIG, "$arg0+", "Der Titel wurde auf »$return« geändert.", "Konnte den Titel nicht ändern.")'
+},
+'^!game( |$)' : {
+    'matchType' : 'regex',
+    'function'  : 'modChannelInfo_category_get(irc, CONFIG, "Die aktuelle Kategorie ist »$return«.", "Konnte Kategorieinfo nicht abrufen.")',
+},
+'^!game-set( |$)' : {
+  'matchType' : 'regex',
+  'function'  : 'modChannelInfo_category_set(irc, CONFIG, "$arg0+", "Mögliche Kandidaten: $return. Ändere das Spiel mit !game-set [Nummer] oder suche neu.", "Kategorie wurde auf »$return« geändert.", "Konnte die Kategorie nicht ändern.")'
 }
 ```
-Dieses Kommando wird von jeder einzelnen Nutzernachricht (`.*`) im Chat ausgelöst und reicht die vollständigen Nachrichtentext `$msgText` wie auch den Namen des Absenders `$senderName` an die `pyrDet_checkForPyramid`-Routine weiter. Wann immer eine Pyramide entdeckt wurde, verarbeitet `pyrDet_checkForPyramid` die übergebenen optionalen Argumente – in diesem Fall ein Timeout und ein hervorgehobener Infotext – als Chatnachricht.-->
+Die `title_get`-Funktion kann vereinfacht als `modChannelInfo_title_get(irc, CONFIG)` aufgerufen werden, jedoch wird es dann im Chat keinerlei Rückmeldungen über den Titel geben. Das erste optionale Argument ist der Text, der bei erfolgreicher Serveranfrage zurückgegeben wird:
+```
+Der aktuelle Titel ist »$return«.
+```
+Dieser enthält den Platzhalter `$return`. Innerhalb des `modChannelInfo`-Moduls wird dieser durch den aktuellen Titel des abgefragten Streams ersetzt. Im Falle eines Fehlschlags der Serveranfrage wird der Text im zweiten optionalen Argument der Funktion ausgegeben.
+
+`title_set` benötigt selbstverständlich einen vom Nutzer übergebenen Titel, der den alten ersetzen soll; dieser ist das erste optionale Argument in dieser Routine, oben als `$arg0+` verwendet, also als Platzhalter, der alle nach `!title-set` eingegebenen Textbestandteile einsammelt.
+
+Die Routine `category_get` funktioniert analog zu `title_get` und bekommt lediglich eine Erfolgs- sowie eine Misserfolgsnachricht als optionale Argumente.
+
+Die komplexeste Funktion in diesem Modul ist `category_set`. Wie `title_set` sammelt auch diese die eingegebenen Argumente (`$arg0+`) und übergibt sie in Gänze der Funktion. Hierbei handelt es sich um eine Zeichenkette, die einer auf Twitch verfügbaren Kategorie möglichst genau entsprechen sollte. Existiert nur eine Kategorie, worauf die übergebene Zeichenkette passt, wird die Kategorie des laufenden Streams auf ebendiese geändert. Ist die Anfrage jedoch nicht eindeutig, wird das Modul bis zu zehn Treffer in einer numerierten Liste im Chat ausgeben, deren Kontext durch das zweite optionale Argument bestimmt wird – in obigem Fall `Mögliche Kandidaten: $return. Ändere das Spiel mit !game-set [Nummer] oder suche neu.` Dabei wird `$return` mit einer Liste im Format `Spieltitel (1), weiterer Spieltitel (2), […]` ausgegeben. Diese Liste wird von Willowbot zwischengespeichert. Nun kann der Befehl `!game-set` erneut abgesetzt werden, jedoch kann nun anstelle eines konkreten Titels eine Nummer aus der zuvor ausgegebenen Liste gewählt und angefügt werden, also bspw. `!game-set 4`, und das `modChannelInfo`-Modul wird die Kategorie des Streams auf die mit entsprechender Nummer assoziierte ändern. Anschließend wird diese interne Liste gelöscht, so dass sich der Vorgang nur durch eine erneute Anfrage mit einem Kategorienamen wiederholen lässt.
 
 
 ## 5 Test-/Fehlerbehandlungsmodus
@@ -720,3 +759,20 @@ Derzeit sind folgende Nachrichtentypen in Willowbots Test-/Fehlerbehandlungsmodu
 * Subscription gift, single, follow-up message for multi-subgift
 * Subscription gift, single, tier 1, 50 gifts total, month 35 for recipient
 * Whisper
+
+
+### Liste der Kommandozeilenoptionen
+
+* `-c`, `--channel`<br>verbinde Willowbot mit dem hinter `--channel` angegebenen Kanal
+* `-cf`, `--configure`<br>erzeuge eine Konfigurations- sowie eine Logindatei
+* `-df`, `--debug-full`<br>Willowbot reagiert auf eine Reihe vordefinierter Nachrichtenmuster mit den für den festgelegten Kanal definierten Kommandos
+* `-ds`, `--debug-single`<br>eine Willowbot übergebene Nachricht wie eine echte Chatnachricht behandeln und Willowbot mit seinen definierten Kommandos reagieren lassen; Nutzung:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`python main_cli.py --debug-single 'Diese Nachricht soll verarbeitet werden.'`<br>achten Sie auf die einfachen Anführungszeichen um Ihre Nachricht
+* `-h`, `--help`<br>zeigt eine Übersicht zur Nutzung von Willowbot sowie dessen Optionen an
+* `-l`, `--login`<br>benutze Willowbot mit dem hinter `--login` angegebenen statt mit dem als `botname` in der Konfigurationsdatei festgelegten Konto
+* `-lg`, `--language`<br>Willowbot mit einer anderen als der Systemsprache starten; benötigt ein Sprachenkürzel als zusätzliches Argument
+* `-t`, `--token`<br>Operationen für Zugangsschlüssel; benötigt zusätzlich eines der folgenden Schlüsselwörter:
+    * `add`<br>der Logindatei einen Schlüssel hinzufügen; benötigt zusätzlich einen Kontonamen sowie den zugehörigen Schlüssel als Argumente
+    * `delete`<br>einen Schlüssel aus der Logindatei löschen; benötigt zusätzlich einen zu löschen Kontonamen als Argument
+    * `get`<br>einen Schlüssel über Twitch generieren
+    * `list`<br>die in der Logindatei hinterlegten Schlüssel auflisten
+    * `revoke`<br>einen in der Logindatei hinterlegten Schlüssel widerrufen; benötigt zusätzlich den Namen des Kontos, dessen Schlüssel widerrufen werden soll, als Argument

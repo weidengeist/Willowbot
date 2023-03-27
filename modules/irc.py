@@ -1,9 +1,12 @@
 import datetime
+import importlib
 import socket
 import ssl
 import select
 import time
 
+from modules.basics import getLogins
+from modules.cliOptions import getLanguage
 
 class IRC:
   
@@ -21,40 +24,33 @@ class IRC:
   def sendPlain(self, text):
     self.irc.send(bytes(text + "\n", "UTF-8"))
 
-  def sendPrototype(self, msg):
-    self.irc.send(bytes(msg, "UTF-8"))
-
   def connect(self):
+    logins = getLogins()
+
+    langDict = importlib.import_module("lang.en").langDict | importlib.import_module("lang." + self.config['language']).langDict
+
     botname = 'botname' in self.config and self.config['botname'] or ""
-    oauth = 'oauth' in self.config and self.config['oauth'] or ""
+    oauth = botname in logins and logins[botname] or ""
     port = 'port' in self.config and self.config['port'] or ""
     server = 'server' in self.config and self.config['server'] or ""   
 
     if port == 6667:      
       self.irc.connect((server, port)) # Connects to the server.
-      self.sendPlain("PASS oauth:" + oauth) # User authentication.
-      print("✔ Pass sent successfully.")
-      self.sendPlain("NICK " + botname)
-      print("✔ Bot account name " + botname + " sent successfully.")
-      self.sendPlain("JOIN #" + self.config['channel'])  # Join the channel.
-      print("✔ Successfully entered channel " + self.config['channel'] + ".")
-      self.sendPlain("CAP REQ :twitch.tv/tags")
-      self.sendPlain("CAP REQ :twitch.tv/commands")
     elif port == 6697:
       # Wrap the socket.
       self.irc = ssl.wrap_socket(self.irc, ssl_version=ssl.PROTOCOL_TLS)      
       self.irc.connect((server, port)) # Connects to the server.
-      self.sendPlain("PASS oauth:" + oauth) # User authentication.
-      print("✔ Pass sent successfully")
-      self.sendPlain("NICK " + botname)
-      print("✔ Bot account name " + botname + " sent successfully.")
-      self.sendPlain("JOIN #" + self.config['channel']) # Join the channel.
-      print("✔ Successfully connected to channel\n    " + self.config['channel'] + ".")
-      self.sendPlain("CAP REQ :twitch.tv/tags")
-      self.sendPlain("CAP REQ :twitch.tv/commands")
-
+    self.sendPlain("PASS oauth:" + oauth) # User authentication.
+    print(" ✔ " + langDict['irc_passSent'])
+    self.sendPlain("NICK " + botname)
+    print(" ✔ " + langDict['irc_botnameSent'].format(botname = botname))
+    self.sendPlain("JOIN #" + self.config['channel']) # Join the channel.
+    print(" ✔ " + langDict['irc_channelEntered'].format(channel = self.config['channel']))
+    self.sendPlain("CAP REQ :twitch.tv/tags")
+    self.sendPlain("CAP REQ :twitch.tv/commands")
 
   def getResponse(self):
+    langDict = importlib.import_module("lang.en").langDict | importlib.import_module("lang." + self.config['language']).langDict
     # To do: Reconnection still not working. 
     text = ""
     ready = select.select([self.irc], [], [], 1)
@@ -64,20 +60,20 @@ class IRC:
         try:
           text = self.irc.recv(4096).decode("utf-8") # Receive the text.
         except ConnectionError:
-          print("Connection error.")
+          print(langDict['irc_connectionError'])
           text = 'EXCEPTION'
       else:
         text = 'EXCEPTION'
 
       if "PING :tmi.twitch.tv" in str(text):
-        self.irc.send(bytes("PONG :tmi.twitch.tv\n", "UTF-8"))
+        self.sendPlain("PONG :tmi.twitch.tv")
   
       if text == 'EXCEPTION' and self.retries_curr <= self.retries_max:
         self.isConnected = False
-        print("Connection error. Trying to reconnect.\n\n——————————————————————————————————\n\n")
+        print(langDict['irc_connectionError_reconnection'])
         for i in range(self.retries_timeout, 0, -1):
           # Three additional spaces at the end of the message to prevent trailing message residues.
-          print("Reconnection trial " + str(self.retries_curr + 1) + " of " + str(self.retries_max) + " in " + str(i) + " seconds …   ", end='\r')
+          print(langDict['irc_reconnectionTrial'].format(currentTrial = str(self.retries_curr + 1), maxTrials = str(self.retries_max), seconds = str(i)), end='\r')
           time.sleep(1)
         print("\n")
         # Renew the connection.
@@ -96,7 +92,7 @@ class IRC:
     del text[-1]
 
     if not self.isConnected and len(text) > 0:
-      print("✔ Connected successfully. Waiting for messages on the server.")
+      print(" ✔ " + langDict['irc_connectionEstablished'])
       self.isConnected = True
       # Reset the trials and the timeout.
       self.retries_curr = 0

@@ -1,0 +1,51 @@
+<html>
+  <head>
+    <title>tokenPage_title</title>
+  </head>
+  <meta charset="utf-8">
+  <body>
+    <h2 style="text-align: center">tokenPage_h2</h2>
+    <br>
+    <div style="text-align: center">
+      <span style="text-align: center">tokenPage_clickInfo</span>
+    </div>
+    <br>
+    <div style="text-align: center">
+      <a style="text-align: center; font-family: monospace; font-size: x-large" id="addTokenCommand" href='#' onclick='postSomething()'>This is your token.</a>
+    </div>
+    <div style="text-align: center">
+      <span id="copyStatus" style="font-size: small; visibility: hidden">(tokenPage_copyStatus)</span>
+    </div>
+    <br>
+    <div style="text-align: center">
+      <span style="text-align: center">tokenPage_commandInfo1<br><br><span style="font-family: monospace; font-size: x-large">PYTHON_EXEC WILLOWBOT_MAIN --token add [user name] </span><span id="tokenInCodeLine" style="font-family: monospace; font-size: x-large">TOKEN</span><br><br>tokenPage_commandInfo2</span>
+    </div>
+  </body>
+
+  <script>
+    window.addEventListener(
+      'load', (event) => {
+        document.getElementById("addTokenCommand").href = window.location;
+        const oauthRegex = new RegExp("(?<=#access_token=)[^&]+")
+        const userOauth = oauthRegex.exec(window.location.hash)[0];
+        document.getElementById("addTokenCommand").innerHTML = userOauth;
+        document.getElementById("tokenInCodeLine").innerHTML = userOauth;
+      }
+    )
+
+    window.addEventListener(
+      'beforeunload', (event) => {
+        event.preventDefault()
+      }
+    );
+
+    function postSomething(){
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'http://localhost:3000/');
+      xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+      xhr.send("");
+      document.getElementById("copyStatus").style.visibility = "visible";
+      navigator.clipboard.writeText(document.getElementById("addTokenCommand").innerHTML);
+    }
+  </script>
+</html>

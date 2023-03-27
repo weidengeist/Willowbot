@@ -6,14 +6,18 @@ from time import localtime
 
 # Import all (*) variables and functions; needed to get all functions from optional modules loaded in the basics module.
 from basics import *
-loadOptionalModules(feedback = True) # False; do not list the imported modules or other debug information. This is already done in the basics module.
+from chatCommands import resolveChatCommands
+from cliOptions import inOneshotMode
+from cliOptions import getLanguage
 
-CONFIG = getConfig(feedback = False)
+# List the imported modules.
+loadOptionalModules(getLanguage(), feedback = not inOneshotMode())
+
+# Needed for evaluation of functions.
+CONFIG = getConfig()
+
 
 class Message():
-
-  # No longer needed as subGiftSingle only applies for msg-param-sender-count > 0.
-  #subSuppressions = {}
 
   ################################
   # Various checks and metadata. #
@@ -148,7 +152,7 @@ class Message():
   def resolvePlaceholders(self, answerText):
     # Message is a raid notification.
     if self.isRaid():
-      answerText = answerText.replace('$raidersChannel', self.getSenderDisplayName())
+      answerText = answerText.replace('$raidersChannelName', self.getSenderDisplayName())
       answerText = answerText.replace('$raidersChannelID', self.getSenderID())
       answerText = answerText.replace('$raidersCount', self.getRaidersCount())
     # Message is a regular or Prime subscription.
@@ -186,7 +190,7 @@ class Message():
   
   def resolveCaptureGroups(self, pattern, replacement):
     try:
-      replEncoded = re.sub("\\\\x([0-9]{2})", r"\\\\g<\1>", replacement.encode('unicode_escape').decode() ).encode().decode('unicode_escape')
+      replEncoded = re.sub("\\\\x([0-9]{2})", r"\\\\g<\1>", replacement.encode('unicode_escape').decode()).encode().decode('unicode_escape')
       # If there are no capture usages in the answer string, just return the answer string itself.
       if replEncoded == replacement:
         return replacement
@@ -208,7 +212,7 @@ class Message():
     # If the command does not contain any arguments, but argument variables are used in the answer, …
     if len(argsMsg) == 0 and (len(argsAnswer) > 0 or re.match('.*\$arg@', answerText)):
       # … return the function-calling string with generic strings for non-resolvable arguments.
-      return answerText.replace("$arg", "missingArg")
+      return re.sub("\$arg[@0-9+]+", "", answerText)
 
     else:
       answerText = answerText.replace("$arg@", " ".join(argsMsg))
@@ -225,72 +229,7 @@ class Message():
         answerText = answerText.replace("$arg" + str(i), argsMsg[i])
       
       # All the remaining arguments used in the answer string but not provided by the command are renamed to »missingArg«
-      return answerText.replace("$arg", "$missingArg")
-
-
-  def resolveChatCommands(self, answerText):
-    if re.match("^/announce ", answerText):
-      announcement = re.sub("^/announce +", "", answerText)
-      response = requests.post(\
-        CONFIG['URL_API'] + "chat/announcements",\
-        params = {'broadcaster_id' : CONFIG['broadcasterID'], 'moderator_id' : CONFIG['moderatorID']},\
-        headers = {"Authorization" : "Bearer " + CONFIG['oauth'], "Client-Id" : CONFIG['clientID'], 'Content-Type' : 'application/json'},\
-        json = {"message" : announcement, "color" : "primary"}\
-      )
-      if not response.ok:
-        print("WARNING! Could not announce!", response.json())
-
-    elif re.match("^/ban ", answerText):
-      args = re.findall("[^ ]+", answerText) # 0: /ban; 1: [user-id]; 2: [optional reason]
-      banReason = args[2] if len(args) > 2 else ""
-      response = requests.post(\
-        CONFIG['URL_API'] + "moderation/bans",\
-        params = {'broadcaster_id' : CONFIG['broadcasterID'], 'moderator_id' : CONFIG['moderatorID']},\
-        headers = {"Authorization" : "Bearer " + CONFIG['oauth'], "Client-Id" : CONFIG['clientID'], 'Content-Type' : 'application/json'},\
-        json = {"user_id" : args[1], "reason" : banReason}\
-      )
-      if not response.ok:
-        print("WARNING! Could not ban!", response.json())
-  
-    elif re.match("^/delete ", answerText):
-      args = re.findall("[^ ]+", answerText) # 0: /delete; 1: [msgID]
-      response = requests.delete(\
-        CONFIG['URL_API'] + "moderation/chat",\
-        params = {'broadcaster_id' : CONFIG['broadcasterID'], 'moderator_id' : CONFIG['moderatorID'], 'message_id' : args[1]},\
-        headers = {"Authorization" : "Bearer " + CONFIG['oauth'], "Client-Id" : CONFIG['clientID']}\
-      )
-      if not response.ok:
-        print("WARNING! Could not delete message!", response.json())
-    
-    elif re.match("^/shoutout ", answerText):
-      args = re.findall("[^ ]+", answerText) # 0: /shoutout; 1: [raidersChannelID]
-      response = requests.post(\
-        CONFIG['URL_API'] + "chat/shoutouts",\
-        params = {'from_broadcaster_id' : CONFIG['broadcasterID'], 'to_broadcaster_id' : args[1], 'moderator_id' : CONFIG['moderatorID']},\
-        headers = {"Authorization" : "Bearer " + CONFIG['oauth'], "Client-Id" : CONFIG['clientID']}\
-      )
-      if not response.ok:
-        print("WARNING! Could not shoutout!", response.json())
-    
-    elif re.match("^/timeout ", answerText):
-      args = re.findall("[^ ]+", answerText) # 0: /timeout; 1: [userID]; 2: [optional duration]
-      timeoutDuration = args[2] if len(args) > 2 else 10 # 10 seconds of fallback/default timeout duration.
-      response = requests.post(\
-        CONFIG['URL_API'] + "moderation/bans",\
-        params = {'broadcaster_id' : CONFIG['broadcasterID'], 'moderator_id' : CONFIG['moderatorID']},\
-        headers = {"Authorization" : "Bearer " + CONFIG['oauth'], "Client-Id" : CONFIG['clientID'], 'Content-Type' : 'application/json'},\
-        json = {"user_id" : args[1], "duration" : timeoutDuration}\
-      )
-      if not response.ok:
-        print("WARNING! Could not timeout!", response.json())
-
-    else:
-      print("Could not resolve the chat command.")
-
-    # Remove the triggering chat command from the answer text and return the remaining message.
-    # This is empty unless it is a random-answer response or a multi-answer response.
-    answerText = re.sub("^[^\n]+\n?", "", answerText)
-    return answerText
+      return re.sub("\$arg[@0-9+]+", "", answerText)
 
 
   # Added commands variable to the function as a »function« key might modify the commands.
@@ -313,32 +252,34 @@ class Message():
           # Choose a random answer to send.
           answer = answer[randint(0, len(answer) - 1)]
           if re.match("^/[^ ]+", answer):
-            answer = self.resolveChatCommands(answer)
+            answer = resolveChatCommands(answer)
           # Turn the answer into a list of chunks with a maximum of 500 characters.
           answer = splitIntoGroupsOf(answer, 500)
           for a in answer:
-            if len(sys.argv) == 3:
-              print("DEBUG MODE, Willowbot’s answer:\n    " + a)
-            else:
+            if irc:
               irc.send(a)
+            else:
+              print("DEBUG MODE, Willowbot’s answer:\n    " + a)
         else:
           # Defaults to »sequence«.
           for a in answer:
             if re.match("^/[^ ]+", a):
-              a = self.resolveChatCommands(a)
+              a = resolveChatCommands(a)
             chunkList = splitIntoGroupsOf(a, 500)
             for c in chunkList:
-              if len(sys.argv) == 3:
-                print("DEBUG MODE, Willowbot’s answer:\n    " + c)
-              else:
+              if irc:
                 irc.send(c)
+              else:
+                print("DEBUG MODE, Willowbot’s answer:\n    " + c)
       else:
         answer = splitIntoGroupsOf(answer[0], 500)
         for a in answer:
-          if len(sys.argv) == 3:
-            print("DEBUG MODE, Willowbot’s answer:\n    " + a)
-          else:
+          if re.match("^/[^ ]+", a):
+            a = resolveChatCommands(a)
+          if irc:
             irc.send(a)
+          else:
+            print("DEBUG MODE, Willowbot’s answer:\n    " + a)
 
     # Execute the string in »os-command« as a system command.
     if 'os-command' in reaction:
@@ -388,6 +329,8 @@ class Message():
 
     # Response type is user’s chat message.
     if self.getType() == "PRIVMSG":
+      # All the following code covers triggerType chat message.
+
       # Convert Cyrillic letters to Latin ones to strike scam bots.
       self.text = cyrillicToLatin(self.getText())
       senderLevel = self.getSenderLevel()
@@ -505,9 +448,18 @@ class Message():
 
       # Message indicates a raid.
       elif self.isRaid():
+        # All the following code covers triggerType raid.
         raidersCount = self.getRaidersCount()
         for m in commands['raid']:
-          if ('minRaidersCount' in commands['raid'][m] and raidersCount >= commands['raid'][m]['minRaidersCount']) or (not 'minRaidersCount' in commands['raid'][m]):
+          if (  (not 'minRaidersCount' in commands['raid'][m]) or
+                ('minRaidersCount' in commands['raid'][m] and raidersCount >= commands['raid'][m]['minRaidersCount'] and
+                  (not 'maxRaidersCount' in commands['raid'][m] or
+                    ('maxRaidersCount' in commands['raid'][m] and
+                      (raidersCount <= commands['raid'][m]['maxRaidersCount'] or commands['raid'][m]['maxRaidersCount'] == 0)
+                    )
+                  )
+                )
+            ):
             self.reactToMessage(commands, 'raid', m, irc)
         
       else:
