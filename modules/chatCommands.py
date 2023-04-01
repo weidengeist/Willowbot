@@ -19,15 +19,21 @@ def resolveChatCommands(answerText):
   
   elif re.match("^/ban ", answerText):
     args = re.findall("[^ ]+", answerText) # 0: /ban; 1: [user-id]; 2: [optional reason]
-    banReason = args[2] if len(args) > 2 else ""
-    response = requests.post(\
-      CONFIG['URL_API'] + "moderation/bans",\
-      params = {'broadcaster_id' : CONFIG['broadcasterID'], 'moderator_id' : CONFIG['moderatorID']},\
-      headers = {"Authorization" : "Bearer " + CONFIG['oauth'], "Client-Id" : CONFIG['clientID'], 'Content-Type' : 'application/json'},\
-      json = {"user_id" : args[1], "reason" : banReason}\
-    )
-    if not response.ok:
-      print("WARNING! Could not ban!", response.json())
+    response = requests.get(CONFIG['URL_API'] + "users" + "?login=" + args[1], headers = {'Authorization' : 'Bearer ' + CONFIG['oauth'], 'Client-Id' : CONFIG['clientID']})
+    if response.ok:
+      banUserID = response.json()['data'][0]['id']
+      banReason = args[2] if len(args) > 2 else ""
+      print(banUserID)
+      response = requests.post(\
+        CONFIG['URL_API'] + "moderation/bans",\
+        params = {'broadcaster_id' : CONFIG['broadcasterID'], 'moderator_id' : CONFIG['moderatorID']},\
+        headers = {"Authorization" : "Bearer " + CONFIG['oauth'], "Client-Id" : CONFIG['clientID'], 'Content-Type' : 'application/json'},\
+        json = {"data" : {"user_id" : banUserID, "reason" : banReason}}\
+      )
+      if not response.ok:
+        print("WARNING! Could not ban!", response.json())
+    else:
+      print("Could not retrieve the ID of the user who is supposed to be banned.", response.json())
   
   elif re.match("^/delete ", answerText):
     args = re.findall("[^ ]+", answerText) # 0: /delete; 1: [msgID]
@@ -38,6 +44,9 @@ def resolveChatCommands(answerText):
     )
     if not response.ok:
       print("WARNING! Could not delete message!", response.json())
+
+  elif re.match("^/raid ", answerText):
+    args = re.findall("[^ ]+", answerText) # 0: /raid; 1: $arg0 (the target channel for the raid)
   
   elif re.match("^/shoutout ", answerText):
     args = re.findall("[^ ]+", answerText) # 0: /shoutout; 1: [raidersChannelID]
@@ -51,15 +60,20 @@ def resolveChatCommands(answerText):
   
   elif re.match("^/timeout ", answerText):
     args = re.findall("[^ ]+", answerText) # 0: /timeout; 1: [userID]; 2: [optional duration]
-    timeoutDuration = args[2] if len(args) > 2 else 10 # 10 seconds of fallback/default timeout duration.
-    response = requests.post(\
-      CONFIG['URL_API'] + "moderation/bans",\
-      params = {'broadcaster_id' : CONFIG['broadcasterID'], 'moderator_id' : CONFIG['moderatorID']},\
-      headers = {"Authorization" : "Bearer " + CONFIG['oauth'], "Client-Id" : CONFIG['clientID'], 'Content-Type' : 'application/json'},\
-      json = {"user_id" : args[1], "duration" : timeoutDuration}\
-    )
-    if not response.ok:
-      print("WARNING! Could not timeout!", response.json())
+    response = requests.get(CONFIG['URL_API'] + "users" + "?login=" + args[1], headers = {'Authorization' : 'Bearer ' + CONFIG['oauth'], 'Client-Id' : CONFIG['clientID']})
+    if response.ok:
+      timeoutUserID = response.json()['data'][0]['id']
+      timeoutDuration = args[2] if len(args) > 2 else 10 # 10 seconds of fallback/default timeout duration.
+      response = requests.post(\
+        CONFIG['URL_API'] + "moderation/bans",\
+        params = {'broadcaster_id' : CONFIG['broadcasterID'], 'moderator_id' : CONFIG['moderatorID']},\
+        headers = {"Authorization" : "Bearer " + CONFIG['oauth'], "Client-Id" : CONFIG['clientID'], 'Content-Type' : 'application/json'},\
+        json = {"data" : {"user_id" : timeoutUserID, "duration" : timeoutDuration}}\
+      )
+      if not response.ok:
+        print("WARNING! Could not timeout!", response.json())
+    else:
+      print("Could not retrieve the ID of the user who is supposed to be timeouted.", response.json())    
   
   else:
     print("Unknown how to resolve this command. Processing normally.")
