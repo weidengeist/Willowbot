@@ -23,7 +23,6 @@ def resolveChatCommands(answerText):
     if response.ok:
       banUserID = response.json()['data'][0]['id']
       banReason = args[2] if len(args) > 2 else ""
-      print(banUserID)
       response = requests.post(\
         CONFIG['URL_API'] + "moderation/bans",\
         params = {'broadcaster_id' : CONFIG['broadcasterID'], 'moderator_id' : CONFIG['moderatorID']},\
@@ -47,6 +46,18 @@ def resolveChatCommands(answerText):
 
   elif re.match("^/raid ", answerText):
     args = re.findall("[^ ]+", answerText) # 0: /raid; 1: $arg0 (the target channel for the raid)
+    response = requests.get(CONFIG['URL_API'] + "users" + "?login=" + args[1], headers = {'Authorization' : 'Bearer ' + CONFIG['oauth'], 'Client-Id' : CONFIG['clientID']})
+    if response.ok:
+      raidUserID = response.json()['data'][0]['id']
+      response = requests.post(\
+        CONFIG['URL_API'] + "raid",\
+        params = {'from_broadcaster_id' : CONFIG['broadcasterID'], 'to_broadcaster_id' : raidUserID},\
+        headers = {"Authorization" : "Bearer " + CONFIG['oauth'], "Client-Id" : CONFIG['clientID']}
+      )
+      if not response.ok:
+        print("WARNING! Could not raid!", response.json())
+    else:
+      print("Could not retrieve the ID of the channel which is supposed to be raided.", response.json())
   
   elif re.match("^/shoutout ", answerText):
     args = re.findall("[^ ]+", answerText) # 0: /shoutout; 1: [raidersChannelID]
