@@ -4,7 +4,7 @@ import requests
 
 # Replace special characters for easy comparison of search term and results.
 # Time will tell if this function needs some extension.
-def normalizeString(s):
+def modChannelInfo_helper_normalizeString(s):
   return re.sub("[,;.:]", "", s.lower()).replace("é", "e").replace("è", "e").replace("ñ", "n").replace("’", "'").replace("\'", "")
 
 
@@ -108,11 +108,11 @@ def modChannelInfo_category_set(irc, CONFIG, searchTerm = "", listMsg = "$return
             irc.send(failMsg)
         else:
           print(response.json())
-          searchTerm_normalized = normalizeString(searchTerm)
+          searchTerm_normalized = modChannelInfo_helper_normalizeString(searchTerm)
           print("searchTerm_normalized", searchTerm_normalized)
           results = response.json()['data']
           for r in results:
-            r_name_normalized = normalizeString(r['name'])
+            r_name_normalized = modChannelInfo_helper_normalizeString(r['name'])
             print("r_name_normalized", r_name_normalized)
             if searchTerm_normalized == r_name_normalized:
               del candidates
