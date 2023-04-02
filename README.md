@@ -632,17 +632,17 @@ The most complex function in this module is `category_set`. Just like `title_set
 
 ## 5 Test/Debugging mode
 
-Willowbot allows you to test your command definitions either by providing it a message text or by passing `DEBUG` as a second argument when starting the bot, so you don’t have to wait for a specific message to appear in the chat to be able to check the correctness of your command sets. In this mode, no connection to the Twitch IRC will be established and the `answer` strings will be output on the console instead of being sent to the chat.
+Willowbot allows you to test your command definitions either by a specific message text or by a series of predefined message types, so you won’t have to wait for a distinct message to appear in the chat to be able to test the correctness of your command sets. To do so, you have to pass the `--debug-single` option in conjunction with a message or the `--debug-full` option when starting Willowbot. In this mode, no connection to the Twitch chat will be established and the `answer` strings will be printed to the console instead of being sent to the chat.
 
 The first case is triggered as follows:
 ```
-python main_cli.py iamabot "!mod @anotherUser There you go."
+python main_cli.py --channel iamabot "!mod @anotherUser There you go."
 ```
-What happens here is that Willowbot will load the command set for the channel `iamabot`, process the string `!mod @anotherUser There you go.` as if it had been a user message in the chat, and show you the reaction on the command line.
+What happens here is that Willowbot will load the command set for the channel `iamabot`, process the string `!mod @anotherUser There you go.` as if it had been a user message in the chat, and show you the reaction on the command line. Please not the quotation marks wrapping the message text!
 
-If you want to test multiple message types, e. g. Prime subscriptions, announcements, gifted subscriptions, etc., you can enter the debug mode:
+If you want to test multiple message types, e.g. Prime subscriptions, announcements, gifted subscriptions, etc., you can enter the full debug mode:
 ```
-python main_cli.py iamabot DEBUG
+python main_cli.py --channel iamabot --debug-full
 ```
 By starting Willowbot this way, it will iterate over a bunch of predefined authentic full IRC messages with certain sets of (anonymized and generic) metadata which identify them as one of the various Twitch chat message types. A list of the supported message types can be found in the appendix.
 

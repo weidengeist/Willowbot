@@ -631,17 +631,17 @@ Die komplexeste Funktion in diesem Modul ist `category_set`. Wie `title_set` sam
 
 ## 5 Test-/Fehlerbehandlungsmodus
 
-Willowbot erlaubt Ihnen, Ihre Kommandodefinitionen entweder durch einen Nachrichtentext oder durch das Übergeben von `DEBUG` als zweites Argument beim Start des Bots zu testen, damit Sie nicht auf das Erscheinen einer bestimmten Nachricht im Chat warten müssen, um die Korrektheit Ihrer Kommandosets prüfen zu können. In diesem Modus wird keine Verbindung zum Twitch-IRC-Chat hergestellt und die `answer`-Zeichenketten werden auf der Konsole ausgegeben, statt an den Chat gesendet zu werden.
+Willowbot erlaubt Ihnen, Ihre Kommandodefinitionen entweder anhand eines spezifischen Nachrichtentexts oder mit einer Reihe vordefinierter Nachrichtentypen zu testen, damit Sie nicht auf das Erscheinen einer bestimmten Nachricht im Chat warten müssen, um die Korrektheit Ihrer Kommandosets prüfen zu können. Dazu muss die Option `--debug-single` zusammen mit einer Nachricht bzw. `--debug-full` als Option beim Start von Willowbot übergeben werden. In diesem Modus wird keine Verbindung zum Twitch-Chat hergestellt und die `answer`-Zeichenketten werden auf der Konsole ausgegeben, statt an den Chat gesendet zu werden.
 
 Der erste Fall wird folgendermaßen ausgelöst:
 ```
-python main_cli.py iamabot "!mod @einandererNutzer Bitte schön."
+python main_cli.py --channel ichbineinbot --debug-single "!mod @einandererNutzer Bitte schön."
 ```
-Was hier geschieht, ist, dass Willowbot das Kommandoset für den Kanal `iamabot` lädt, die Zeichenkette `!mod @einandererNutzer Bitte schön.` verarbeitet, als wäre sie eine Nutzernachricht im Chat gewesen, und Ihnen die Reaktion auf der Kommandozeile anzeigt.
+Was hier geschieht, ist, dass Willowbot das Kommandoset für den Kanal `ichbineinbot` lädt, die Zeichenkette `!mod @einandererNutzer Bitte schön.` verarbeitet, als wäre sie eine Nutzernachricht im Chat gewesen, und Ihnen die Reaktion auf der Kommandozeile anzeigt. Achten Sie unbedingt auf die Anführungszeichen, die diese Nachricht einschließen!
 
-Falls Sie mehrere Nachrichtentypen testen möchten, z. B. Primeabonnements, Ankündigungen, verschenkte Abonnements etc., können Sie den Fehlerbehandlungsmodus verwenden:
+Falls Sie mehrere Nachrichtentypen testen möchten, z. B. Primeabonnements, Ankündigungen, verschenkte Abonnements etc., können Sie den vollständigen Fehlerbehandlungsmodus verwenden:
 ```
-python main_cli.py iamabot DEBUG
+python main_cli.py --channel ichbineinbot --debug-full
 ```
 Indem Sie Willowbot auf diese Art starten, wird er einen Stapel vordefinierter authentischer, vollständiger Chatnachrichten mit bestimmten (anonymisierten und generischen) Metadaten, die sie als einen der verschiedenen Nachrichtentypen auf Twitch identifizieren, durchlaufen. Eine Liste der unterstützten Nachrichtentypen findet sich im Anhang.
 
