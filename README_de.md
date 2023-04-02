@@ -681,6 +681,9 @@ Fühlen Sie sich frei, den Code als Inspiration für Ihre eigenen IRC-Projekte z
 * `matchType`
     * Typ: Zeichenkette (string)
     * `is` [Standardwert], `is_caseInsensitive`, `startsWith`, `contains`, `contains_caseInsensitive`, `endsWith`, `regex`
+* `maxRaidersCount`
+    * Typ: Ganzzahl (integer)
+    * maximale Anzahl an Raidern, die benötigt wird, um die zugehörige Nachricht auszulösen
 * `maxSubLevel`
     * Typ: Ganzzahl (integer)
     * maximale Abomonatszahl, die benötigt wird, um die zugehörige Nachricht auszulösen; kann für Chatbefehle sowie für Abonnementnachrichten verwendet werden

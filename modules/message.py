@@ -397,11 +397,10 @@ class Message():
         subMonth = int(self.getSubMonth_new())
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'sub':
-            subLevel = float('inf') if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
-            minSubLevel = float('inf') if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
-            maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
-            # The last check enables sub command definitions without any level specifications.
-            if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel) or (minSubLevel == float('inf') and subLevel == float('inf') and maxSubLevel == float('inf')):
+            subLevel = commands['sub'][m]['subLevel'] if 'subLevel' in commands['sub'][m] else 0 
+            minSubLevel = commands['sub'][m]['minSubLevel'] if 'minSubLevel' in commands['sub'][m] else 0
+            maxSubLevel = commands['sub'][m]['maxSubLevel'] if 'maxSubLevel' in commands['sub'][m] else float('inf') 
+            if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel and not 'subLevel' in commands['sub'][m]):
               self.reactToMessage(commands, 'sub', m, irc)
 
       # Message indicates a Prime sub.
@@ -409,11 +408,10 @@ class Message():
         subMonth = int(self.getSubMonth_new())
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'subPrime':
-            subLevel = float('inf') if not 'subLevel' in commands['sub'][m] else commands['sub'][m]['subLevel']
-            minSubLevel = float('inf') if not 'minSubLevel' in commands['sub'][m] else commands['sub'][m]['minSubLevel']
-            maxSubLevel = float('inf') if not 'maxSubLevel' in commands['sub'][m] else commands['sub'][m]['maxSubLevel']
-            # The last check enables sub command definitions without any level specifications.
-            if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel) or (minSubLevel == float('inf') and subLevel == float('inf') and maxSubLevel == float('inf')):
+            subLevel = commands['sub'][m]['subLevel'] if 'subLevel' in commands['sub'][m] else 0 
+            minSubLevel = commands['sub'][m]['minSubLevel'] if 'minSubLevel' in commands['sub'][m] else 0
+            maxSubLevel = commands['sub'][m]['maxSubLevel'] if 'maxSubLevel' in commands['sub'][m] else float('inf') 
+            if (subLevel == subMonth) or (minSubLevel <= subMonth and subMonth <= maxSubLevel and not 'subLevel' in commands['sub'][m]):
               self.reactToMessage(commands, 'sub', m, irc)
 
       # Message indicates an anonymously gifted subscription.
@@ -450,16 +448,10 @@ class Message():
       elif self.isRaid():
         # All the following code covers triggerType raid.
         raidersCount = self.getRaidersCount()
+        lowerBound = commands['raid'][m]['minRaidersCount'] if "minRaidersCount" in commands['raid'][m] else 0
+        upperBound = commands['raid'][m]['maxRaidersCount'] if "maxRaidersCount" in commands['raid'][m] else float('inf')
         for m in commands['raid']:
-          if (  (not 'minRaidersCount' in commands['raid'][m]) or
-                ('minRaidersCount' in commands['raid'][m] and raidersCount >= commands['raid'][m]['minRaidersCount'] and
-                  (not 'maxRaidersCount' in commands['raid'][m] or
-                    ('maxRaidersCount' in commands['raid'][m] and
-                      (raidersCount <= commands['raid'][m]['maxRaidersCount'] or commands['raid'][m]['maxRaidersCount'] == 0)
-                    )
-                  )
-                )
-            ):
+          if  lowerBound <= raidersCount and raidersCount <= upperBound:
             self.reactToMessage(commands, 'raid', m, irc)
         
       else:

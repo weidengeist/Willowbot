@@ -682,6 +682,9 @@ Feel free to use the code as an inspiration for your own IRC projects and to rep
 * `matchType`
     * type: string
     * `is` [Default], `is_caseInsensitive`, `startsWith`, `contains`, `contains_caseInsensitive`, `endsWith`, `regex`
+* `maxRaidersCount`
+    * type: integer
+    * maximum count of raiders needed to trigger the associated message
 * `maxSubLevel`
     * type: integer
     * maximum subscription count needed to trigger the associated message; can be used for chat commands as well as for subscription messages
