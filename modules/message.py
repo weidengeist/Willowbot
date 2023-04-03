@@ -448,11 +448,12 @@ class Message():
       elif self.isRaid():
         # All the following code covers triggerType raid.
         raidersCount = self.getRaidersCount()
-        lowerBound = commands['raid'][m]['minRaidersCount'] if "minRaidersCount" in commands['raid'][m] else 0
-        upperBound = commands['raid'][m]['maxRaidersCount'] if "maxRaidersCount" in commands['raid'][m] else float('inf')
         for m in commands['raid']:
-          if  lowerBound <= raidersCount and raidersCount <= upperBound:
-            self.reactToMessage(commands, 'raid', m, irc)
+          lowerBound = commands['raid'][m]['minRaidersCount'] if "minRaidersCount" in commands['raid'][m] else 0
+          upperBound = commands['raid'][m]['maxRaidersCount'] if "maxRaidersCount" in commands['raid'][m] else float('inf')
+          for m in commands['raid']:
+            if  lowerBound <= raidersCount and raidersCount <= upperBound:
+              self.reactToMessage(commands, 'raid', m, irc)
         
       else:
         print("\nUSERNOTICE\n")
