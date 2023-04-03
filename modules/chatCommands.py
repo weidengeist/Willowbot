@@ -50,7 +50,7 @@ def resolveChatCommands(answerText):
     if response.ok:
       raidUserID = response.json()['data'][0]['id']
       response = requests.post(\
-        CONFIG['URL_API'] + "raid",\
+        CONFIG['URL_API'] + "raids",\
         params = {'from_broadcaster_id' : CONFIG['broadcasterID'], 'to_broadcaster_id' : raidUserID},\
         headers = {"Authorization" : "Bearer " + CONFIG['oauth'], "Client-Id" : CONFIG['clientID']}
       )
