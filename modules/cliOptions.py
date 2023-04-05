@@ -163,11 +163,7 @@ def doDebugRunSingle(chatMsg, commands):
 
 
 def createConfigFiles():
-  langDict = importlib.import_module("lang.en").langDict | importlib.import_module("lang." + self.config['language']).langDict
-
-  if not os.path.exists(configDir):
-    os.makedirs(configDir)
-    os.makedirs(os.path.join(configDir, 'commands'))
+  langDict = importlib.import_module("lang.en").langDict | importlib.import_module("lang." + getLanguage()).langDict
 
   userOS = platform.system()
   if userOS == "Linux":
@@ -180,10 +176,16 @@ def createConfigFiles():
     print(langDict['configFiles_osMismatch'].format(os = userOS))
     exit()
 
+  if not os.path.exists(configDir):
+    os.makedirs(configDir)
+    os.makedirs(os.path.join(configDir, 'commands'))
+
   answer = "something that impossibly means yes"
   if os.path.exists(os.path.join(configDir, "config.py")):  
     print(langDict['configFiles_configFileAlreadyExists'].format(dir = configDir))
     answer = input(langDict['yesNo_prompt'] + ": ")
+  else:
+    answer = "y"
   
   localeYes = re.match("^\[.\]", langDict['yesNo_prompt']) and re.findall("^\[(.)\]", langDict['yesNo_prompt'])[0] or "y"
   if answer == localeYes:
@@ -201,6 +203,8 @@ def createConfigFiles():
   if os.path.exists(os.path.join(configDir, "logins.py")):
     print(langDict['configFiles_loginsFileAlreadyExists'].format(dir = configDir))
     answer = input(langDict['yesNo_prompt'] + ": ")
+  else:
+    answer = "y"
   
   localeYes = re.match("^\[.\]", langDict['yesNo_prompt']) and re.findall("^\[(.)\]", langDict['yesNo_prompt'])[0] or "y"
   if answer == localeYes:
