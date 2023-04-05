@@ -41,11 +41,11 @@ class IRC:
       self.irc = ssl.wrap_socket(self.irc, ssl_version=ssl.PROTOCOL_TLS)      
       self.irc.connect((server, port)) # Connects to the server.
     self.sendPlain("PASS oauth:" + oauth) # User authentication.
-    print(" ✔ " + langDict['irc_passSent'])
+    print(" " + langDict['symbol_success'] + " " + langDict['irc_passSent'])
     self.sendPlain("NICK " + botname)
-    print(" ✔ " + langDict['irc_botnameSent'].format(botname = botname))
+    print(" "  + langDict['symbol_success'] + " " + langDict['irc_botnameSent'].format(botname = botname))
     self.sendPlain("JOIN #" + self.config['channel']) # Join the channel.
-    print(" ✔ " + langDict['irc_channelEntered'].format(channel = self.config['channel']))
+    print(" " + langDict['symbol_success'] + " " + langDict['irc_channelEntered'].format(channel = self.config['channel']))
     self.sendPlain("CAP REQ :twitch.tv/tags")
     self.sendPlain("CAP REQ :twitch.tv/commands")
 
@@ -92,7 +92,7 @@ class IRC:
     del text[-1]
 
     if not self.isConnected and len(text) > 0:
-      print(" ✔ " + langDict['irc_connectionEstablished'])
+      print(" " + langDict['symbol_success'] + " " + langDict['irc_connectionEstablished'])
       self.isConnected = True
       # Reset the trials and the timeout.
       self.retries_curr = 0

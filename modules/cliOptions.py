@@ -44,20 +44,20 @@ def getLanguage(feedback = False):
   if '-lg' in sys.argv or '--language' in sys.argv:
     argIndex = sys.argv.index("-lg" in sys.argv and "-lg" or "--language")
     if len(sys.argv) <= argIndex + 1:
-      feedback and print(" ╳ WARNING! No language abbreviation passed to -lg/--language option. Using English.")
+      feedback and print(" " + langDict['symbol_failure'] + " WARNING! No language abbreviation passed to -lg/--language option. Using English.")
       return 'en'
     else:
       argLocale = sys.argv[argIndex + 1]
       if argLocale in availableLocales:
         return argLocale
       else:
-        feedback and print(" ╳ WARNING! There is no language file for the language abbreviation passed to Willowbot.")
+        feedback and print(" " + langDict['symbol_failure'] + " WARNING! There is no language file for the language abbreviation passed to Willowbot.")
         if argLocale != osLocale:
           feedback and print("   Trying your OS locale …")
           if osLocale in availableLocales:
             return osLocale
           else:
-            feedback and print(" ╳ WARNING! There is no locale for your OS language. Using English.")
+            feedback and print(" " + langDict['symbol_failure'] + " WARNING! There is no locale for your OS language. Using English.")
             return 'en'
         else:
           feedback and print("   Using English.")
@@ -65,7 +65,7 @@ def getLanguage(feedback = False):
     if osLocale in availableLocales:
       return osLocale
     else:
-      feedback and print(" ╳ WARNING! There is no locale for your OS language. Using English.")
+      feedback and print(" " + langDict['symbol_failure'] + " WARNING! There is no locale for your OS language. Using English.")
       return 'en'
 
 
@@ -229,13 +229,13 @@ def tokenActions(CONFIG, LOGINS):
   if len(sys.argv) > argIndex + 1:
     keyword = sys.argv[argIndex + 1]
     if not keyword in availableKeywords:
-      print(" ╳ " + langDict['tokenActions_unknownOption'].format(options = ", ".join(availableKeywords)))
+      print(" " + langDict['symbol_failure'] + " " + langDict['tokenActions_unknownOption'].format(options = ", ".join(availableKeywords)))
 
     elif keyword == "add":
       if len(sys.argv) <= argIndex + 2:
-        print(" ╳ " + langDict['tokenActions_add_needName'].format(pythonExec = os.path.split(sys.executable)[-1], willowbotMain = sys.argv[0]))
+        print(" " + langDict['symbol_failure'] + " " + langDict['tokenActions_add_needName'].format(pythonExec = os.path.split(sys.executable)[-1], willowbotMain = sys.argv[0]))
       elif len(sys.argv) <= argIndex + 3:
-        print(" ╳ " + langDict['tokenActions_add_needToken'].format(pythonExec = os.path.split(sys.executable)[-1], willowbowMain = sys.argv[0], name = sys.argv[argIndex + 2]))
+        print(" " + langDict['symbol_failure'] + " " + langDict['tokenActions_add_needToken'].format(pythonExec = os.path.split(sys.executable)[-1], willowbowMain = sys.argv[0], name = sys.argv[argIndex + 2]))
       else:
         loginName = sys.argv[argIndex + 2]
         answer = "something that impossibly means yes"
@@ -269,7 +269,7 @@ def tokenActions(CONFIG, LOGINS):
 
     elif keyword == "delete":
       if len(sys.argv) <= argIndex + 2:
-        print(" ╳ " + langDict['tokenActions_delete_needName'])
+        print(" " + langDict['symbol_failure'] + " " + langDict['tokenActions_delete_needName'])
       else:
         loginName = sys.argv[argIndex + 2]
         if loginName in LOGINS:
@@ -289,7 +289,7 @@ def tokenActions(CONFIG, LOGINS):
           else:
             print(langDict['tokenActions_delete_cancelled'])
         else:
-          print(" ╳ " + langDict['tokenActions_delete_nameNotFound'].format(name = loginName))
+          print(" " + langDict['symbol_failure'] + " " + langDict['tokenActions_delete_nameNotFound'].format(name = loginName))
           
     elif keyword == "get":
       from modules.oauthToken import scopes
@@ -306,7 +306,7 @@ def tokenActions(CONFIG, LOGINS):
 
     elif keyword == "revoke":
       if len(sys.argv) <= argIndex + 2:
-        print(" ╳ " + langDict['tokenActions_revoke_needName'])
+        print(" " + langDict['symbol_failure'] + " " + langDict['tokenActions_revoke_needName'])
       else:
         loginName = sys.argv[argIndex + 2]
         if loginName in LOGINS:
@@ -327,8 +327,8 @@ def tokenActions(CONFIG, LOGINS):
           else:
             print(langDict['tokenActions_revoke_failed'], response.json())
         else:
-          print(" ╳ " + langDict['tokenActions_revoke_nameNotFound'].format(name = loginName))
+          print(" " + langDict['symbol_failure'] + " " + langDict['tokenActions_revoke_nameNotFound'].format(name = loginName))
 
   else:
-    print(" ╳ " + langDict['tokenActions_missingKeyword'].format(keywords = ", ".join(availableKeywords)))
+    print(" " + langDict['symbol_failure'] + " " + langDict['tokenActions_missingKeyword'].format(keywords = ", ".join(availableKeywords)))
   exit()

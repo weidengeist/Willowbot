@@ -83,5 +83,6 @@ langDict = {
   'help_keyword'                          : 'keyword',
   'help_name'                             : 'name',
   'help_token'                            : 'token',
-  
+  'symbol_failure'                        : '×',
+  'symbol_success'                        : '✔',  
 }

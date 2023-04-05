@@ -62,9 +62,9 @@ def loadOptionalModules(lang = 'en', feedback = False):
             g = globals()
             for name in names:
               g[name] = getattr(module, name)
-            feedback and print("     ✔ " + langDict['optModules_loadingSuccessful'].format(module = line))
+            feedback and print("     " + langDict['symbol_success'] + " " + langDict['optModules_loadingSuccessful'].format(module = line))
           else:
-            feedback and print("     ╳ " + langDict['optModules_loadingFailed'].format(module = line))
+            feedback and print("     " + langDict['symbol_failure'] + " " + langDict['optModules_loadingFailed'].format(module = line))
       else:
         break
     activeModulesFile.close()
@@ -92,10 +92,10 @@ def getLogins(feedback = False):
   if os.path.exists(os.path.join(loginsDir, "logins.py")):  
     loginsFromFile = importlib.import_module("logins").logins
     LOGINS = LOGINS | loginsFromFile
-    feedback and print(" ✔ " + langDict['logins_loadingSuccessful'].format(dir = loginsDir))
+    feedback and print(" " + langDict['symbol_success'] + " " + langDict['logins_loadingSuccessful'].format(dir = loginsDir))
   # … or create an empty one if none exists yet.
   else:
-    feedback and print(" ╳ " + langDict['logins_loadingFailed'].format(dir = loginsDir))
+    feedback and print(" " + langDict['symbol_failure'] + " " + langDict['logins_loadingFailed'].format(dir = loginsDir))
     exit()
   
   return LOGINS
@@ -113,11 +113,11 @@ def getRoleIDs(CONFIG, feedback = False):
         CONFIG['broadcasterID'] = response.json()['data'][1]['id']
       else:
         CONFIG['broadcasterID'] = CONFIG['moderatorID']
-      feedback and print(" ✔ " + langDict['roles_retrievingSuccessful'].format(botname = CONFIG['botname'], moderatorID = CONFIG['moderatorID'], channel = CONFIG['channel'], broadcasterID = CONFIG['broadcasterID']))
+      feedback and print(" " + langDict['symbol_success'] + " " + langDict['roles_retrievingSuccessful'].format(botname = CONFIG['botname'], moderatorID = CONFIG['moderatorID'], channel = CONFIG['channel'], broadcasterID = CONFIG['broadcasterID']))
     else:
-      feedback and print(" ╳ " + langDict['roles_retrievingFailed'], response.json())
+      feedback and print(" " + langDict['symbol_failure'] + " " + langDict['roles_retrievingFailed'], response.json())
   else:
-    feedback and print(" ╳ " + langDict['roles_missingClientID'])
+    feedback and print(" " + langDict['symbol_failure'] + " " + langDict['roles_missingClientID'])
 
   return CONFIG
 
@@ -145,13 +145,13 @@ def getConfig(feedback = False):
     # Check if the configuration set is complete.
     if 'port' in configFromFile and 'botname' in configFromFile and 'server' in configFromFile and 'oauth' in configFromFile and 'clientID' in configFromFile:
       CONFIG = CONFIG | configFromFile
-      feedback and print(" ✔ " + langDict['config_loadingSuccessful'])
+      feedback and print(" " + langDict['symbol_success'] + " " + langDict['config_loadingSuccessful'])
     else:
       print(langDict['config_loadingFailed_incomplete'].format(dir = CONFIG['dir']))
       exit()
   # … or create an empty one if none exists yet.
   else:
-    print(" ╳ " + langDict['config_loadingFailed_missing'].format(dir = CONFIG['dir']))
+    print(" " + langDict['symbol_failure'] + " " + langDict['config_loadingFailed_missing'].format(dir = CONFIG['dir']))
     exit()
 
   
@@ -164,14 +164,14 @@ def getConfig(feedback = False):
       CONFIG['oauth'] = LOGINS[potentialBotAccount]
     else:
       if potentialBotAccount != CONFIG['botname']:
-        feedback and print(" ╳ " + langDict['config_loginFailed_noOauth_tryDefault'].format(botname = potentialBotAccount))
+        feedback and print(" " + langDict['symbol_failure'] + " " + langDict['config_loginFailed_noOauth_tryDefault'].format(botname = potentialBotAccount))
         potentialBotAccount = CONFIG['botname']
       if potentialBotAccount in LOGINS:
         CONFIG['botname'] = potentialBotAccount
         CONFIG['oauth'] = LOGINS[potentialBotAccount]
-        feedback and print(" ✔ " + langDict['config_loginSuccessful'].format(botname = potentialBotAccount))
+        feedback and print(" " + langDict['symbol_success'] + " " + langDict['config_loginSuccessful'].format(botname = potentialBotAccount))
       else:
-        feedback and print(" ╳ " + langDict['config_loginFailed'].format(botname = potentialBotAccount))
+        feedback and print(" " + langDict['symbol_failure'] + " " + langDict['config_loginFailed'].format(botname = potentialBotAccount))
         exit()
   
   if '-c' in sys.argv or '--channel' in sys.argv:
@@ -185,9 +185,9 @@ def getConfig(feedback = False):
   if CONFIG['channel'] != CONFIG['botname']:
     if CONFIG['channel'] in LOGINS:
       CONFIG['channelOauth'] = LOGINS[CONFIG['channel']]
-      feedback and print(" ✔ " + langDict['config_channelOauthFound'].format(channel = CONFIG['channel']))
+      feedback and print(" " + langDict['symbol_success'] + " " + langDict['config_channelOauthFound'].format(channel = CONFIG['channel']))
     else:
-      feedback and print(" ╳ " + langDict['config_channelOauthMissing'].format(channel = CONFIG['channel']))
+      feedback and print(" " + langDict['symbol_failure'] + " " + langDict['config_channelOauthMissing'].format(channel = CONFIG['channel']))
   
   return CONFIG
 
@@ -253,9 +253,9 @@ def getCommands(config, feedback = False):
       if not 'matchType' in commands[c]:
         commands[c]['matchType'] = "is"
 
-    feedback and print(" ✔ " + langDict['commands_loadingSuccessful'].format(channel = config['channel']))
+    feedback and print(" " + langDict['symbol_success'] + " " + langDict['commands_loadingSuccessful'].format(channel = config['channel']))
   else:
-    feedback and print(" ╳ " + langDict['commands_loadingFailed'].format(channel = config['channel']))
+    feedback and print(" " + langDict['symbol_failure'] + " " + langDict['commands_loadingFailed'].format(channel = config['channel']))
 
   return {'general' : commands, 'timed' : commands_timed, 'sub' : commands_sub, 'raid' : commands_raid, 'status' : status}
   
