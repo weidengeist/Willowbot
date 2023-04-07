@@ -44,20 +44,20 @@ def getLanguage(feedback = False):
   if '-lg' in sys.argv or '--language' in sys.argv:
     argIndex = sys.argv.index("-lg" in sys.argv and "-lg" or "--language")
     if len(sys.argv) <= argIndex + 1:
-      feedback and print(" " + langDict['symbol_failure'] + " WARNING! No language abbreviation passed to -lg/--language option. Using English.")
+      feedback and print(" × WARNING! No language abbreviation passed to -lg/--language option. Using English.")
       return 'en'
     else:
       argLocale = sys.argv[argIndex + 1]
       if argLocale in availableLocales:
         return argLocale
       else:
-        feedback and print(" " + langDict['symbol_failure'] + " WARNING! There is no language file for the language abbreviation passed to Willowbot.")
+        feedback and print(" × WARNING! There is no language file for the language abbreviation passed to Willowbot.")
         if argLocale != osLocale:
           feedback and print("   Trying your OS locale …")
           if osLocale in availableLocales:
             return osLocale
           else:
-            feedback and print(" " + langDict['symbol_failure'] + " WARNING! There is no locale for your OS language. Using English.")
+            feedback and print(" × WARNING! There is no locale for your OS language. Using English.")
             return 'en'
         else:
           feedback and print("   Using English.")
@@ -65,7 +65,7 @@ def getLanguage(feedback = False):
     if osLocale in availableLocales:
       return osLocale
     else:
-      feedback and print(" " + langDict['symbol_failure'] + " WARNING! There is no locale for your OS language. Using English.")
+      feedback and print(" × WARNING! There is no locale for your OS language. Using English.")
       return 'en'
 
 
