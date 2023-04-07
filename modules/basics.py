@@ -180,7 +180,9 @@ def getConfig(feedback = False):
 
   CONFIG['channel'] = 'channel' in CONFIG and CONFIG['channel'] != "" and CONFIG['channel'] or CONFIG['botname'].lower()
 
-  CONFIG = getRoleIDs(CONFIG, feedback = feedback)
+  from cliOptions import inTokenMode
+  if not inTokenMode():
+    CONFIG = getRoleIDs(CONFIG, feedback = feedback)
 
   if CONFIG['channel'] != CONFIG['botname']:
     if CONFIG['channel'] in LOGINS:
