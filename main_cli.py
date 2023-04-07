@@ -18,11 +18,10 @@ if '-cf' in sys.argv or '--configure' in sys.argv:
 
 # Load all the remaining modules.
 from modules.basics import checkTimedCommands  # Import various general functions from the basics(.py) module in ./modules.
-from modules.basics import getCommands        
+from modules.basics import getCommands    
 from modules.basics import getConfig
 from modules.basics import getLogins
 from modules.irc import IRC                    # Import the IRC class from the irc(.py) module in ./modules.
-from modules.message import Message            # Import the Message class.
 
 
 # Suppress output in debug mode.
@@ -30,7 +29,6 @@ if inOneshotMode():
   globalFeedback = False
 else:
   globalFeedback = True
-
 
 LOGINS = getLogins(feedback = globalFeedback)   # Load all available login oauths.
 CONFIG = getConfig(feedback = globalFeedback)   # Load configuration files. 
@@ -44,6 +42,7 @@ if '-t' in sys.argv or '--token' in sys.argv:
 # Returns a dictionary with the keys 'general', 'timed', 'sub', and 'raid'.
 commands = getCommands(CONFIG, feedback = globalFeedback)
 
+from modules.message import Message            # Import the Message class.
 chatMsg = Message()
 
 # If plain IRC messages are provided as arguments, enter debug mode, do not connect, but process the messages as if Willowbot was connected.

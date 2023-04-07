@@ -53,7 +53,7 @@ def loadOptionalModules(lang = 'en', feedback = False):
         line = re.findall("^[^#\n ]+", line)
         line = line[0] if len(line) > 0 else ""
         if line != "":
-          feedback and print(" " + langDict['optModules_importTrial'].format(module = line))
+          feedback and print(" • " + langDict['optModules_importTrial'].format(module = line))
           if os.path.exists("./modules_opt/" + line + ".py"):
             module = importlib.import_module(line)
             # Determine a list of names to copy to the current namespace.
@@ -138,7 +138,6 @@ def getConfig(feedback = False):
   
   # Add the configuration path to the system paths to enable python to load configuration modules in this location.
   sys.path.append(CONFIG['dir'])
-  
   # Load the configuration file from the according path …
   if os.path.exists(os.path.join(CONFIG['dir'], "config.py")):  
     configFromFile = importlib.import_module("config").config
@@ -154,7 +153,6 @@ def getConfig(feedback = False):
     print(" " + langDict['symbol_failure'] + " " + langDict['config_loadingFailed_missing'].format(dir = CONFIG['dir']))
     exit()
 
-  
   LOGINS = getLogins(feedback = False)
 
   if '-l' in sys.argv or '--login' in sys.argv:
@@ -162,20 +160,18 @@ def getConfig(feedback = False):
   else:
     potentialBotAccount = CONFIG['botname']
 
+  if potentialBotAccount != CONFIG['botname'] and not potentialBotAccount in LOGINS:
+    feedback and print(" " + langDict['symbol_failure'] + " " + langDict['config_loginFailed_noOauth_tryDefault'].format(botname = potentialBotAccount))
+    potentialBotAccount = CONFIG['botname']
+
   if potentialBotAccount in LOGINS:
+    CONFIG['botname'] = potentialBotAccount
     CONFIG['oauth'] = LOGINS[potentialBotAccount]
+    feedback and print(" " + langDict['symbol_success'] + " " + langDict['config_loginSuccessful'].format(botname = potentialBotAccount))
   else:
-    if potentialBotAccount != CONFIG['botname']:
-      feedback and print(" " + langDict['symbol_failure'] + " " + langDict['config_loginFailed_noOauth_tryDefault'].format(botname = potentialBotAccount))
-      potentialBotAccount = CONFIG['botname']
-    if potentialBotAccount in LOGINS:
-      CONFIG['botname'] = potentialBotAccount
-      CONFIG['oauth'] = LOGINS[potentialBotAccount]
-      feedback and print(" " + langDict['symbol_success'] + " " + langDict['config_loginSuccessful'].format(botname = potentialBotAccount))
-    else:
-      feedback and print(" " + langDict['symbol_failure'] + " " + langDict['config_loginFailed'].format(botname = potentialBotAccount))
-      exit()
-  
+    feedback and print(" " + langDict['symbol_failure'] + " " + langDict['config_loginFailed_noOauth'].format(botname = potentialBotAccount))
+    exit()
+    
   if '-c' in sys.argv or '--channel' in sys.argv:
     channelIndex = sys.argv.index("-c" in sys.argv and "-c" or "--channel") + 1
     CONFIG['channel'] = len(sys.argv) > channelIndex and sys.argv[channelIndex].lower() or 'channel' in CONFIG and CONFIG['channel'].lower()
