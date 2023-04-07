@@ -143,7 +143,7 @@ def getConfig(feedback = False):
   if os.path.exists(os.path.join(CONFIG['dir'], "config.py")):  
     configFromFile = importlib.import_module("config").config
     # Check if the configuration set is complete.
-    if 'port' in configFromFile and 'botname' in configFromFile and 'server' in configFromFile and 'oauth' in configFromFile and 'clientID' in configFromFile:
+    if 'port' in configFromFile and 'botname' in configFromFile and 'server' in configFromFile and 'clientID' in configFromFile:
       CONFIG = CONFIG | configFromFile
       feedback and print(" " + langDict['symbol_success'] + " " + langDict['config_loadingSuccessful'])
     else:
