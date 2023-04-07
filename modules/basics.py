@@ -159,20 +159,22 @@ def getConfig(feedback = False):
 
   if '-l' in sys.argv or '--login' in sys.argv:
     potentialBotAccount = sys.argv[sys.argv.index("-l" in sys.argv and "-l" or "--login") + 1].lower()
+  else:
+    potentialBotAccount = CONFIG['botname']
+
+  if potentialBotAccount in LOGINS:
+    CONFIG['oauth'] = LOGINS[potentialBotAccount]
+  else:
+    if potentialBotAccount != CONFIG['botname']:
+      feedback and print(" " + langDict['symbol_failure'] + " " + langDict['config_loginFailed_noOauth_tryDefault'].format(botname = potentialBotAccount))
+      potentialBotAccount = CONFIG['botname']
     if potentialBotAccount in LOGINS:
       CONFIG['botname'] = potentialBotAccount
       CONFIG['oauth'] = LOGINS[potentialBotAccount]
+      feedback and print(" " + langDict['symbol_success'] + " " + langDict['config_loginSuccessful'].format(botname = potentialBotAccount))
     else:
-      if potentialBotAccount != CONFIG['botname']:
-        feedback and print(" " + langDict['symbol_failure'] + " " + langDict['config_loginFailed_noOauth_tryDefault'].format(botname = potentialBotAccount))
-        potentialBotAccount = CONFIG['botname']
-      if potentialBotAccount in LOGINS:
-        CONFIG['botname'] = potentialBotAccount
-        CONFIG['oauth'] = LOGINS[potentialBotAccount]
-        feedback and print(" " + langDict['symbol_success'] + " " + langDict['config_loginSuccessful'].format(botname = potentialBotAccount))
-      else:
-        feedback and print(" " + langDict['symbol_failure'] + " " + langDict['config_loginFailed'].format(botname = potentialBotAccount))
-        exit()
+      feedback and print(" " + langDict['symbol_failure'] + " " + langDict['config_loginFailed'].format(botname = potentialBotAccount))
+      exit()
   
   if '-c' in sys.argv or '--channel' in sys.argv:
     channelIndex = sys.argv.index("-c" in sys.argv and "-c" or "--channel") + 1

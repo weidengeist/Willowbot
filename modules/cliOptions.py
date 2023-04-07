@@ -180,14 +180,14 @@ def createConfigFiles():
     os.makedirs(configDir)
     os.makedirs(os.path.join(configDir, 'commands'))
 
-  answer = "something that impossibly means yes"
+  localeYes = re.match("^\[.\]", langDict['yesNo_prompt']) and re.findall("^\[(.)\]", langDict['yesNo_prompt'])[0] or "y"
+  
   if os.path.exists(os.path.join(configDir, "config.py")):  
     print(langDict['configFiles_configFileAlreadyExists'].format(dir = configDir))
     answer = input(langDict['yesNo_prompt'] + ": ")
   else:
-    answer = "y"
+    answer = localeYes
   
-  localeYes = re.match("^\[.\]", langDict['yesNo_prompt']) and re.findall("^\[(.)\]", langDict['yesNo_prompt'])[0] or "y"
   if answer == localeYes:
     # Create an empty file …
     configFile = open(os.path.join(configDir, "config.py"), 'w')
@@ -199,14 +199,12 @@ def createConfigFiles():
   else:
     print(langDict['configFiles_configFileUntouched'])
 
-  answer = "something that impossibly means yes"
   if os.path.exists(os.path.join(configDir, "logins.py")):
     print(langDict['configFiles_loginsFileAlreadyExists'].format(dir = configDir))
     answer = input(langDict['yesNo_prompt'] + ": ")
   else:
-    answer = "y"
+    answer = localeYes
   
-  localeYes = re.match("^\[.\]", langDict['yesNo_prompt']) and re.findall("^\[(.)\]", langDict['yesNo_prompt'])[0] or "y"
   if answer == localeYes:
     # Create an empty file …
     loginsFile = open(os.path.join(configDir, "logins.py"), 'w')
@@ -238,11 +236,12 @@ def tokenActions(CONFIG, LOGINS):
         print(" " + langDict['symbol_failure'] + " " + langDict['tokenActions_add_needToken'].format(pythonExec = os.path.split(sys.executable)[-1], willowbowMain = sys.argv[0], name = sys.argv[argIndex + 2]))
       else:
         loginName = sys.argv[argIndex + 2]
-        answer = "something that impossibly means yes"
+        localeYes = re.match("^\[.\]", langDict['yesNo_prompt']) and re.findall("^\[(.)\]", langDict['yesNo_prompt'])[0] or "y"
         if loginName in LOGINS:
           print(langDict['tokenActions_add_loginAlreadyExists'].format(name = loginName))
           answer = input(langDict['yesNo_prompt'] + ": ")
-        localeYes = re.match("^\[.\]", langDict['yesNo_prompt']) and re.findall("^\[(.)\]", langDict['yesNo_prompt'])[0] or "y"
+        else:
+          answer = localeYes
         if answer == localeYes:
           # Get the longest key in the logins file to be able to align the colons in the logins file later.
           maxExistingKeyLength = len(loginName)
@@ -250,6 +249,9 @@ def tokenActions(CONFIG, LOGINS):
             maxExistingKeyLength = max(maxExistingKeyLength, len(l))
           with open(os.path.join(CONFIG['dir'], "logins.py"), "r") as f:
             content = f.read()
+            # Remove the potentially present old key.
+            content = re.sub('\n  \'' + sys.argv[argIndex + 2] + '\'[^\n]+\n', '\n', content)
+            # Insert the new one.
             content = re.sub('\n *}.*', '\n  \'' + sys.argv[argIndex + 2] + '\' : \'' + sys.argv[argIndex + 3] + '\',\n}', content)
             # Eye candy: Aligning the colons in the logins file. {
             content = re.sub('\n  \'([^\']+)\' *', '\n  \'\g<1>\' ', content)
