@@ -595,8 +595,7 @@ Following the name scheme for optional modules suggested in this chapter, the na
 * `modChannelInfo_category_get`
 * `modChannelInfo_category_set`
 
-Each of these routines requires an instance of an IRC connection as well as the Willowbot configuration as mandatory arguments.
-The optional arguments are messages in case of a successful request, in case of a failed request, and arguments for the desired title or category, respectively, in case of the `set` method.
+Each of these routines requires an instance of an IRC connection as well as the Willowbot configuration as mandatory arguments. The optional arguments are messages in case of a successful request, in case of a failed request, and arguments for the desired title or category, respectively, in case of the `set` method.
 
 The following command definitions are examples for modifying and getting titles and categories:
 ```
@@ -636,7 +635,7 @@ Willowbot allows you to test your command definitions either by a specific messa
 
 The first case is triggered as follows:
 ```
-python main_cli.py --channel iamabot "!mod @anotherUser There you go."
+python main_cli.py --channel iamabot --debug-single "!mod @anotherUser There you go."
 ```
 What happens here is that Willowbot will load the command set for the channel `iamabot`, process the string `!mod @anotherUser There you go.` as if it had been a user message in the chat, and show you the reaction on the command line. Please not the quotation marks wrapping the message text!
 
