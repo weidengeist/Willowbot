@@ -297,7 +297,9 @@ def tokenActions(CONFIG, LOGINS):
       from modules.oauthToken import scopes
       from modules.oauthToken import baseURL
       fullURL = baseURL + "&client_id=" + CONFIG['clientID'] + "&scope=" + ("+".join(scopes))
+      print("Trying to open\n    " + fullURL)
       webbrowser.open(fullURL)
+      #print(fullURL)
       #webbrowser.open("http://localhost:3000/#access_token=1a2b3c4d5e6f7g8h9i&scopes=test1+test2+test3+test4")
       serverThread = threading.Thread(target = startServer, args=("localhost", 3000))
       serverThread.start()
