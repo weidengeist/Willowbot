@@ -192,7 +192,7 @@ def createConfigFiles():
     # Create an empty file …
     configFile = open(os.path.join(configDir, "config.py"), 'w')
     # … and write a configuration template to it.
-    configFile.write('config = {\n  \'botname\'          : \'IHaveNoName\',\n  \'clientID\'         : \'e5kdpgd2bbnbj1u5gbjpzeq7vsgwup\',\n  \'connectionRetries\': 10,\n  \'port\'             : 6697,\n  \'server\'           : \'irc.chat.twitch.tv\'\n}')
+    configFile.write('config = {\n  \'botname\'          : \'IAmYourFirstBot\',\n  \'clientID\'         : \'e5kdpgd2bbnbj1u5gbjpzeq7vsgwup\',\n  \'connectionRetries\': 10,\n  \'port\'             : 6697,\n  \'server\'           : \'irc.chat.twitch.tv\'\n}')
     configFile.close()
     # Generate the file here
     print(langDict['configFiles_newConfigFile'].format(optionalNew = (answer == localeYes and (langDict['new_female'] + " ") or "")))
@@ -297,9 +297,8 @@ def tokenActions(CONFIG, LOGINS):
       from modules.oauthToken import scopes
       from modules.oauthToken import baseURL
       fullURL = baseURL + "&client_id=" + CONFIG['clientID'] + "&scope=" + ("+".join(scopes))
-      print("Trying to open\n    " + fullURL)
+      #print("Trying to open\n    " + fullURL)
       webbrowser.open(fullURL)
-      #print(fullURL)
       #webbrowser.open("http://localhost:3000/#access_token=1a2b3c4d5e6f7g8h9i&scopes=test1+test2+test3+test4")
       serverThread = threading.Thread(target = startServer, args=("localhost", 3000))
       serverThread.start()
