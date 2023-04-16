@@ -59,11 +59,11 @@ unter Windows oder
 ```
 cd /home/dasbinich/Willowbot
 ```
-unter Linux/Mac. Starten Sie nun den Bot, indem Sie
+unter Linux/Mac. Erstellen Sie nun die Grundkonfigurationsdateien, indem Sie
 ```
 python main_cli.py --configure
 ```
-eintippen und die Entertaste drücken. Je nach Installationsroutine ist es möglich, dass Sie unter Windows statt `python` `py` zum Aufrufen von Python nutzen müssen.
+eintippen und die Entertaste drücken. Je nach Ihrer Pythoninstallation ist es möglich, dass Sie `py` oder `python3` statt `python` zum Aufrufen nutzen müssen.
 
 Sofern alles korrekt installiert ist, sollte Ihnen Willowbot nun mitteilen, dass und wo er eine Konfigurations- sowie eine Logindatei für Sie angelegt hat. Die Standardverzeichnisse für diese Dateien (`config.py` und `logins.py`) sind die folgenden:
 

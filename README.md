@@ -59,11 +59,11 @@ on Windows or
 ```
 cd /home/thatsme/Willowbot
 ```
-on Linux/Mac. Now start the bot by typing
+on Linux/Mac. Now create the initial config files by typing
 ```
 python main_cli.py --configure
 ```
-and pressing the Enter button. Depending on the installation routine, it might be necessary to use `py` instead of `python` when using a Windows system.
+and pressing the Enter button. Depending on your Python installation, it might be necessary to use `py` or `python3` instead of `python`.
 
 If everything is installed correctly, you should now be presented Willowbot’s message that and where it has created a config and a logins file for you. The default directories for those files (`config.py` and `logins.py`) are the following ones:
 
