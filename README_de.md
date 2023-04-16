@@ -73,17 +73,23 @@ Sofern alles korrekt installiert ist, sollte Ihnen Willowbot nun mitteilen, dass
 
 **Achtung!** Das soeben beschriebene Vorgehen wurde nur unter Linux getestet. Falls irgendwelche der Informationen über die unter Windows benötigten Schritte inkorrekt sein oder nicht funktionieren sollten, lassen Sie es mich bitte wissen.
 
-Erzeugen Sie nun einen Zugangsschlüssel für Willowbot. Dazu rufen Sie Willowbot mit der `--token`-Option und dem Schlüsselwort `get` auf:
+Erzeugen Sie nun einen Zugangsschlüssel für Willowbot. Doch bevor Sie fortfahren, stellen Sie sicher, dass in Ihrem Browser keine aktive Twitchsitzung gespeichert ist, also loggen Sie sich aus oder löschen Sie gleich das entsprechende Sitzungscookie Anschließend sind Sie bereit, einen Zugangsschlüssel zu generieren, indem Sie Willowbot mit der `--token`-Option, gefolgt vom Schlüsselwort `get`, starten:
 ```
 python main_cli.py --token get
 ```
-Ihr Standardbrowser sollte sich nun öffnen und Ihnen Twitchs Autorisierungsseite für Zugangsschlüssel präsentieren. Loggen Sie sich mit dem Konto Ihres Bots ein und wählen Sie »Authorize«. Sie werden anschließend auf eine Seite weitergeleitet, die Ihnen erklärt, wie Sie den soeben erzeugten Schlüssel Ihrer Logindatei hinzufügen. Folgen Sie diesen Anweisungen.
+Ihr Standardbrowser sollte sich nun öffnen und Ihnen Twitchs Autorisierungsseite für Zugangsschlüssel präsentieren. Loggen Sie sich mit dem Konto Ihres Bots ein und wählen Sie »Authorize«. Sie werden anschließend auf eine Seite weitergeleitet, die Ihnen erklärt, wie Sie den soeben erzeugten Zugangsschlüssel Ihrer Logindatei hinzufügen. Folgen Sie diesen Anweisungen.
 
-Nachdem Ihr Schlüssel hinzugefügt wurde, starten Sie den Bot via
+Nachdem Sie den Schlüssel hinzugefügt haben, stellen Sie Willowbots Standardloginnamen auf denjenigen ein, für den Sie gerade einen Zugangsschlüssel erzeugt haben:
 ```
-python main_cli.py
+python main_cli.py --set-config botname ichbineinbot
 ```
-und er wird sich mit seinem eigenen Kanal verbinden. In der Praxis werden Sie Willowbot natürlich auf Ihrem Streamerkanal oder – falls Sie Moderator sind – auf einem anderen Kanal, wo Sie Moderatorenrechte besitzen, laufen lassen wollen. Dafür starten Sie Willowbot mit der `--channel`-Option, gefolgt vom Namen des Kanals, dem Willowbot beitreten soll:
+`ichbineinbot` ist hier nur ein Platzhalter; es muss der eigentliche Name des Botkontos angegeben werden.
+
+Nun können Sie Willowbot starten, indem Sie
+```
+python main_cli.py 
+```
+eintippen, und er wird sich mit dem Kanal verbinden, den Sie als `botname` festgelegt haben. In der Praxis werden Sie Willowbot natürlich auf Ihrem Streamerkanal oder – falls Sie Moderator sind – auf einem anderen Kanal, wo Sie Moderatorenrechte besitzen, laufen lassen wollen. Dafür starten Sie Willowbot mit der `--channel`-Option, gefolgt vom Namen des Kanals, dem Willowbot beitreten soll:
 ```
 python main_cli.py --channel meineigenerkanal
 ```
@@ -584,9 +590,9 @@ Derzeit sind in diesem Modul nur deutsche Infotexte hinterlegt und eine Änderun
 
 ### 4.3 `modChannelInfo`-Modul (Kanalinformationen bearbeiten)
 
-Dieses Modul erlaubt dem Bot, sowohl den Titel als auch die Kategorie eines Kanals abzurufen und zu bearbeiten. Die Voraussetzung dafür – zumindest für das Bearbeiten – ist jedoch, dass Willowbot über einen Zugangsschlüssel für den Kanal, dessen Daten er ändern möchte, verfügt. Fehlt ein solcher Schlüssel beim Betreten eines Kanals, wird Willowbot beim Verbindungsaufbau mit einer Meldung darauf hinweisen.
+Dieses Modul erlaubt dem Bot, sowohl den Titel als auch die Kategorie eines Kanals abzurufen und zu bearbeiten. Die Voraussetzung dafür – zumindest für das Bearbeiten – ist jedoch, dass Willowbot über einen Zugangsschlüssel für den Kanal, dessen Daten er ändern möchte, verfügt. Fehlt ein solcher Zugangsschlüssel beim Betreten eines Kanals, wird Willowbot beim Verbindungsaufbau mit einer Meldung darauf hinweisen.
 
-Sind Sie Moderator auf einem nicht von Ihnen betreuten Kanal, möchten Willowbots Funktion zum Ändern der Kanaldaten jedoch dort nutzen, benötigen Sie also einen Willowbotzugangsschlüssel des Streamers. <b>Dies ist mit einem gewissen Risiko verbunden!</b> Ein Moderator, der über einen anderen Zugangsschlüssel als seinen eigenen verfügt, kann Willowbot mit fremder Identität nutzen und so bspw. andere Nutzer in Misskredit bringen. Tauschen Sie Schlüssel also nur mit Personen aus, denen Sie genügend vertrauen. Bei Verdacht auf Missbrauch eines Schlüssels sollte dieser umgehend zurückgerufen und damit invalidiert werden (`--token revoke`)!
+Sind Sie Moderator auf einem nicht von Ihnen betreuten Kanal, möchten Willowbots Funktion zum Ändern der Kanaldaten jedoch dort nutzen, benötigen Sie also einen Willowbotzugangsschlüssel des Streamers. <b>Dies ist mit einem gewissen Risiko verbunden!</b> Ein Moderator, der über einen anderen Zugangsschlüssel als seinen eigenen verfügt, kann Willowbot mit fremder Identität nutzen und so bspw. andere Nutzer in Misskredit bringen. Tauschen Sie Zugangsschlüssel also nur mit Personen aus, denen Sie genügend vertrauen. Bei Verdacht auf Missbrauch eines Zugangsschlüssels sollte dieser umgehend zurückgerufen und damit invalidiert werden (`--token revoke`)!
 
 Dem in diesem Kapitel empfohlenen Namensschema für optionale Module folgend, sind die Namen der Routinen, die das `modChannelInfo`-Modul bereitstellt:
 
@@ -766,16 +772,18 @@ Derzeit sind folgende Nachrichtentypen in Willowbots Test-/Fehlerbehandlungsmodu
 
 ### Liste der Kommandozeilenoptionen
 
-* `-c`, `--channel`<br>verbinde Willowbot mit dem hinter `--channel` angegebenen Kanal
-* `-cf`, `--configure`<br>erzeuge eine Konfigurations- sowie eine Logindatei
-* `-df`, `--debug-full`<br>Willowbot reagiert auf eine Reihe vordefinierter Nachrichtenmuster mit den für den festgelegten Kanal definierten Kommandos
-* `-ds`, `--debug-single`<br>eine Willowbot übergebene Nachricht wie eine echte Chatnachricht behandeln und Willowbot mit seinen definierten Kommandos reagieren lassen; Nutzung:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`python main_cli.py --debug-single 'Diese Nachricht soll verarbeitet werden.'`<br>achten Sie auf die einfachen Anführungszeichen um Ihre Nachricht
-* `-h`, `--help`<br>zeigt eine Übersicht zur Nutzung von Willowbot sowie dessen Optionen an
-* `-l`, `--login`<br>benutze Willowbot mit dem hinter `--login` angegebenen statt mit dem als `botname` in der Konfigurationsdatei festgelegten Konto
-* `-lg`, `--language`<br>Willowbot mit einer anderen als der Systemsprache starten; benötigt ein Sprachenkürzel als zusätzliches Argument
-* `-t`, `--token`<br>Operationen für Zugangsschlüssel; benötigt zusätzlich eines der folgenden Schlüsselwörter:
-    * `add`<br>der Logindatei einen Schlüssel hinzufügen; benötigt zusätzlich einen Kontonamen sowie den zugehörigen Schlüssel als Argumente
-    * `delete`<br>einen Schlüssel aus der Logindatei löschen; benötigt zusätzlich einen zu löschen Kontonamen als Argument
-    * `get`<br>einen Schlüssel über Twitch generieren
-    * `list`<br>die in der Logindatei hinterlegten Schlüssel auflisten
-    * `revoke`<br>einen in der Logindatei hinterlegten Schlüssel widerrufen; benötigt zusätzlich den Namen des Kontos, dessen Schlüssel widerrufen werden soll, als Argument
+* `-c`, `--channel {Kanalname}`<br>Zwingt Willowbot, sich mit dem Kanal `{Kanalname}` zu verbinden..
+* `-cf`, `--configure`<br>Generiert eine Konfigurations- sowie eine Logindatei.
+* `-df`, `--debug-full`<br>Willowbot wird auf eine Reihe vordefinierter Nachrichtenmuster reagieren und dabei Kommandos des mittels `--channel`-Option festgelegten Kanals verwenden. Wird die `--channel`-Option weggelassen, werden die Kommandos des als `botname` in der Konfigurationsdatei festgelegten Kanals verwendet.
+* `-ds`, `--debug-single '{Nachricht}'`<br>Willowbot wird die Nachricht `{Nachricht}` wie eine gewöhnliche Chatnachricht behandeln und darauf reagieren. Beachten Sie die einfachen Anführungszeichen um die Nachricht.
+* `-gc`, `--get-config [Schlüssel]`<br>Gibt alle Schlüssel der Willowbotkonfigurationsdatei und deren Werte aus. Wird ein bestimmter Schlüssel `[Schlüssel]` als zusätzliches Argument übergeben, wird nur eben dieser Schlüssel und dessen Wert angezeigt.
+* `-h`, `--help`<br>Zeigt eine Übersicht an, wie Willowbot und seine Optionen benutzt werden, ähnlich der in diesem Abschnitt der Dokumentation.
+* `-l`, `--login {Kontoname}`<br>Willowbot benutzt das Nutzerkonto `{Kontoname}` anstelle des als `botname` in der Konfigurationsdatei festgelegten.
+* `-lg`, `--language {Sprachkürzel}`<br>Startet Willowbot mit der als {Sprachkürzel} übergebenen Sprache statt mit der Betriebssystemsprache (sofern diese unterstützt wird). Derzeit unterstützte Sprachkürzel können in Willowbots `lang`-Verzeichnis oder über die Nutzung der `--help`-Option in Willowbot selbst nachgesehen werden.
+* `-sc`, `--set-config {key} {value}`<br>Setzt den in der Willowbotkonfigurationsdatei existierenden Schlüssel `{Schlüssel}` auf den Wert `{Wert}`.
+* `-t`, `--token {keyword}`<br>Führt Zugansschlüsselaktionen aus. Benötigt eines der folgenden Schlüsselworte:
+    * `add {Name} {Zugangsschlüssel}`<br>Fügt der Logindatei den Zugangsschlüssel `{Zugangsschlüssel}` für das Nutzerkonto `{Name}` hinzu.
+    * `delete {Name}`<br>Entfernt den Namen `{Name}` sowie den damit assoziierten Zugangsschlüssel aus der Logindatei.
+    * `get`<br>Generiert einen Zugangsschlüssel über Twitch.
+    * `list`<br>Listet alle in der Logindatei hinterlegten Zugangsschlüssel auf.
+    * `revoke {Name}`<br>Widerruft den mit dem Namen `{Name}` in der Logindatei hinterlegten Zugangsschlüssel. Dies entfernt entsprechenden Zugangsschlüssel zugleich aus der Logindatei.

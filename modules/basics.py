@@ -108,11 +108,13 @@ def getRoleIDs(CONFIG, feedback = False):
   if 'clientID' in CONFIG:
     response = requests.get(CONFIG['URL_API'] + "users" + "?login=" + CONFIG['botname'] + "&login=" + CONFIG['channel'], headers = {'Authorization' : 'Bearer ' + CONFIG['oauth'], 'Client-Id' : CONFIG['clientID']})
     if response.ok:
-      CONFIG['moderatorID'] = response.json()['data'][0]['id']
-      if len(response.json()['data']) > 1:
-        CONFIG['broadcasterID'] = response.json()['data'][1]['id']
-      else:
-        CONFIG['broadcasterID'] = CONFIG['moderatorID']
+      # Beware! Data retrieved via the request above don’t necessarily have the same order in the response as they had in the request.
+      responseData = response.json()['data']
+      for dataSet in responseData:
+        if dataSet['login'] == CONFIG['botname'].lower():
+          CONFIG['moderatorID'] = dataSet['id']
+        if dataSet['login'] == CONFIG['channel'].lower():
+          CONFIG['broadcasterID'] = dataSet['id']
       feedback and print(" " + langDict['symbol_success'] + " " + langDict['roles_retrievingSuccessful'].format(botname = CONFIG['botname'], moderatorID = CONFIG['moderatorID'], channel = CONFIG['channel'], broadcasterID = CONFIG['broadcasterID']))
     else:
       feedback and print(" " + langDict['symbol_failure'] + " " + langDict['roles_retrievingFailed'], response.json())

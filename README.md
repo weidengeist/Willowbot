@@ -73,17 +73,23 @@ If everything is installed correctly, you should now be presented Willowbot’s 
 
 **Beware!** Aforementioned procedure has only been tested on Linux. If any information about the steps needed on Windows is incorrect and/or does not work, please let me know.
 
-Now generate an access token for Willowbot. To do so, invoke Willowbot with the `--token` option, followed by the keyword `get`:
+Now generate an access token for Willowbot. But before you proceed, make sure that there is no active Twitch session in your browser, so log out or even delete the according session cookie. Afterwards, you are ready to generate the token by invoking Willowbot with the `--token` option, followed by the keyword `get`:
 ```
 python main_cli.py --token get
 ```
-This should open your default browser will open your default web browser and present you Twitch’s authorization page for access tokens. Log into your bot’s account and click »Authorize«. Afterwards, you will be redirected to a page explaining how to add the just generated key to your logins file. Follow those instructions
+This should open your default browser will open your default web browser and present you Twitch’s authorization page for access tokens. Log into your bot’s account and click »Authorize«. Afterwards, you will be redirected to a page explaining how to add the just generated key to your logins file. Follow those instructions.
 
-After having added the key, start the bot via
+After having added the key, set Willowbot’s default login name to the name which you have just generated an access token for:
 ```
-python main_cli.py
+python main_cli.py --set-config botname iamabot
 ```
-and it will connect to its own channel. In practice, you will of course want to use Willowbot on your personal broadcaster channel or – if you are a moderator – on another channel where you have moderator privileges. To do so, start Willowbot with the `--channel` option, followed by the name of the channel Willowbot is supposed to join:
+`iamabot` is just a placeholder; you have to provide the actual bot account name.
+
+You can now start Willowbot by simply typing
+```
+python main_cli.py 
+```
+and it will connect to the channel you have specified as `botnome`. In practice, however, you will of course want to use Willowbot on your personal broadcaster channel or – if you are a moderator – on another channel where you have moderator privileges. To do so, start Willowbot with the `--channel` option, followed by the name of the channel Willowbot is supposed to join:
 ```
 python main_cli.py --channel myownchannel
 ```
@@ -766,16 +772,18 @@ Currently, the following message types are included in Willowbot’s debugging/t
 
 ### List of command line options
 
-* `-c`, `--channel`<br>make Willowbot connect to the channel put after `--channel`
-* `-cf`, `--configure`<br>generate a config and a logins file
-* `-df`, `--debug-full`<br>Willowbot will react to a series of predefined message patterns, using the commands set of the chosen channel
-* `-ds`, `--debug-single`<br>Willowbot will treat a message passed to it like an ordinary chat message and react to it; usage:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`python main_cli.py --debug-single 'This is the message to be processed.'`<br>note the single quotation marks around the message
-* `-h`, `--help`<br>shows an overview of how to use Willowbot and its options
-* `-l`, `--login`<br>make Willowbot use the account named after `--login` instead of the one stated as `botname` in the config file
-* `-lg`, `--language`<br>start Willowbot with another language than the OS default language; needs a locale abbreviation as an additional argument
-* `-t`, `--token`<br>token operations; needs one of the following keywords as an additional argument:
-    * `add`<br>add a key to the logins file; needs an account name as well as a token as additional arguments
-    * `delete`<br>remove a token from the logins file; needs an account name supposed to be deleted as an additional argument
-    * `get`<br>generate a token via Twitch
-    * `list`<br>list all tokens residing in the logins file
-    * `revoke`<br>revoke a token listed in the logins file; needs the account name the token of which is supposed to be revoked as an additional argument
+* `-c`, `--channel {channel name}`<br>Make Willowbot connect to the channel `{channel name}`.
+* `-cf`, `--configure`<br>Generate a config and a logins file.
+* `-df`, `--debug-full`<br>Willowbot will react to a series of predefined message patterns, using the commands set of the channel specified via the `--channel` option. If the `--channel` option is omitted, the commands of the channel set as `botname` in the config file will be used.
+* `-ds`, `--debug-single '{message}'`<br>Willowbot will treat `{message}` like an ordinary chat message and react to it. Note the single quotation marks around the message.
+* `-gc`, `--get-config [key]`<br>Show all keys of the Willowbot config file and their values. If you provide a distinct key `[key]` as an additional argument, onyl that key and its value will be shown.
+* `-h`, `--help`<br>Shows an overview of how to use Willowbot and its options, similar to this section of the README.
+* `-l`, `--login {account name}`<br>Make Willowbot use the account `{account name}` instead of the one stated as `botname` in the config file.
+* `-lg`, `--language {locale abbreviation}`<br>Start Willowbot with the language that has the code `{locale abbreviation}` instead of with OS default language (provided it is supported). Currently supported language abbreviations can be checked in Willowbot’s `lang` directory or via Willowbot’s `--help` option.
+* `-sc`, `--set-config {key} {value}`<br>Set the value of an existing key `{key}` of Willowbot’s config file to `{value}`.
+* `-t`, `--token {keyword}`<br>Perform a token operation. One of the following keywords is needed:
+    * `add {name} {token}`<br>Add the token `{token}` for the account `{name}` to the logins file.
+    * `delete {name}`<br>Remove `{name}` and the token associated with it from the logins file.
+    * `get`<br>Generate a token via Twitch.
+    * `list`<br>List all tokens residing in the logins file.
+    * `revoke {name}`<br>Revoke the token listed in the logins file and associated with the passed `{name}`. This operation will also delete the token from the logins file.

@@ -16,6 +16,12 @@ if '-h' in sys.argv or '--help' in sys.argv:
 if '-cf' in sys.argv or '--configure' in sys.argv:
   createConfigFiles()
 
+if '-sc' in sys.argv or '--set-config' in sys.argv:
+  setConfigValue()
+
+if '-gc' in sys.argv or '--get-config' in sys.argv:
+  getConfigValue()
+
 # Load all the remaining modules.
 from modules.basics import checkTimedCommands  # Import various general functions from the basics(.py) module in ./modules.
 from modules.basics import getCommands    
