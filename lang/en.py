@@ -68,7 +68,7 @@ langDict = {
   'tokenActions_unknownOption'            : 'ERROR! Unknown token option. Available options: {options}.',
   # Help topics.
   'help_info_channel'                     : 'Make Willowbot connect to the channel {channel name}.',
-  'help_info_config_get'                  : 'Show all keys of the Willowbot config file and their values. If you provide a distinct key [key] as an additional argument, onyl that key and its value will be shown.',
+  'help_info_config_get'                  : 'Show all keys of the Willowbot config file and their values. If you provide a distinct key [key] as an additional argument, only that key and its value will be shown.',
   'help_info_config_set'                  : 'Set the value of an existing key {key} of Willowbot’s config file to {value}.',
   'help_info_configure'                   : 'Generate a config and a logins file.',
   'help_info_debug_full'                  : 'Willowbot will react to a series of predefined message patterns, using the commands set of the channel specified via the --channel option. If the --channel option is omitted, the commands of the channel set as »botname« in the config file will be used.',

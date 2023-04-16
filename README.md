@@ -776,7 +776,7 @@ Currently, the following message types are included in Willowbot’s debugging/t
 * `-cf`, `--configure`<br>Generate a config and a logins file.
 * `-df`, `--debug-full`<br>Willowbot will react to a series of predefined message patterns, using the commands set of the channel specified via the `--channel` option. If the `--channel` option is omitted, the commands of the channel set as `botname` in the config file will be used.
 * `-ds`, `--debug-single '{message}'`<br>Willowbot will treat `{message}` like an ordinary chat message and react to it. Note the single quotation marks around the message.
-* `-gc`, `--get-config [key]`<br>Show all keys of the Willowbot config file and their values. If you provide a distinct key `[key]` as an additional argument, onyl that key and its value will be shown.
+* `-gc`, `--get-config [key]`<br>Show all keys of the Willowbot config file and their values. If you provide a distinct key `[key]` as an additional argument, only that key and its value will be shown.
 * `-h`, `--help`<br>Shows an overview of how to use Willowbot and its options, similar to this section of the README.
 * `-l`, `--login {account name}`<br>Make Willowbot use the account `{account name}` instead of the one stated as `botname` in the config file.
 * `-lg`, `--language {locale abbreviation}`<br>Start Willowbot with the language that has the code `{locale abbreviation}` instead of with OS default language (provided it is supported). Currently supported language abbreviations can be checked in Willowbot’s `lang` directory or via Willowbot’s `--help` option.
