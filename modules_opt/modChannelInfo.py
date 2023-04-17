@@ -117,10 +117,18 @@ def modChannelInfo_category_set(irc, CONFIG, searchTerm = "", listMsg = "$return
             if searchTerm_normalized == r_name_normalized:
               del candidates
               break
-            elif searchTerm_normalized in r_name_normalized:
-              candidates.append({'name' : r['name'], 'id' : r['id']})
             else:
-              continue
+              allWordsFound = True
+              searchTerm_normalized = searchTerm_normalized.split(" ")
+              r_name_normalized = r_name_normalized.split(" ")
+              for word in searchTerm_normalized:
+                if not word in r_name_normalized:
+                  allWordsFound = False
+                  break
+              if allWordsFound:
+                candidates.append({'name' : r['name'], 'id' : r['id']})
+              else:
+                continue
       
           if not 'candidates' in locals() or len(candidates) == 1:
             print("Perfect match found!", r['id'], r['name'])
