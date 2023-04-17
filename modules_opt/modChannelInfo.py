@@ -146,6 +146,10 @@ def modChannelInfo_category_set(irc, CONFIG, searchTerm = "", listMsg = "$return
               print("New category:", r['name'])
               if len(successMsg) > 0:
                 irc.send(successMsg.replace("$return", r['name']))
+
+          elif len(candidates) == 0:
+            irc.send("No such category found.") # To do: Make this answer parametric.
+
           else:
             candidatesListString = ""
             for i in range(0, len(candidates)):
