@@ -122,7 +122,8 @@ def modChannelInfo_category_set(irc, CONFIG, searchTerm = "", listMsg = "$return
               searchTerm_normalized = searchTerm_normalized.split(" ")
               r_name_normalized = r_name_normalized.split(" ")
               for word in searchTerm_normalized:
-                if not word in r_name_normalized:
+                # The second condition also checks substrings.
+                if not word in r_name_normalized and not word in " ".join(r_name_normalized):
                   allWordsFound = False
                   break
               if allWordsFound:
