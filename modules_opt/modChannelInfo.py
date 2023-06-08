@@ -96,7 +96,7 @@ def modChannelInfo_category_set(irc, CONFIG, searchTerm = "", listMsg = "$return
     else:
       if not searchTerm == "":
         candidates = []
-        # Limit the list of results to 5 entries ('first' : 10).
+        # Limit the list of results to 10 entries ('first' : 10).
         response = requests.get(\
           CONFIG['URL_API'] + "search/categories/",\
           params = {'query' : searchTerm, 'first' : 10},\
