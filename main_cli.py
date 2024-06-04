@@ -70,7 +70,7 @@ while 1:
   response = irc.getResponse()
   
   # Needs the irc connection as an argument to enable sending reactions to the chat. Full commands are passed for »function« key, which might tamper with the commands set.
-  checkTimedCommands(commands, commands['timed'], irc)
+  checkTimedCommands(commands['timed'], irc)
   
   # Iterate over the received messages.
   for r in response:

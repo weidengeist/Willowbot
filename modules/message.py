@@ -352,6 +352,8 @@ class Message():
           continue
 
         # Check if the message that has to be reacted to has been sent by the specified user (login name), if any.
+        if 'senderName' in commands['general'][c]:
+          print("Comparing", self.getSenderName(), commands['general'][c]['senderName'])
         if not 'senderName' in commands['general'][c] or ('senderName' in commands['general'][c] and self.getSenderName() in commands['general'][c]['senderName']):
           pass
         else:
@@ -473,6 +475,7 @@ class Message():
 
     elif self.getType() == "RECONNECT":
       print("\nRECONNECT\n")
+      irc.tryReconnect()
       print(message)
 
     elif self.getType() == "USERSTATE":

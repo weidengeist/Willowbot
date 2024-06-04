@@ -23,7 +23,7 @@ class LocalServer(BaseHTTPRequestHandler):
     exit()
 
 
-  # By using a simple »return« in this function every output in the terminal is suppressed.
+  # By using a simple »return« in this function, every output in the terminal is suppressed.
   def log_message(self, format, *args):
     return
 

@@ -262,61 +262,76 @@ def getCommands(config, feedback = False):
   return {'general' : commands, 'timed' : commands_timed, 'sub' : commands_sub, 'raid' : commands_raid, 'status' : status}
   
 
-def checkTimedCommands(commands, commands_timed, irc):  
+def channelIsOnline(channel, oauth, clientID):
+  streamData = requests.get("https://api.twitch.tv/helix/streams/" , params = {"user_login" :  channel}, headers = {"Authorization" : "Bearer " + oauth, "Client-Id" : clientID}).json()
+  if 'data' in streamData:
+    if len(streamData['data']) > 0 and 'game_name' in streamData['data'][0]:
+      return True
+    else:
+      return False
+  else:
+    print("TWITCH ERROR", "Could not get online status.")
+    return False
+
+
+def checkTimedCommands(commands_timed, irc):  
   # Check for elapsed intervals in timed commands.
   for c in list(commands_timed.keys()):
     if timeElapsed(commands_timed[c], 'interval'):
-      reaction = commands_timed[c]
-       # If the command contains an answer key, process its value.
-      if 'answer' in reaction:
-        answer = commands_timed[c]['answer'].split('\n')
-        if len(answer) > 1:
-          if 'answerType' in reaction and reaction['answerType'] == 'random':
-            # Choose a random answer to send.
-            answer = answer[randint(0, len(answer) - 1)]
-            # Turn the answer into a list of chunks with a maximum of 500 characters.
-            answer = splitIntoGroupsOf(answer, 500)
+      if channelIsOnline(irc.config['channel'], irc.config['oauth'], irc.config['clientID']):
+        reaction = commands_timed[c]
+         # If the command contains an answer key, process its value.
+        if 'answer' in reaction:
+          answer = commands_timed[c]['answer'].split('\n')
+          if len(answer) > 1:
+            if 'answerType' in reaction and reaction['answerType'] == 'random':
+              # Choose a random answer to send.
+              answer = answer[randint(0, len(answer) - 1)]
+              # Turn the answer into a list of chunks with a maximum of 500 characters.
+              answer = splitIntoGroupsOf(answer, 500)
+              for a in answer:
+                irc.send(a)
+            else:
+              # Defaults to »sequence«.
+              for a in answer:
+                chunkList = splitIntoGroupsOf(a, 500)
+                for c in chunkList:
+                  irc.send(c)
+          else:
+            answer = splitIntoGroupsOf(answer[0], 500)
             for a in answer:
               irc.send(a)
+    
+        # Execute the string in »os-command« as a system command.
+        if 'os-command' in reaction:
+          os.system(reaction['os-command'])
+    
+        if 'function' in reaction:
+          eval(reaction['function'])
+    
+        # If there is a debug message provided, output this on the console.
+        if 'debug' in reaction:
+          answer = reaction['debug'].split('\n')
+          if len(answer) > 1:
+            if 'answerType' in reaction and reaction['answerType'] == 'random':
+              # Choose a random answer to send.
+              answer = answer[randint(0, len(answer) - 1)]
+              # Turn the answer into a list of chunks with a maximum of 500 characters.
+              answer = splitIntoGroupsOf(answer, 500)
+              for a in answer:
+                print("    [debug]: " + a)
+            else:
+              # Defaults to »sequence«.
+              for a in answer:
+                chunkList = splitIntoGroupsOf(a, 500)
+                for c in chunkList:
+                  print("    [debug]: " + c)
           else:
-            # Defaults to »sequence«.
-            for a in answer:
-              chunkList = splitIntoGroupsOf(a, 500)
-              for c in chunkList:
-                irc.send(c)
-        else:
-          answer = splitIntoGroupsOf(answer[0], 500)
-          for a in answer:
-            irc.send(a)
-  
-      # Execute the string in »os-command« as a system command.
-      if 'os-command' in reaction:
-        os.system(reaction['os-command'])
-  
-      if 'function' in reaction:
-        eval(reaction['function'])
-  
-      # If there is a debug message provided, output this on the console.
-      if 'debug' in reaction:
-        answer = reaction['debug'].split('\n')
-        if len(answer) > 1:
-          if 'answerType' in reaction and reaction['answerType'] == 'random':
-            # Choose a random answer to send.
-            answer = answer[randint(0, len(answer) - 1)]
-            # Turn the answer into a list of chunks with a maximum of 500 characters.
-            answer = splitIntoGroupsOf(answer, 500)
+            answer = splitIntoGroupsOf(answer[0], 500)
             for a in answer:
               print("    [debug]: " + a)
-          else:
-            # Defaults to »sequence«.
-            for a in answer:
-              chunkList = splitIntoGroupsOf(a, 500)
-              for c in chunkList:
-                print("    [debug]: " + c)
-        else:
-          answer = splitIntoGroupsOf(answer[0], 500)
-          for a in answer:
-            print("    [debug]: " + a)
+      else:
+        print("Channel offline. Skipping timed commands.")
 
 
 # Used to split too long bot messages into chunks of a distinct character limit.
@@ -351,6 +366,7 @@ def splitIntoGroupsOf(s, length):
     s = re.sub("^ *", "", s.replace(first, ""))
 
   return finalStringsList
+
 
 # Convert Latin-like Cyrillic letters to real Latin ones to strike scam bots.
 # Only apply those replacements in case of a mixture of Latin and Cyrillic letters.
