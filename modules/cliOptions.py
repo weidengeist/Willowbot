@@ -228,8 +228,8 @@ def setConfigValue():
             with open(os.path.join(configDir, "config_tmp.py"), "w") as tempFile:
               tempFile.write(content)
             # Delete the original config file and rename the new, formerly temporary one.
-            os.remove(os.path.join(configDir, "logins.py"))
-            os.rename(os.path.join(configDir, "logins_tmp.py"), os.path.join(configDir, "logins.py"))
+            os.remove(os.path.join(configDir, "config.py"))
+            os.rename(os.path.join(configDir, "config_tmp.py"), os.path.join(configDir, "config.py"))
             print(langDict['config_set_valueUpdated'].format(key = distinctKey, oldValue = str(configData[distinctKey]), newValue = str(sys.argv[distinctKeyIndex + 1])))
         else:
           print(langDict['config_set_noNewValue'].format(key = distinctKey))
