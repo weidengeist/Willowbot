@@ -89,11 +89,11 @@ You can now start Willowbot by simply typing
 ```
 python main_cli.py 
 ```
-and it will connect to the channel you have specified as `botnome`. In practice, however, you will of course want to use Willowbot on your personal broadcaster channel or – if you are a moderator – on another channel where you have moderator privileges. To do so, start Willowbot with the `--channel` option, followed by the name of the channel Willowbot is supposed to join:
+and it will connect to the channel you have specified as `botname`. In practice, however, you will of course want to use Willowbot on your personal broadcaster channel or – if you are a moderator – on another channel where you have moderator privileges. To do so, start Willowbot with the `--channel` option, followed by the name of the channel Willowbot is supposed to join:
 ```
 python main_cli.py --channel myownchannel
 ```
-Oviously, you have to replace `myownchannel` with the actual name of the appropriate channel where Willowbot is supposed to do its duty and run a specific set of commands.
+Obviously, you have to replace `myownchannel` with the actual name of the appropriate channel where Willowbot is supposed to do its duty and run a specific set of commands.
 
 
 ### Hints on migrations (first-time users may skip this part)
