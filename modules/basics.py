@@ -178,7 +178,7 @@ def getConfig(feedback = False):
     channelIndex = sys.argv.index("-c" in sys.argv and "-c" or "--channel") + 1
     CONFIG['channel'] = len(sys.argv) > channelIndex and sys.argv[channelIndex].lower() or 'channel' in CONFIG and CONFIG['channel'].lower()
 
-  CONFIG['channel'] = 'channel' in CONFIG and CONFIG['channel'] != "" and CONFIG['channel'] or CONFIG['botname'].lower()
+  CONFIG['channel'] = CONFIG['channel'] if 'channel' in CONFIG and CONFIG['channel'] != "" else CONFIG['botname'].lower()
 
   from cliOptions import inTokenMode
   if not inTokenMode():

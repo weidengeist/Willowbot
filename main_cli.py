@@ -36,6 +36,7 @@ if inOneshotMode():
 else:
   globalFeedback = True
 
+
 LOGINS = getLogins(feedback = globalFeedback)   # Load all available login oauths.
 CONFIG = getConfig(feedback = globalFeedback)   # Load configuration files. 
 
