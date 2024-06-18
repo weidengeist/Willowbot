@@ -66,7 +66,7 @@ def createConfigFiles():
     # Create an empty file …
     configFile = open(os.path.join(configDir, "config.py"), 'w')
     # … and write a configuration template to it.
-    configFile.write('config = {\n  \'botname\'          : \'IAmYourFirstBot\',\n  \'clientID\'         : \'e5kdpgd2bbnbj1u5gbjpzeq7vsgwup\',\n  \'connectionRetries\': 10,\n  \'port\'             : 6697,\n  \'server\'           : \'irc.chat.twitch.tv\'\n}')
+    configFile.write('config = {\n  \'botname\'                 : \'IAmYourFirstBot\',\n  \'clientID\'                : \'e5kdpgd2bbnbj1u5gbjpzeq7vsgwup\',\n  \'connectionRetries\'       : 10,\n  \'disconnectCheckInterval\' : 10,\n  \'port\'                    : 6697,\n  \'server\'                  : \'irc.chat.twitch.tv\'\n}')
     configFile.close()
     # Generate the file here
     print(langDict['configFiles_newConfigFile'].format(optionalNew = (answer == localeYes and (langDict['new_female'] + " ") or "")))
