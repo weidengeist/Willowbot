@@ -656,7 +656,7 @@ Eine Beispieldefinition für einen Chatbefehl, der `dateDiff_send` verwendet, is
   }
 ```
 
-Schickt ein Chatteilnehmer den Befehl `!geb` ab, gibt der Bot (bspw.) die Antwort `In 221 Tagen, 12 Stunden, 10 Minuten und 17 Sekunden hat die Streamerin Geburtstag.` aus. Die Datumsdifferenzzeichenkette wird dort eingefügt, wo `{dateDiff}` in `contextString` auftaucht, und in diesem Fall ist es die bis 08. April verbleibende Zeit. In den meisten Fällen wird bei deutscher Sprache erforderlich sein, die Verwendung der Akkusativendungen via `useAccusativeMod = True` zuzuschalten, damit der Satz grammatisch korrekt ist. Wird Willowbot nicht ohnehin schon in deutscher Sprache gestartet, soll aber eine auf Deutsche formulierte Datumsdifferenz ausgeben, ist obendrein `languageOverride = "de"` als Funktionsparameter notwendig.
+Schickt ein Chatteilnehmer den Befehl `!geb` ab, gibt der Bot (bspw.) die Antwort `In 221 Tagen, 12 Stunden, 10 Minuten und 17 Sekunden hat die Streamerin Geburtstag.` aus. Die Datumsdifferenzzeichenkette wird dort eingefügt, wo `{dateDiff}` in `contextString` auftaucht, und in diesem Fall ist es die bis 08. April verbleibende Zeit. In den meisten Fällen wird bei deutscher Sprache erforderlich sein, die Verwendung der Akkusativendungen via `useAccusativeMod = True` zuzuschalten, damit der Satz grammatisch korrekt ist. Wird Willowbot nicht ohnehin schon in deutscher Sprache gestartet, soll aber eine auf Deutsch formulierte Datumsdifferenz ausgeben, ist obendrein `languageOverride = "de"` als Funktionsparameter notwendig.
 
 
 ## 5 Test-/Fehlerbehandlungsmodus
