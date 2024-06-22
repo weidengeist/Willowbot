@@ -28,6 +28,7 @@
     * [4.1 Accessing custom modules: the `function` key](https://github.com/weidengeist/Willowbot#41-accessing-custom-modules-the-function-key)
     * [4.2 `poll` module](https://github.com/weidengeist/Willowbot#42-poll-module)
     * [4.3 `modChannelInfo` module](https://github.com/weidengeist/Willowbot#43-modchannelinfo-module)
+    * [4.4 `dateDiff` module](https://github.com/weidengeist/Willowbot#44-dateDiff-module)
 * [5 Test/Debugging mode](https://github.com/weidengeist/Willowbot#5-testdebugging-mode)
 * [6 Concluding words](https://github.com/weidengeist/Willowbot#6-concluding-words)
 * [Appendix](https://github.com/weidengeist/Willowbot#appendix)
@@ -633,6 +634,29 @@ It contains the placeholder `$return`. Within the `modChannelInfo` module it is 
 The routine `category_get` works analogously to `title_get` and merely uses both a success and a failure message as optional arguments.
 
 The most complex function in this module is `category_set`. Just like `title_set` it gathers the passed arguments (`$arg0+`) and passes them to the function in their entirety. They are handled as a string that should match one of the categories available on Twitch as much as possible. If only one category exists that matches this string, the category of the running broadcast will be set to that category. In case of an ambiguous request the module will show up to ten entries in a numbered list in the chat the context of which is determined by the second optional argument – in the example above it’s `Potential candidates: $return. Change the game by typing !game-set [number] or send a new request.` `$return` is replaced with a list with the format `Game title (1), another game title (2), […]`. This list is saved in the background by Willowbot. You may now use the `!game-set` command again, but instead of querying for a distinct category you may now choose one of the numbers of the list output before and append it to the command, e.g. `!game-set 4`, and the `modChannelInfo` module will change the broadcast category to the one associated with that number. Afterwards, that internal list will be deleted, which means that this procedure may only be repeated by a new query with a category name.
+
+
+### 4.4 `dateDiff` module
+
+A very popular command is getting the time remaining until a certain event happens, e.g. a game presentation or the streamer’s birthday. That’s what the `dateDiff` module can be used for. It allows you to calculate the difference between two dates as well as the one between the time of sending the command linked to this module and a target date.
+
+The core function supposed to be used by the end-user is `dateDiff_send`. It uses the following parameters:
+* `irc`: mandatory.
+* `targetDate`: mandatory; a string in ISO format [YYYY]-[MM]-[DD]T[hh]:[mm]:[ss] or [MM]-[DD]; if the latter variant is used, Willowbot will assume the next occurrence of this month-day combination, i.e. either the current or the next year.
+* `nowDate`: optional, default: `""`; see `targetDate`; if this parameter is omitted, the actual current date and time will be used instead of the one expressed by the provided string.
+* `contextString`: optional, default: `{dateDiff}`; the string you want to appear in the chat when the command associated with `dateDiff_send` is used, with `{dateDiff}` being automatically replaced by a string in a natural language, expressing the date difference in words.
+* `useAccusativeMod`: optional, default: `False`; some languages, like German, use a suffix for expressing the accusative and this boolean parameter tells Willowbot if it shall be used when composing the natural language date difference string.
+* `languageOverride`: optional, default: `""`; if you want Willowbot to compose the date difference string in another language than the one Willowbot is launched with, use this parameter with a language code being present in the `./lang` subdirectory.
+
+An example definition for a command using `dateDiff_send` is the following:
+```
+'^!bday( |$)' : {
+    'matchType' : 'regex',
+    'function'  : 'dateDiff_send(irc, targetDate = "04-08", contextString = "The channel owner’s next birthday will be in {dateDiff}.")'
+  }
+```
+
+When a chat participant issues the command `!bday`, the bot will (for example) answer `The channel owner’s next birthday will be in 221 days, 12 hours, 10 minutes and 17 seconds.` The date difference string is inserted where `{dateDiff}` appears in the `contextString` parameter and in this case it is the time remaining until April 8th.
 
 
 ## 5 Test/Debugging mode

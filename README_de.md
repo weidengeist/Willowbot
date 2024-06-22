@@ -28,6 +28,7 @@
     * [4.1 Auf eigene Module zugreifen: der `function`-Schlüssel](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#41-auf-eigene-module-zugreifen-der-function-schl%C3%BCssel)
     * [4.2 `poll`-Modul (Abstimmungen)](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#42-poll-modul-abstimmungen)
     * [4.3 `modChannelInfo`-Modul (Kanalinformationen bearbeiten)](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#43-modchannelinfo-modul-kanalinformationen-bearbeiten)
+    * [4.4 `dateDiff`-Modul (Datumsdifferenzen ausgeben)](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#44-dateDiff-modul-datumsdifferenzen-ausgeben)
 * [5 Test-/Fehlerbehandlungsmodus](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#5-test-fehlerbehandlungsmodus)
 * [6 Abschließende Worte](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#6-abschlie%C3%9Fende-worte)
 * [Anhang](https://github.com/weidengeist/Willowbot/blob/main/README_de.md#anhang)
@@ -105,7 +106,7 @@ Des Weiteren unterstützt Willowbot nun API-Shoutouts und -Ankündigungen. Um si
 
 ## 3 Kommandosets erstellen
 
-Neben einem Verzeichnis für die allgemeine Willowbot-/IRC-Konfiguration wird dieses Programm ein Unterverzeichnis namens `commands` in diesem Konfigurationsverzeichnis anlegen. Sie können Kommandosets für mehrere Kanäle anlegen; jedes Set ist eine gesonderte Datei, die nach dem Kanal benannt ist, auf dem sie benutzt werden soll. (Das ist besonders nützlich, wenn Sie Moderator auf mehr als einem Kanal sind.) Ab jetzt nehmen wir, dass Ihr Bot IchBinEinBot heißt, d. h. den Twitchlogin ichbineinbot verwendet. Um Ihre Kommandos zu testen, ist es strengstens empfohlen, den Kanal des Bots zu verwenden, also lassen Sie uns jetzt für diesen ein Kommandoset anlegen.
+Neben einem Verzeichnis für die allgemeine Willowbot-/IRC-Konfiguration wird dieses Programm ein Unterverzeichnis namens `commands` in diesem Konfigurationsverzeichnis anlegen. Sie können Kommandosets für mehrere Kanäle anlegen; jedes Set ist eine gesonderte Datei, die nach dem Kanal benannt ist, auf dem sie benutzt werden soll. (Das ist besonders nützlich, wenn Sie Moderator auf mehr als einem Kanal sind.) Ab jetzt nehmen wir, dass Ihr Bot IchBinEinBot heißt, d. h. den Twitchlogin ichbineinbot verwendet. Um Ihre Kommandos zu testen, ist es strengstens empfohlen, den Kanal des Bots zu verwenden, also lassen Sie uns jetzt für diesen ein Kommandoset anlegen.
 
 Die Kommandosets selbst sind kleine Skripte, die in der Programmiersprache Python geschrieben sind und nichts weiter tun, als der Variablen `commands` ein sogenanntes Wörterbuch ([dictionary](https://docs.python.org/3/tutorial/datastructures.html#dictionaries)) zuzuordnen, worin all Ihre Kommandoinformationen gespeichert sind. Erstellen Sie eine Datei namens `ichbineinbot.py` (da dies der Kanal ist, wo wir einige Tests durchführen wollen; beachten Sie: nur Kleinbuchstaben verwenden!), worin Sie Ihre Kommandoprüfungen und Botreaktionen ablegen können.
 
@@ -130,7 +131,7 @@ commands = {
 ```
 `answer` wird in unserem Wörterbuch (dictionary) Schlüssel/Schlüsselwort (key) genannt; die eigentliche Antwort bezeichnet man als Wert (value). Wir werden diese Begriffe in den vor uns liegenden Beschreibungen öfter verwenden.
 
-Der Wert unseres `answer`-Schlüssels funktioniert genau wie ein gewöhnliches [Twitchchatkommando](https://help.twitch.tv/s/article/chat-commands), d. h. Sie können der Antwort `/me` oder `/announce` voranstellen, um sie hervorzuheben, wenn Sie mögen.
+Der Wert unseres `answer`-Schlüssels funktioniert genau wie ein gewöhnliches [Twitchchatkommando](https://help.twitch.tv/s/article/chat-commands), d. h. Sie können der Antwort `/me` oder `/announce` voranstellen, um sie hervorzuheben, wenn Sie mögen.
 
 
 #### 3.1.1 Einfaches Abgleichen
@@ -144,7 +145,7 @@ commands = {
   }
 }
 ```
-Jetzt kann die Antwort des Bots z. B. durch `!bsg @randomtwitchuser` ausgelöst werden. Beachten Sie das Komma am Ende der Zeile mit `answer`! Die Reihenfolge der Schlüsseldefinitionen spielt keine Rolle; `matchType` kann ebensogut vor `answer` festgelegt werden.
+Jetzt kann die Antwort des Bots z. B. durch `!bsg @randomtwitchuser` ausgelöst werden. Beachten Sie das Komma am Ende der Zeile mit `answer`! Die Reihenfolge der Schlüsseldefinitionen spielt keine Rolle; `matchType` kann ebensogut vor `answer` festgelegt werden.
 
 Die anderen verfügbaren `matchType`-Optionen, die Willowbot zur Verfügung stellt, sind `is` (ist genau; Standardwert; muss nicht explizit gesetzt werden), `is_caseInsensitive` (wie `is`, aber ohne Berücksichtigung von Groß- und Kleinschreibung), `contains` (enthält), `endsWith` (endet mit), `regex` (mehr dazu später) und `contains_caseInsensitive` (wie `contains`, aber ohne Berücksichtigung von Groß- und Kleinschreibung). Die letzte besteht hauptsächlich aufgrund von Bequemlichkeitserwägungen für den Endnutzer, allerdings sei nahegelegt, stattdessen Reguläre Ausdrücke (regular expressions, Option `regex`) zu verwenden.
 
@@ -192,7 +193,7 @@ Das Muster, das hier benutzt wird, veranlasst Willowbot, auf URLs, die zu Twitch
 
 ### 3.2 Aliasse
 
-Da wir nun reguläre Ausdrücke kennen, können wir für unsere Kommandos Aliasse definieren, d. h. mehrere Kommandoauslöser für ein und dieselbe Reaktion. Ein simples Beispiel sollte ausreichend sein, um zu zeigen, wie das funktioniert:
+Da wir nun reguläre Ausdrücke kennen, können wir für unsere Kommandos Aliasse definieren, d. h. mehrere Kommandoauslöser für ein und dieselbe Reaktion. Ein simples Beispiel sollte ausreichend sein, um zu zeigen, wie das funktioniert:
 ```
 commands = {
   "^!([Mm]ods?|[Ss]kyrim|[Gg]ame)" : {
@@ -205,12 +206,12 @@ Da dieses Kommando mehrere verschiedene Regexstrukturen enthält, lassen Sie uns
 
 Einen Abschnitt zuvor haben Sie Zeichensets kennengelernt, und ebendiese Sets können Sie im hier definierten Kommando erneut sehen. Sie können die Antwort also entweder durch `!mod`, `!Mod`, `!skyrim`, `!Skyrim`, `!game` oder `!Game` auslösen.
 
-»Aber Moment! Da ist ein Fragezeichen hinter `![Mm]ods`!«, mögen Sie jetzt einwerfen. »Und wieso heißt es jetzt `!mods` und nicht mehr `!mod`?« Das Fragezeichen ist ein spezielles Zeichen im Kontext regulärer Ausdrücke. Es bedeutet, dass das Zeichen vor ihm optional ist, d. h. Sie können die Antwort nicht nur über `!mod` or `!Mod`, sondern auch durch `!mods` und `!Mods` auslösen.
+»Aber Moment! Da ist ein Fragezeichen hinter `![Mm]ods`!«, mögen Sie jetzt einwerfen. »Und wieso heißt es jetzt `!mods` und nicht mehr `!mod`?« Das Fragezeichen ist ein spezielles Zeichen im Kontext regulärer Ausdrücke. Es bedeutet, dass das Zeichen vor ihm optional ist, d. h. Sie können die Antwort nicht nur über `!mod` or `!Mod`, sondern auch durch `!mods` und `!Mods` auslösen.
 
 
 ### 3.3 Zeitabhängige Kommandos
 
-Natürlich unterstützt Willowbot auch zeitabhängige Kommandos, d. h. das automatische Versenden von Nachrichten nach Ablauf einer festgelegten Zeitspanne. In diesem Fall ist es nicht nötig, einen Befehl zu definieren, der diese Nachricht auslösen soll, und Sie können den Befehl nach Belieben benennen. Willowbot unterscheidet intern zwischen nutzerausgelösten und zeitabhängigen Kommandos, weshalb es nicht möglich ist, ein Kommando für beide Zwecke zu verwenden, also ein zeitabhängiges Kommando manuell auszulösen.
+Natürlich unterstützt Willowbot auch zeitabhängige Kommandos, d. h. das automatische Versenden von Nachrichten nach Ablauf einer festgelegten Zeitspanne. In diesem Fall ist es nicht nötig, einen Befehl zu definieren, der diese Nachricht auslösen soll, und Sie können den Befehl nach Belieben benennen. Willowbot unterscheidet intern zwischen nutzerausgelösten und zeitabhängigen Kommandos, weshalb es nicht möglich ist, ein Kommando für beide Zwecke zu verwenden, also ein zeitabhängiges Kommando manuell auszulösen.
 
 Um ein zeitabhängiges Kommando zu definieren, benötigt Willowbot das Schlüsselwort `interval`:
 ```
@@ -403,9 +404,9 @@ Obige Kommandodefinition löscht alle Nachrichten, die die Worte/Emotes »Kappa�
 
 ### 3.7 Auslösertypen: Raids und Abonnements (Subs)
 
-Die auf Twitch versandten Chatnachrichten enthalten alle spezielle Metadaten und können so u. a. zwischen Nutzernachricht, Abonnement/Sub und Raid unterschieden werden. Im Gegensatz zu Nutzernachrichtenkommandos, die Sie definieren, indem Sie ein Wort oder ein Muster festlegen, dem die Nachricht entsprechen muss, können Raid- und Abonnement-/Subnachrichten einen beliebigen Namen haben. Unter welchen Umständen eine Nachricht ausgelöst werden kann, teilen Sie Willowbot durch die Angabe eines `triggerType`-Schlüssels (Auslösetyp) mit.
+Die auf Twitch versandten Chatnachrichten enthalten alle spezielle Metadaten und können so u. a. zwischen Nutzernachricht, Abonnement/Sub und Raid unterschieden werden. Im Gegensatz zu Nutzernachrichtenkommandos, die Sie definieren, indem Sie ein Wort oder ein Muster festlegen, dem die Nachricht entsprechen muss, können Raid- und Abonnement-/Subnachrichten einen beliebigen Namen haben. Unter welchen Umständen eine Nachricht ausgelöst werden kann, teilen Sie Willowbot durch die Angabe eines `triggerType`-Schlüssels (Auslösetyp) mit.
 
-Willowbots Standardverhalten ist es, Nachrichten, die im Chat erscheinen, als Nutzernachrichten aufzufassen. Für den gewöhnlichen Nutzer unsichtbar, werden im Hintergrund spezielle Nachrichten gesendet. Diese enthalten u. a. Informationen über Raids und Abonnements. Wenn Sie wollen, dass Willowbot diese verarbeitet, müssen Sie den passenden `triggerType`-Wert in Ihrer Kommandodefinition festlegen.
+Willowbots Standardverhalten ist es, Nachrichten, die im Chat erscheinen, als Nutzernachrichten aufzufassen. Für den gewöhnlichen Nutzer unsichtbar, werden im Hintergrund spezielle Nachrichten gesendet. Diese enthalten u. a. Informationen über Raids und Abonnements. Wenn Sie wollen, dass Willowbot diese verarbeitet, müssen Sie den passenden `triggerType`-Wert in Ihrer Kommandodefinition festlegen.
 
 
 #### 3.7.1 Raids
@@ -421,7 +422,7 @@ commands = {
 ```
 Es ist wichtig, in dieser Definition als `triggerType` `raid` einzutragen. Andernfalls würde Willowbot den festgelegten Antwortsatz in den Chat schreiben, sobald jemandes Nachricht im Chat "meineRaids" entspricht.
 
-Wie weiter oben bereits erwähnt wurde, ist es nicht erforderlich, für diese Art der Nachrichten ein bestimmtes Signalwort oder Muster anzugeben. Allerdings *müssen* Sie einen eindeutigen Identifikator (in diesem Fall `meineRaids`) für diese Art der Nachrichtenverarbeitung festlegen. Nicht eindeutige, d. h. mehrfach vergebene Identifikatoren überschreiben die bereits angelegten Kommandos mit selbem Identifikator/Muster, so dass nur das zuletzt definierte existieren und auch verarbeitet werden können wird.
+Wie weiter oben bereits erwähnt wurde, ist es nicht erforderlich, für diese Art der Nachrichten ein bestimmtes Signalwort oder Muster anzugeben. Allerdings *müssen* Sie einen eindeutigen Identifikator (in diesem Fall `meineRaids`) für diese Art der Nachrichtenverarbeitung festlegen. Nicht eindeutige, d. h. mehrfach vergebene Identifikatoren überschreiben die bereits angelegten Kommandos mit selbem Identifikator/Muster, so dass nur das zuletzt definierte existieren und auch verarbeitet werden können wird.
 
 In der Antwort sehen Sie zwei weitere Platzhaltervariable: `raidersChannelName` und `raidersCount`. Sobald ein Raid festgestellt wird, werden diese Platzhalter durch den Kanal, der Ihnen seine Zuschauer schickt, respektive die Anzahl der herübergeschickten Zuschauer ersetzt.
 
@@ -478,7 +479,7 @@ commands = {
   }
 }
 ```
-Hier sehen Sie diverse Arten `subLevel`, `minSubLevel` und `maxSubLevel` zu verwenden. Willowbot wird die Kommando-/Auslöserkategorie `sub` (`sub`, `subPrime`, `subGiftContinued`, `subGiftSingle`, `subGiftMulti`) durchlaufen und *jeden* Treffer ausführen, es ist also wichtig, ihre Einschränkungen sorgsam, d. h. sich nicht überschneidend zu wählen, um zu vermeiden, dass mehr als eine Reaktion ausgeführt wird. In der obigen Definition können Sie sehen, dass die Abonnementstufen sich gegenseitig ausschließen. Obwohl sie geordnet sind, ist dies nicht erforderlich, damit Willowbot die Reaktionen korrekt ausführt. Es wird auch die Performanz nicht verbessern.
+Hier sehen Sie diverse Arten `subLevel`, `minSubLevel` und `maxSubLevel` zu verwenden. Willowbot wird die Kommando-/Auslöserkategorie `sub` (`sub`, `subPrime`, `subGiftContinued`, `subGiftSingle`, `subGiftMulti`) durchlaufen und *jeden* Treffer ausführen, es ist also wichtig, ihre Einschränkungen sorgsam, d. h. sich nicht überschneidend zu wählen, um zu vermeiden, dass mehr als eine Reaktion ausgeführt wird. In der obigen Definition können Sie sehen, dass die Abonnementstufen sich gegenseitig ausschließen. Obwohl sie geordnet sind, ist dies nicht erforderlich, damit Willowbot die Reaktionen korrekt ausführt. Es wird auch die Performanz nicht verbessern.
 
 
 ##### Unterstütze Platzhalter nach Abonnementkontext
@@ -505,7 +506,7 @@ Hier sehen Sie diverse Arten `subLevel`, `minSubLevel` und `maxSubLevel` zu verw
 
 ### 3.8 Antworttypen: sequentiell vs. zufällig
 
-Willowbots Standardverhalten ist es, einfach die Zeichenkette, die im `answer`-Schlüssel der entsprechenden Reaktion definiert ist, zu senden. Allerdings hat Twitch ein internes Zeichenlimit von 500 pro Nachricht. Im Normalfall werden Ihre Antwortsätze dieses Limit nicht überschreiten, doch was, wenn Sie umfangreichere Informationen an den Chat senden wollen, z. B. Storyzusammenfassungen für das aktuell gespielte Spiel? Nein, dafür müssen Sie nicht mehrere Kommandos, wie `!zusammenfassung1`, `!zusammenfassung2` etc.,  definieren. Stattdessen schreiben Sie einfach Ihre Antwort in eine einzige Kommandodefinition, ungeachtet der Zeichenanzahl. Willowbot hat eine eingebaute Funktion, die Ihre Antwort in Stücke von maximal 500 Zeichen aufteilen (weniger, wenn das letzte Wort eines Stücks das 500. Zeichen überschreitet oder wenn, selbstverständlich, nicht mehr genügend Zeichen übrig sind, um das Limit zu erreichen) und stückweise sowie ohne erwähnenswerte Verzögerung dazwischen an den Chat senden wird.
+Willowbots Standardverhalten ist es, einfach die Zeichenkette, die im `answer`-Schlüssel der entsprechenden Reaktion definiert ist, zu senden. Allerdings hat Twitch ein internes Zeichenlimit von 500 pro Nachricht. Im Normalfall werden Ihre Antwortsätze dieses Limit nicht überschreiten, doch was, wenn Sie umfangreichere Informationen an den Chat senden wollen, z. B. Storyzusammenfassungen für das aktuell gespielte Spiel? Nein, dafür müssen Sie nicht mehrere Kommandos, wie `!zusammenfassung1`, `!zusammenfassung2` etc.,  definieren. Stattdessen schreiben Sie einfach Ihre Antwort in eine einzige Kommandodefinition, ungeachtet der Zeichenanzahl. Willowbot hat eine eingebaute Funktion, die Ihre Antwort in Stücke von maximal 500 Zeichen aufteilen (weniger, wenn das letzte Wort eines Stücks das 500. Zeichen überschreitet oder wenn, selbstverständlich, nicht mehr genügend Zeichen übrig sind, um das Limit zu erreichen) und stückweise sowie ohne erwähnenswerte Verzögerung dazwischen an den Chat senden wird.
 
 Es gibt Situationen, in denen Sie möglicherweise bewusst sequentielle Nachrichten versenden möchten. Eine solche wurde im Kontext des Blacklistens von Wörtern/Wendungen erwähnt. Manche Emotes blinken sehr stark und können potentiell bei photosensitiven Menschen zu unerwünschten Reaktionen führen. Wenn Sie solche Emotes also von Ihrem Kanal ausschließen, möchten Sie vielleicht nicht nur entsprechende Nachrichten löschen, sondern zugleich Ihre Zuschauer darüber informieren, warum ihre Nachricht gelöscht wurde. So würden Sie das bewerkstelligen:
 ```
@@ -528,7 +529,7 @@ commands = {
   }
 }
 ```
-Wenn Nutzer McFluffy dieses Kommando auslöst, indem er `!mopsen einnutzer` an den Chat sendet, wird Willowbot zufällig eine der durch `\n` getrennten Antworten im `answer`-Schlüssel auswählen und im Chat anzeigen, z. B. `McFluffy mopst einnutzer eine alte Socke.`
+Wenn Nutzer McFluffy dieses Kommando auslöst, indem er `!mopsen einnutzer` an den Chat sendet, wird Willowbot zufällig eine der durch `\n` getrennten Antworten im `answer`-Schlüssel auswählen und im Chat anzeigen, z. B. `McFluffy mopst einnutzer eine alte Socke.`
 
 
 ### 3.9 Betriebssystemkommandos
@@ -544,12 +545,12 @@ commands = {
   }
 }
 ```
-Wann immer ein Nutzer `!gg` (oder eine andere Nachricht, die zumindest mit dieser Wendung beginnt) an den Chat sendet , wird Ihr System die Tondatei abspielen, die sich unter `C:\der\pfad\zu\meiner\tondatei.mp3` befindet. Beachten Sie, dass obige Definition nur auf Windowssystemen funktionieren wird! Unixsysteme benötigen ein Kommando wie `playsound /home/[Nutzer]/wo/meine/tondateien/liegen.mp3`, abhängig von der auf Ihrem System installierten Software. Solche Betriebssystemkommandos werden zusätzlich zum `answer`-Schlüssel ausgeführt, d. h. Sie können sie kombinieren und sowohl eine Nachricht an den Chat senden als auch eine Tondatei abspielen, ein Ereigbnis protokollieren, ein Video abspielen oder was auch immer Sie mit Ihrem Betriebssystemkommando anstellen wollen.
+Wann immer ein Nutzer `!gg` (oder eine andere Nachricht, die zumindest mit dieser Wendung beginnt) an den Chat sendet , wird Ihr System die Tondatei abspielen, die sich unter `C:\der\pfad\zu\meiner\tondatei.mp3` befindet. Beachten Sie, dass obige Definition nur auf Windowssystemen funktionieren wird! Unixsysteme benötigen ein Kommando wie `playsound /home/[Nutzer]/wo/meine/tondateien/liegen.mp3`, abhängig von der auf Ihrem System installierten Software. Solche Betriebssystemkommandos werden zusätzlich zum `answer`-Schlüssel ausgeführt, d. h. Sie können sie kombinieren und sowohl eine Nachricht an den Chat senden als auch eine Tondatei abspielen, ein Ereigbnis protokollieren, ein Video abspielen oder was auch immer Sie mit Ihrem Betriebssystemkommando anstellen wollen.
 
 
 ### 3.10 Nachrichten zur Fehlersuche (Debugging)
 
-Möchten Sie Ihre Kommandos prüfen, d. h. eruieren, ob Willowbot auf bestimmte Ereignisse/Muster so wie von Ihnen vorgesehen reagieren wird, und entsprechende Rückmeldung über die Reaktionen bekommen, wollen zu diesem Zweck aber keine Nachricht in den Chat schreiben lassen, können Sie Willowbots `debug`-Schlüssel benutzen. Die Zeichenkette in Ihrem `debug`-Schlüssel wird sich genau so verhalten, als wäre es ein `answer`-Wert, allerdings wird es nicht an den Chat gesendet, sondern auf Ihrer Konsole ausgegeben. Das Auflösen von Argumenten und Platzhaltervariablen ist ebenfalls Bestandteil des `debug`-Schlüssels. `answer` und `debug` (und ebenso `os-command`) werden unabhängig voneinander verarbeitet, also können Sie diese Schlüssel in beliebiger Kombination für beliebige Zwecke definieren.
+Möchten Sie Ihre Kommandos prüfen, d. h. eruieren, ob Willowbot auf bestimmte Ereignisse/Muster so wie von Ihnen vorgesehen reagieren wird, und entsprechende Rückmeldung über die Reaktionen bekommen, wollen zu diesem Zweck aber keine Nachricht in den Chat schreiben lassen, können Sie Willowbots `debug`-Schlüssel benutzen. Die Zeichenkette in Ihrem `debug`-Schlüssel wird sich genau so verhalten, als wäre es ein `answer`-Wert, allerdings wird es nicht an den Chat gesendet, sondern auf Ihrer Konsole ausgegeben. Das Auflösen von Argumenten und Platzhaltervariablen ist ebenfalls Bestandteil des `debug`-Schlüssels. `answer` und `debug` (und ebenso `os-command`) werden unabhängig voneinander verarbeitet, also können Sie diese Schlüssel in beliebiger Kombination für beliebige Zwecke definieren.
 
 
 ## 4 Optionale/Eigene Module
@@ -560,7 +561,7 @@ Um alle Routinen und Variablen säuberlich sortiert zu halten und das Risiko des
 
 Diese optionalen Module können mittels einer Liste `activeModules`¹ aktiviert und deaktiviert werden. Willowbot wird nur die Module verwenden, die auf dieser Liste vertreten sind, also vergessen Sie nicht, Ihr Modul daraufzusetzen. Wenn Sie Schwierigkeiten mit einem bestimmten Modul haben (Fehler, unerwartetes Verhalten, Konflikte mit anderen Modulen etc.), müssen Sie es nicht vollständig aus der Liste oder gar dem `modules_opt`-Verzeichnis entfernen, sondern Sie können es einfach auskommentieren, indem Sie vor seinen Eintrag in `activeModules` ein `#` setzen. Diese auskommentieren Module werden nicht geladen, wenn Willowbot startet.
 
-¹ Achtung, Windowsnutzer! Diese Datei hat keine Dateierweiterung/-endung, kann jedoch mit einem beliebigen Texteditor (z. B. Notepad) geöffnet und bearbeitet werden. Stellen Sie sicher, dass sie auch weiterhin keine Endung hat, wenn Sie Ihre Änderungen daran speichern. Falls diese Designentscheidung ein Punkt, der besonderer Aufmerksamkeit bedarf, und eine häufige Fehlerquelle ist, teilen Sie mir dies bitte mit.
+¹ Achtung, Windowsnutzer! Diese Datei hat keine Dateierweiterung/-endung, kann jedoch mit einem beliebigen Texteditor (z. B. Notepad) geöffnet und bearbeitet werden. Stellen Sie sicher, dass sie auch weiterhin keine Endung hat, wenn Sie Ihre Änderungen daran speichern. Falls diese Designentscheidung ein Punkt, der besonderer Aufmerksamkeit bedarf, und eine häufige Fehlerquelle ist, teilen Sie mir dies bitte mit.
 
 
 ### 4.1 Auf eigene Module zugreifen: der `function`-Schlüssel
@@ -633,6 +634,29 @@ Dieser enthält den Platzhalter `$return`. Innerhalb des `modChannelInfo`-Moduls
 Die Routine `category_get` funktioniert analog zu `title_get` und bekommt lediglich eine Erfolgs- sowie eine Misserfolgsnachricht als optionale Argumente.
 
 Die komplexeste Funktion in diesem Modul ist `category_set`. Wie `title_set` sammelt auch diese die eingegebenen Argumente (`$arg0+`) und übergibt sie in Gänze der Funktion. Hierbei handelt es sich um eine Zeichenkette, die einer auf Twitch verfügbaren Kategorie möglichst genau entsprechen sollte. Existiert nur eine Kategorie, worauf die übergebene Zeichenkette passt, wird die Kategorie des laufenden Streams auf ebendiese geändert. Ist die Anfrage jedoch nicht eindeutig, wird das Modul bis zu zehn Treffer in einer numerierten Liste im Chat ausgeben, deren Kontext durch das zweite optionale Argument bestimmt wird – in obigem Fall `Mögliche Kandidaten: $return. Ändere das Spiel mit !game-set [Nummer] oder suche neu.` Dabei wird `$return` mit einer Liste im Format `Spieltitel (1), weiterer Spieltitel (2), […]` ausgegeben. Diese Liste wird von Willowbot zwischengespeichert. Nun kann der Befehl `!game-set` erneut abgesetzt werden, jedoch kann nun anstelle eines konkreten Titels eine Nummer aus der zuvor ausgegebenen Liste gewählt und angefügt werden, also bspw. `!game-set 4`, und das `modChannelInfo`-Modul wird die Kategorie des Streams auf die mit entsprechender Nummer assoziierte ändern. Anschließend wird diese interne Liste gelöscht, so dass sich der Vorgang nur durch eine erneute Anfrage mit einem Kategorienamen wiederholen lässt.
+
+
+### 4.4 `dateDiff`-Modul (Datumsdifferenzen ausgeben)
+
+Ein sehr beliebter Chatbefehl ist die Ausgabe der verbleibenden Zeit, bis ein bestimmtes Ereignis eintritt, bspw. eine Spielepräsentation oder der Geburtstag des Streamers resp. der Streamerin. Dafür kann das `dateDiff`-Modul verwendet werden. Es erlaubt die Berechnung der Differenz zweier Daten sowie diejenige zwischen dem Zeitpunkt des Abschickens des Befehls, der mit diesem Modul verbunden ist, und einem Zieldatum.
+
+Die Kernfunktion, die vom Endnutzer verwendet werden soll, ist `dateDiff_send`. Sie verwendet die folgenden Parameter:
+* `irc`: Pflichtargument.
+* `targetDate`: Pflichtargument; eine Zeichenkette im ISO-Format [YYYY]-[MM]-[DD]T[hh]:[mm]:[ss] oder [MM]-[DD]; wird letztere Variante verwendet, wird Willowbot vom nächsten Eintreten dieser Monat-Tag-Kombination ausgehen, d. h. entweder im aktuellen oder im Folgejahr.
+* `nowDate`: optional, Standardwert: `""`; siehe `targetDate`; wird dieser Parameter weggelassen, werden das tatsächliche aktuelle Datum sowie die aktuelle Uhrzeit anstelle derjenigen, die durch die angegebene Zeichenkette ausgedrückt wird, verwendet.
+* `contextString`: optional, Standardwert: `{dateDiff}`; die Zeichenkette, die im Chat erscheinen soll, sobald das Chatkommando, das mit `dateDiff_send` verknüpft ist, verwendet wird, wobei `{dateDiff}` automatisch durch eine Zeichenkette in natürlicher Sprache ersetzt wird, die eine Zeitdifferenz in Worten angibt.
+* `useAccusativeMod`: optional, Standardwert: `False`; einige Sprachen, wie bspw. Deutsch, verwenden einen Suffix, um den Akkusativ auszudrücken, und dieser Wahrheitswertparameter teilt Willowbot mit, ob jener Suffix verwendet werden soll, wenn die Datumsdifferenzzeichenkette in natürlicher Sprache erstellt wird.
+* `languageOverride`: optional, Standardwert: `""`; soll Willowbot die Datumsdifferenzzeichenkette in einer anderen Sprache als derjenigen, mit der Willowbot gestartet wurde, ausgeben soll, verwenden Sie diesen Parameter mit dem Code einer Sprache, die im Unterverzeichnis `./lang` hinterlegt ist.
+
+Eine Beispieldefinition für einen Chatbefehl, der `dateDiff_send` verwendet, ist die folgende:
+```
+'^!geb( |$)' : {
+    'matchType' : 'regex',
+    'function'  : 'dateDiff_send(irc, targetDate = "04-08", contextString = "In {dateDiff} hat die Streamerin Geburtstag.", useAccusativeMod = True, languageOverride = "de")'
+  }
+```
+
+Schickt ein Chatteilnehmer den Befehl `!geb` ab, gibt der Bot (bspw.) die Antwort `In 221 Tagen, 12 Stunden, 10 Minuten und 17 Sekunden hat die Streamerin Geburtstag.` aus. Die Datumsdifferenzzeichenkette wird dort eingefügt, wo `{dateDiff}` in `contextString` auftaucht, und in diesem Fall ist es die bis 08. April verbleibende Zeit. In den meisten Fällen wird bei deutscher Sprache erforderlich sein, die Verwendung der Akkusativendungen via `useAccusativeMod = True` zuzuschalten, damit der Satz grammatisch korrekt ist. Wird Willowbot nicht ohnehin schon in deutscher Sprache gestartet, soll aber eine auf Deutsche formulierte Datumsdifferenz ausgeben, ist obendrein `languageOverride = "de"` als Funktionsparameter notwendig.
 
 
 ## 5 Test-/Fehlerbehandlungsmodus

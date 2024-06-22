@@ -100,4 +100,15 @@ langDict = {
   'symbol_failure'                        : '×',
   'symbol_success'                        : '✔',
   'yesNo_prompt'                          : '[j]a/[n]ein',
+  # Module dateDiff.
+  'dateDiff_day'                          : 'Tag',
+  'dateDiff_days'                         : 'Tage{accusativeMod}',
+  'dateDiff_hour'                         : 'Stunde',
+  'dateDiff_hours'                        : 'Stunden',
+  'dateDiff_minute'                       : 'Minute',
+  'dateDiff_minutes'                      : 'Minuten',
+  'dateDiff_second'                       : 'Sekunde',
+  'dateDiff_seconds'                      : 'Sekunden',
+  'dateDiff_and'                          : 'und',
+  'dateDiff_accusativeMod'                : 'n'
 }

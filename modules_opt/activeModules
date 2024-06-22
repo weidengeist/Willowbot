@@ -1,6 +1,5 @@
 # A list containing the active bot modules. Modules in uncommented lines (#) will be ignored.
 
 poll
-#pyrDet
-#svwiki
 modChannelInfo
+dateDiff
