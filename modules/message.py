@@ -286,9 +286,10 @@ class Message():
       os.system(reaction['os-command'])
 
     if 'function' in reaction:
-      func = self.resolveArguments(reaction['function'])
-      func = self.resolvePlaceholders(func)
-      eval(func)
+      for f in reaction['function']:
+        func = self.resolveArguments(f)
+        func = self.resolvePlaceholders(func)
+        eval(func)
 
     # If there is a debug message provided, output this on the console.
     if 'debug' in reaction:

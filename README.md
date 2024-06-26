@@ -566,7 +566,7 @@ Those optional modules can be activated an deactivated via a list called `active
 
 ### 4.1 Accessing custom modules: the `function` key
 
-Calling one of the routines provided by your custom module is achieved by using the `function` key in your command definition. The value for that key is a string with the routine name and the passed parameters where necessary. Since writing your own modules requires profound knowledge in Python programming, it is considered a technique for experienced users. Please be aware of that if you want to extend Willowbot.
+Calling one of the routines provided by your custom module is achieved by using the `function` key in your command definition. The value for that key is a list of strings with the routine names and the passed arguments where necessary. Those routines are processed in the same order as they appear in the list. Since writing your own modules requires profound knowledge in Python programming, it is considered a technique for experienced users. Please be aware of that if you want to extend Willowbot.
 
 
 ### 4.2 `poll` module
@@ -577,7 +577,7 @@ commands = {
   '!poll' : {
     'matchType' : 'startsWith',
     'debug'     : 'Poll has been started.',
-    'function'  : 'poll_start(commands, irc, "$arg0+")',
+    'function'  : ['poll_start(commands, irc, "$arg0+")'],
     'minLevel'  : 3
   }
 }
@@ -608,19 +608,19 @@ The following command definitions are examples for modifying and getting titles 
 ```
 '^!title( |$)' : {
   'matchType' : 'regex',
-  'function'  : 'modChannelInfo_title_get(irc, CONFIG, "The current title is »$return«.", "Could not retrieve the title information.")',
+  'function'  : ['modChannelInfo_title_get(irc, CONFIG, "The current title is »$return«.", "Could not retrieve the title information.")'],
 },
 '^!title-set( |$)' : {
   'matchType' : 'regex',
-  'function'  : 'modChannelInfo_title_set(irc, CONFIG, "$arg0+", "Title has been changed to »$return«.", "Could not change the title.")'
+  'function'  : ['modChannelInfo_title_set(irc, CONFIG, "$arg0+", "Title has been changed to »$return«.", "Could not change the title.")']
 },
 '^!game( |$)' : {
     'matchType' : 'regex',
-    'function'  : 'modChannelInfo_category_get(irc, CONFIG, "The current category is »$return«.", "Could not retrieve the category information.")',
+    'function'  : ['modChannelInfo_category_get(irc, CONFIG, "The current category is »$return«.", "Could not retrieve the category information.")'],
 },
 '^!game-set( |$)' : {
   'matchType' : 'regex',
-  'function'  : 'modChannelInfo_category_set(irc, CONFIG, "$arg0+", "Potential candidates: $return. Change the game by typing !game-set [number] or send a new request.", "Category has been set to »$return«.", "Could not set the category.")'
+  'function'  : ['modChannelInfo_category_set(irc, CONFIG, "$arg0+", "Potential candidates: $return. Change the game by typing !game-set [number] or send a new request.", "Category has been set to »$return«.", "Could not set the category.")']
 }
 ```
 The `title_get` function may be called in a simplified way by invoking `modChannelInfo_title_get(irc, CONFIG)`, however, there will be no feedback about the title in the chat then. The first optional argument is the text being returned after a successful server request:
@@ -652,7 +652,7 @@ An example definition for a command using `dateDiff_send` is the following:
 ```
 '^!bday( |$)' : {
     'matchType' : 'regex',
-    'function'  : 'dateDiff_send(irc, targetDate = "04-08", contextString = "The channel owner’s next birthday will be in {dateDiff}.")'
+    'function'  : ['dateDiff_send(irc, targetDate = "04-08", contextString = "The channel owner’s next birthday will be in {dateDiff}.")']
   }
 ```
 
@@ -700,8 +700,8 @@ Feel free to use the code as an inspiration for your own IRC projects and to rep
     * type: string
     * debug message; will be displayed on the console only and will not be sent via IRC
 * `function`
-    * type: string
-    * name of a callable routine in a custom module
+    * type: list
+    * a list of callable routines and their arguments within a custom module
 * `interval`
     * type: integer
     * for timed commands; in seconds

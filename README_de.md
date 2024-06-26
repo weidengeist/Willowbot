@@ -566,7 +566,7 @@ Diese optionalen Module können mittels einer Liste `activeModules`¹ aktiviert 
 
 ### 4.1 Auf eigene Module zugreifen: der `function`-Schlüssel
 
-Eine Routine aufzurufen, die Ihnen durch Ihr eigenes Modul zur Verfügung gestellt wird, erreichen Sie durch das Benutzen des `function`-Schlüssels in Ihrer Kommandodefinition. Der Wert für diesen Schlüssel ist eine Zeichenkette (string) mit dem Namen der Routine und den ggf. zu übergeben nötigen Parametern. Da das Schreiben eigener Module fundierte Kenntnis in der Programmiersprache Python erfordert, sollten sich nur erfahrene Nutzer daran wagen. Bitte seien Sie dessen gewahr, wenn Sie Willowbot erweitern wollen.
+Eine Routine aufzurufen, die Ihnen durch Ihr eigenes Modul zur Verfügung gestellt wird, erreichen Sie durch das Benutzen des `function`-Schlüssels in Ihrer Kommandodefinition. Der Wert für diesen Schlüssel ist eine Liste (list) aus Namen der Routinen und den ggf. zu übergeben nötigen Parametern. Diese Routinen werden in derselben Reihenfolge abgearbeitet, wie sie in der Liste stehen. Da das Schreiben eigener Module fundierte Kenntnis in der Programmiersprache Python erfordert, sollten sich nur erfahrene Nutzer daran wagen. Bitte seien Sie dessen gewahr, wenn Sie Willowbot erweitern wollen.
 
 
 ### 4.2 `poll`-Modul (Abstimmungen)
@@ -577,7 +577,7 @@ commands = {
   '!abstimmung' : {
     'matchType' : 'startsWith',
     'debug'     : 'Abstimmung wurde gestartet.',
-    'function'  : 'poll_start(commands, irc, "$arg0+")',
+    'function'  : ['poll_start(commands, irc, "$arg0+")'],
     'minLevel'  : 3
   }
 }
@@ -608,19 +608,19 @@ Die folgenden Kommandodefinitionen stellen jeweils ein Beispiel für das Bearbei
 ```
 '^!title( |$)' : {
   'matchType' : 'regex',
-  'function'  : 'modChannelInfo_title_get(irc, CONFIG, "Der aktuelle Titel ist »$return«.", "Konnte Titelinfo nicht abrufen.")',
+  'function'  : ['modChannelInfo_title_get(irc, CONFIG, "Der aktuelle Titel ist »$return«.", "Konnte Titelinfo nicht abrufen.")'],
 },
 '^!title-set( |$)' : {
   'matchType' : 'regex',
-  'function'  : 'modChannelInfo_title_set(irc, CONFIG, "$arg0+", "Der Titel wurde auf »$return« geändert.", "Konnte den Titel nicht ändern.")'
+  'function'  : ['modChannelInfo_title_set(irc, CONFIG, "$arg0+", "Der Titel wurde auf »$return« geändert.", "Konnte den Titel nicht ändern.")']
 },
 '^!game( |$)' : {
     'matchType' : 'regex',
-    'function'  : 'modChannelInfo_category_get(irc, CONFIG, "Die aktuelle Kategorie ist »$return«.", "Konnte Kategorieinfo nicht abrufen.")',
+    'function'  : ['modChannelInfo_category_get(irc, CONFIG, "Die aktuelle Kategorie ist »$return«.", "Konnte Kategorieinfo nicht abrufen.")'],
 },
 '^!game-set( |$)' : {
   'matchType' : 'regex',
-  'function'  : 'modChannelInfo_category_set(irc, CONFIG, "$arg0+", "Mögliche Kandidaten: $return. Ändere das Spiel mit !game-set [Nummer] oder suche neu.", "Kategorie wurde auf »$return« geändert.", "Konnte die Kategorie nicht ändern.")'
+  'function'  : ['modChannelInfo_category_set(irc, CONFIG, "$arg0+", "Mögliche Kandidaten: $return. Ändere das Spiel mit !game-set [Nummer] oder suche neu.", "Kategorie wurde auf »$return« geändert.", "Konnte die Kategorie nicht ändern.")']
 }
 ```
 Die `title_get`-Funktion kann vereinfacht als `modChannelInfo_title_get(irc, CONFIG)` aufgerufen werden, jedoch wird es dann im Chat keinerlei Rückmeldungen über den Titel geben. Das erste optionale Argument ist der Text, der bei erfolgreicher Serveranfrage zurückgegeben wird:
@@ -652,7 +652,7 @@ Eine Beispieldefinition für einen Chatbefehl, der `dateDiff_send` verwendet, is
 ```
 '^!geb( |$)' : {
     'matchType' : 'regex',
-    'function'  : 'dateDiff_send(irc, targetDate = "04-08", contextString = "In {dateDiff} hat die Streamerin Geburtstag.", useAccusativeMod = True, languageOverride = "de")'
+    'function'  : ['dateDiff_send(irc, targetDate = "04-08", contextString = "In {dateDiff} hat die Streamerin Geburtstag.", useAccusativeMod = True, languageOverride = "de")']
   }
 ```
 
@@ -700,8 +700,8 @@ Fühlen Sie sich frei, den Code als Inspiration für Ihre eigenen IRC-Projekte z
     * Typ: Zeichenkette (string)
     * Fehlersuchmeldung; wird nur auf der Textkonsole angezeigt und nicht an den Chat gesendet
 * `function`
-    * Typ: Zeichenkette (string)
-    * Name einer aufrufbaren Routine in einem eigenen Modul
+    * Typ: Liste (list)
+    * eine Liste aus Zeichenketten von Namen und deren Argumenten aufrufbarer Routinen aus eigenen Modulen
 * `interval`
     * Typ: Ganzzahl (integer)
     * für zeitabhängige Kommandos; in Sekunden
