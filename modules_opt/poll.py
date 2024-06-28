@@ -11,7 +11,7 @@ def poll_start(commands, irc, *args):
   commands['timed']['willowbot_poll'] = {
     'interval' : duration,
     'debug'    : "Poll ended.",
-    'function' : 'poll_stop(commands, poll_results, irc)'
+    'function' : ['poll_stop(commands, poll_results, irc)']
   }
 
   # A string that gathers the vote options for an message that announces the beginning of a poll.
@@ -29,7 +29,7 @@ def poll_start(commands, irc, *args):
       print("Adding a poll option in the commands for " + a)
       commands['general'][a] = {
         'debug'     : '$senderDisplayName added with vote ' + a,
-        'function'  : 'poll_addUserVote(poll_results, "' + a + '", "$senderDisplayName")',
+        'function'  : ['poll_addUserVote(poll_results, "' + a + '", "$senderDisplayName")'],
         'matchType' : 'is_caseInsensitive'
       }
     else:
