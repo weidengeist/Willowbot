@@ -260,7 +260,7 @@ def getCommands(config, feedback = False):
     feedback and print(" " + langDict['symbol_failure'] + " " + langDict['commands_loadingFailed'].format(channel = config['channel']))
 
   return {'general' : commands, 'timed' : commands_timed, 'sub' : commands_sub, 'raid' : commands_raid, 'status' : status}
-  
+
 
 def channelIsOnline(channel, oauth, clientID):
   streamData = requests.get("https://api.twitch.tv/helix/streams/" , params = {"user_login" :  channel}, headers = {"Authorization" : "Bearer " + oauth, "Client-Id" : clientID}).json()
@@ -274,15 +274,15 @@ def channelIsOnline(channel, oauth, clientID):
     return False
 
 
-def checkTimedCommands(commands_timed, irc):  
+def checkTimedCommands(commands, irc):  
   # Check for elapsed intervals in timed commands.
-  for c in list(commands_timed.keys()):
-    if timeElapsed(commands_timed[c], 'interval'):
+  for c in list(commands['timed'].keys()):
+    if timeElapsed(commands['timed'][c], 'interval'):
       if channelIsOnline(irc.config['channel'], irc.config['oauth'], irc.config['clientID']):
-        reaction = commands_timed[c]
+        reaction = commands['timed'][c]
          # If the command contains an answer key, process its value.
         if 'answer' in reaction:
-          answer = commands_timed[c]['answer'].split('\n')
+          answer = commands['timed'][c]['answer'].split('\n')
           if len(answer) > 1:
             if 'answerType' in reaction and reaction['answerType'] == 'random':
               # Choose a random answer to send.
@@ -307,7 +307,9 @@ def checkTimedCommands(commands_timed, irc):
           os.system(reaction['os-command'])
     
         if 'function' in reaction:
-          eval(reaction['function'])
+          for f in reaction['function']:
+            print("Evaluating", f)
+            eval(f)
     
         # If there is a debug message provided, output this on the console.
         if 'debug' in reaction:
