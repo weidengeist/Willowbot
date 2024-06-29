@@ -255,11 +255,11 @@ def showHelp():
   langDict = import_module("lang.en").langDict | import_module("lang." + getLanguage()).langDict
   from basics import indentedWithWidth
   
-  helpPages = markup.bold + langDict['help_usage'] + markup.end + "\n"
-  helpPages += indentedWithWidth("main_cli.py [" + langDict['help_option'] + "]", 4)
+  helpPages = markup.bold + langDict['usage'] + markup.end + "\n"
+  helpPages += indentedWithWidth("main_cli.py [" + langDict['option'] + "]", 4)
   helpPages += "\n"
-  helpPages += markup.bold + langDict['help_options'] + markup.end + "\n"
-  helpPages += indentedWithWidth(markup.bold + "-c, --channel" + markup.end + " {" + langDict['help_channelName'] + "}", 4)
+  helpPages += markup.bold + langDict['options'] + markup.end + "\n"
+  helpPages += indentedWithWidth(markup.bold + "-c, --channel" + markup.end + " {" + langDict['channelName'] + "}", 4)
   helpPages += indentedWithWidth(langDict['help_info_channel'], 8)
   helpPages += "\n"
   helpPages += indentedWithWidth(markup.bold + "-cf, --configure" + markup.end, 4)
@@ -268,31 +268,31 @@ def showHelp():
   helpPages += indentedWithWidth(markup.bold + "-df, --debug-full" + markup.end, 4)
   helpPages += indentedWithWidth(langDict['help_info_debug_full'], 8)
   helpPages += "\n"
-  helpPages += indentedWithWidth(markup.bold + "-ds, --debug-single" + markup.end + " '{" + langDict['help_message'] + "}'", 4)
+  helpPages += indentedWithWidth(markup.bold + "-ds, --debug-single" + markup.end + " '{" + langDict['message'] + "}'", 4)
   helpPages += indentedWithWidth(langDict['help_info_debug_single'], 8)
   helpPages += "\n"
-  helpPages += indentedWithWidth(markup.bold + "-gc, --get-config" + markup.end + " [" + langDict['help_configKey'] + "]", 4)
+  helpPages += indentedWithWidth(markup.bold + "-gc, --get-config" + markup.end + " [" + langDict['configKey'] + "]", 4)
   helpPages += indentedWithWidth(langDict['help_info_config_get'], 8)
   helpPages += "\n"
   helpPages += indentedWithWidth(markup.bold + "-h, --help" + markup.end, 4)
   helpPages += indentedWithWidth(langDict['help_info_help'], 8)
   helpPages += "\n"
-  helpPages += indentedWithWidth(markup.bold + "-l, --login" + markup.end + " {" + langDict['help_accountName'] + "}", 4)
+  helpPages += indentedWithWidth(markup.bold + "-l, --login" + markup.end + " {" + langDict['accountName'] + "}", 4)
   helpPages += indentedWithWidth(langDict['help_info_login'], 8)
   helpPages += "\n"
-  helpPages += indentedWithWidth(markup.bold + "-lg, --language" + markup.end + " {" + langDict['help_localeAbbreviation'] + "}", 4)
+  helpPages += indentedWithWidth(markup.bold + "-lg, --language" + markup.end + " {" + langDict['localeAbbreviation'] + "}", 4)
   helpPages += indentedWithWidth(langDict['help_info_language'].format(langList = ", ".join(getAvailableLanguages())), 8)
   helpPages += "\n"
-  helpPages += indentedWithWidth(markup.bold + "-sc, --set-config" + markup.end + " {" + langDict['help_configKey'] + "} {" + langDict['help_configValue'] + "}" , 4)
+  helpPages += indentedWithWidth(markup.bold + "-sc, --set-config" + markup.end + " {" + langDict['configKey'] + "} {" + langDict['configValue'] + "}" , 4)
   helpPages += indentedWithWidth(langDict['help_info_config_set'], 8)
   helpPages += "\n"
-  helpPages += indentedWithWidth(markup.bold + "-t, --token" + markup.end + " {" + langDict['help_keyword'] + "}", 4)
+  helpPages += indentedWithWidth(markup.bold + "-t, --token" + markup.end + " {" + langDict['keyword'] + "}", 4)
   helpPages += indentedWithWidth(langDict['help_info_token'], 8)
   helpPages += "\n"
-  helpPages += indentedWithWidth(markup.bold + "add" + markup.end + " {" + langDict['help_name'] + "} {" + langDict['help_token'] + "}", 8)
+  helpPages += indentedWithWidth(markup.bold + "add" + markup.end + " {" + langDict['name'] + "} {" + langDict['token'] + "}", 8)
   helpPages += indentedWithWidth(langDict['help_info_token_add'], 12)
   helpPages += "\n"
-  helpPages += indentedWithWidth(markup.bold + "delete" + markup.end + " {" + langDict['help_name'] + "}", 8)
+  helpPages += indentedWithWidth(markup.bold + "delete" + markup.end + " {" + langDict['name'] + "}", 8)
   helpPages += indentedWithWidth(langDict['help_info_token_delete'], 12)
   helpPages += "\n"
   helpPages += indentedWithWidth(markup.bold + "get" + markup.end, 8)
@@ -301,7 +301,7 @@ def showHelp():
   helpPages += indentedWithWidth(markup.bold + "list" + markup.end, 8)
   helpPages += indentedWithWidth(langDict['help_info_token_list'], 12)
   helpPages += "\n"
-  helpPages += indentedWithWidth(markup.bold + "revoke" + markup.end + " {" + langDict['help_name'] + "}", 8)
+  helpPages += indentedWithWidth(markup.bold + "revoke" + markup.end + " {" + langDict['name'] + "}", 8)
   helpPages += indentedWithWidth(langDict['help_info_token_revoke'], 12)
   print(helpPages)
   exit()

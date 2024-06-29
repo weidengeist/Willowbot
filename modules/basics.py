@@ -263,16 +263,16 @@ def getCommands(config, feedback = False):
 
 
 def channelIsOnline(channel, oauth, clientID):
-  streamData = requests.get("https://api.twitch.tv/helix/streams/" , params = {"user_login" :  channel}, headers = {"Authorization" : "Bearer " + oauth, "Client-Id" : clientID}).json()
-  if 'data' in streamData:
-    if len(streamData['data']) > 0 and 'game_name' in streamData['data'][0]:
-      return True
-    else:
-      return False
-  else:
-    print("TWITCH ERROR", "Could not get online status.")
-    return False
-
+  #streamData = requests.get("https://api.twitch.tv/helix/streams/" , params = {"user_login" :  channel}, headers = {"Authorization" : "Bearer " + oauth, "Client-Id" : clientID}).json()
+  #if 'data' in streamData:
+  #  if len(streamData['data']) > 0 and 'game_name' in streamData['data'][0]:
+  #    return True
+  #  else:
+  #    return False
+  #else:
+  #  print("TWITCH ERROR", "Could not get online status.")
+  #  return False
+  return True
 
 def checkTimedCommands(commands, irc):  
   # Check for elapsed intervals in timed commands.

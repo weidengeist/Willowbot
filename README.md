@@ -206,7 +206,7 @@ The pattern used here makes Willowbot react to URLs leading to a Twitch clip. Bu
 
 ### 3.2 Aliases
 
-Knowing about regular expressions, we are now able to define aliases for our commands, i. e. multiple command triggers for one and the same reaction. A simple example should be enough to show how this works:
+Knowing about regular expressions, we are now able to define aliases for our commands, i.e. multiple command triggers for one and the same reaction. A simple example should be enough to show how this works:
 ```
 commands = {
   "^!([Mm]ods?|[Ss]kyrim|[Gg]ame)" : {
@@ -219,7 +219,7 @@ As this command contains multiple different regex structures, let’s break this
 
 One section above, you have learned about character sets, and you can see those again in the command defined here. So you can trigger the answer either by `!mod`, `!Mod`, `!skyrim`, `!Skyrim`, `!game`, or `!Game`.
 
-»But wait! There is a question mark after `![Mm]ods`!«, you might interpose now. »And why is it `!mods` now instead of `!mod`?« The question mark is a special character in the context of regular expressions. It means that the character before it is optional, i. e. you can not only trigger the answer by posting `!mod` or `!Mod`, but also by `!mods` and `!Mods`.
+»But wait! There is a question mark after `![Mm]ods`!«, you might interpose now. »And why is it `!mods` now instead of `!mod`?« The question mark is a special character in the context of regular expressions. It means that the character before it is optional, i.e. you can not only trigger the answer by posting `!mod` or `!Mod`, but also by `!mods` and `!Mods`.
 
 
 ### 3.3 Timed commands
@@ -590,16 +590,22 @@ commands = {
   '!poll' : {
     'matchType' : 'startsWith',
     'debug'     : 'Poll has been started.',
-    'function'  : ['poll_start(commands, irc, "$arg0+")'],
+    'function'  : ['poll_start(commands, irc, "$arg0+", contextString = "Vote for {pollDuration} seconds with {pollOptions}", resultString = "{votesQuantity} vote{pluralMod} submitted.", languageOverride = "en")'],
     'minLevel'  : 3
   }
 }
 ```
-Before turning to the most interesting part, let’s quickly summarize what other things than calling a `poll` routine happens in this command definition. The poll is started as soon as a user of at least level 3 (moderator or broadcaster) sends a message to the chat that `startsWith` `!poll`. As soon as that happens, there will be a short message on the console that a `Poll has been started.` The key newly introduced in this section and used in the command definition above is `function`. Its value calls the routine defined by `def poll_start(commands, irc, *args)` in the `poll` module and passes the required arguments. As the `poll` module manipulates the command set, it needs `commands` as an argument. Furthermore, we want the module to be able to send messages to the chat, so it needs access to our `irc` connection. Finally, we hand over all the arguments sent to the chat together with the `!poll` command (`"$arg0+"`).
+Before turning to the most interesting part, let’s quickly summarize what other things than calling a `poll` routine happens in this command definition. The poll is started as soon as a user of at least level 3 (moderator or broadcaster) sends a message to the chat that `startsWith` `!poll`. As soon as that happens, there will be a short message on the console that a `Poll has been started.` The key newly introduced in this section and used in the command definition above is `function`. Its value calls the routine defined by `def poll_start(commands, irc, *args, […])` in the `poll` module and passes the required arguments. As the `poll` module manipulates the command set, it needs `commands` as an argument. Furthermore, we want the module to be able to send messages to the chat, so it needs access to our `irc` connection. Finally, we hand over all the arguments sent to the chat together with the `!poll` command (`"$arg0+"`).
+
+The module also takes some optional arguments. That they are optional can be identified by their preset values in the definition of the function. In this case, the optional arguments are `contextString`, `resultString`, and `languageOverride`. Please note that they **have to appear after** `$arg0+`, if you decide on using them. Their order, however, is irrelevant.
+
+The `contextString` argument is the string that Willowbot will send to the chat when a poll is initated. This string may contain the placeholders `{pollDuration}` and `{pollOptions}`. The former will be replaced with the duration of the poll in seconds (i.e. the first argument after your `!poll` command) during the evaluation of the command and the latter is a string composed automatically by the module, concatenating the options with comma or »or« in Willowbot’s used locale.
+
+Which phrase is used to summarize the results of the poll, is determined by `resultString`. It accepts the placeholder `{votesQuantity}`, being replaced with the number of unique users who submitted their votes. Additionally, you may use `{pluralMod}` to modify the the word »vote«, depending on whether only one or multiple votes have been submitted to the poll.
+
+The last optional argument of `poll_start` is `languageOverride`. It is used to determine the language of the conjunction between the second-last and the last poll option in the `{pollOptions}` string generated by the module. This means that you can, for example, start Willowbot in English and generate an output in German by setting `languageOverride = "de"`.
 
 To actually start a poll, you would send a command like `!poll 30 left right forward` to the chat. This will initiate a poll that will last 30 seconds and allow the viewers to choose where to go next in the currently played game – left, right, or forward – by sending the appropriate word to the chat. An according message will appear in the chat. Willowbot will then gather the votes sent by the users and put them into a list that will eventually be evaluated. Every user can vote only once, but he/she may change his/her vote by just sending another of the available options to the chat. After the time passed to the `!poll` command has elapsed, the poll will be summarized and Willowbot sends a list of the results to the chat, shown in percentage terms and in descending order, from the option with the most to the one with the fewest votes.
-
-Currently, only German information messages are deposited in the module and changing them into another language requires modifying the module itself.
 
 
 ### 4.3 `modChannelInfo` module

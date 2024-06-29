@@ -99,7 +99,7 @@ Natürlich müssen Sie `meineigenerkanal` durch den Namen des passenden Kanals, 
 
 ### Kyrillisch-Latein-Konvertierung
 
-Willowbot enthält eine Option, kyrillische Buchstaben, die wie lateinische aussehen, tatsächlich in ihr lateinisches Pendant to konvertieren. Diese Funktion wurde wegen Scambots, die versuchen, Maßnahmen gegen Bots dadurch zu unterlaufen, indem sie lateinische Buchstaben mit kyrillischen kombinieren und damit Mustererkennungen entgehen, eingerichtet. Der Standardwert für diese Option ist `False` (falsch), aber wenn Sie den Bot in einem hauptsächlich lateinischen Kontext respektive in einer entsprechenden Community verwenden und diese Funktion einsetzen wollen, können Sie diese mit folgendem Befehl aktivieren:
+Willowbot enthält eine Option, kyrillische Buchstaben, die wie lateinische aussehen, tatsächlich in ihr lateinisches Pendant zu konvertieren. Diese Funktion wurde wegen Scambots, die versuchen, Maßnahmen gegen Bots dadurch zu unterlaufen, indem sie lateinische Buchstaben mit kyrillischen kombinieren und damit Mustererkennungen entgehen, eingerichtet. Der Standardwert für diese Option ist `False` (falsch), aber wenn Sie den Bot in einem hauptsächlich lateinischen Kontext respektive in einer entsprechenden Community verwenden und diese Funktion einsetzen wollen, können Sie diese mit folgendem Befehl aktivieren:
 ```
 python main_cli.py --set-config 'cyrillicToLatinConversion' True
 ```
@@ -590,16 +590,22 @@ commands = {
   '!abstimmung' : {
     'matchType' : 'startsWith',
     'debug'     : 'Abstimmung wurde gestartet.',
-    'function'  : ['poll_start(commands, irc, "$arg0+")'],
+    'function'  : ['poll_start(commands, irc, "$arg0+", contextString = "Abstimmung offen für {pollDuration} Sekunden. Stimmt ab mit {pollOptions}.", resultString = "{votesQuantity} Stimme{pluralMod} wurde{pluralMod} abgegeben.", languageOverride = "en")'],
     'minLevel'  : 3
   }
 }
 ```
-Bevor wir uns dem interessantesten Part zuwenden, fassen wir kurz die anderen Dinge, die neben dem Aufruf einer Routine aus dem `poll`-Modul geschehen, zusammen. Die Abstimmung wird gestartet, sobald ein Nutzer mit wenigstens Level 3 (Moderator oder Streamer) eine Nachricht an den Chat sendet, die mit `!abstimmung` startet (`startsWith`). Sobald dies erfolgt ist, wird auf der Konsole die kurze Nachricht `Abstimmung wurde gestartet.` ausgegeben. Der in diesem Abschnitt neu eingeführte und in der Kommandodefinition genutzte Schlüssel ist `function`. Sein Wert ruft die Routine auf, die im Umfragemodul durch `def poll_start(commands, irc, *args)` definiert ist, und übergibt ihr die notwendigen Argumente. Da das `poll`-Modul das Kommandoset manipuliert, benötigt es `commands` als Argument. Des Weiteren wollen wir, dass das Modul in der Lage sein soll, Nachrichten an den Chat zu senden, also braucht es Zugriff auf unsere `irc`-Verbindung. Schließlich übergeben wird alle Argumente (`"$arg0+"`), die zusammen mit dem `!abstimmung`-Kommando in den Chat geschrieben wurden.
+Bevor wir uns dem interessantesten Part zuwenden, fassen wir kurz die anderen Dinge, die neben dem Aufruf einer Routine aus dem `poll`-Modul geschehen, zusammen. Die Abstimmung wird gestartet, sobald ein Nutzer mit wenigstens Level 3 (Moderator oder Streamer) eine Nachricht an den Chat sendet, die mit `!abstimmung` startet (`startsWith`). Sobald dies erfolgt ist, wird auf der Konsole die kurze Nachricht `Abstimmung wurde gestartet.` ausgegeben. Der in diesem Abschnitt neu eingeführte und in der Kommandodefinition genutzte Schlüssel ist `function`. Sein Wert ruft die Routine auf, die im Umfragemodul durch `def poll_start(commands, irc, *args, […])` definiert ist, und übergibt ihr die notwendigen Argumente. Da das `poll`-Modul das Kommandoset manipuliert, benötigt es `commands` als Argument. Des Weiteren wollen wir, dass das Modul in der Lage sein soll, Nachrichten an den Chat zu senden, also braucht es Zugriff auf unsere `irc`-Verbindung. Schließlich übergeben wird alle Argumente (`"$arg0+"`), die zusammen mit dem `!abstimmung`-Kommando in den Chat geschrieben wurden.
+
+Das Modul akzeptiert auch einige optionale Argumente. Dass diese optional sind, lässt sich an ihren in der Funktionsdefinition vorgegebenen Standardwerten erkennen. In diesem Fall sind die optionalen Argumente `contextString`, `resultString` und `languageOverride`. Bitte beachten Sie, dass diese **nach** `$arg0+` **gesetzt werden müssen**, sollten Sie sich dafür entscheiden, sie zu nutzen. Deren Reihenfolge hingegen ist nicht von Belang.
+
+Das `contextString`-Argument ist die Zeichenkette, die Willowbot an den Chat sendet, sobald eine Umfrage gestartet wird. Diese Zeichenkette darf die Platzhalter `{pollDuration}` und `{pollOptions}` enthalten. Ersterer wird bei der Auswertung des Befehls durch die Dauer der Abstimmung in Sekunden (d. h. durch das erste Argument nach dem `!abstimmung`-Befehl) ersetzt und Letzterer ist eine Zeichenkette, die das Modul automatisch erzeugt, indem es die Abstimmoptionen mittels Komma respektive »oder« in der von Willowbot genutzten Sprache zusammenfügt.
+
+Welche Phrase zur Zusammenfassung der Abstimmergebnisse genutzt wird, wird durch `resultString` bestimmt. Dieses Argument akzeptiert den Platzhalter `{votesQuantity}`, der durch die Anzahl der Nutzer, die abgestimmt haben, ersetzt wird. Zusätzlich kann `{pluralMod}` genutzt werden, um das Wort »Stimme« (wie in »1 Stimme wurde abgegeben«) zu in Abhängigkeit davon, ob eine oder mehrere Stimmen abgegeben wurden, zu modifizieren.
+
+Das letzte optionale Argument der `poll_start`-Routine ist `languageOverride`. Es wird verwendet, um die Sprache, in der die Konjuktion zwischen der vorletzten und letzten Abstimmoption in der generierten `{pollOptions}`-Zeichenkette erscheint, zu bestimmen. Dies bedeutet, dass Sie Willowbot bspw. auf Englisch starten, aber dennoch eine Ausgabe auf Deutsch erzeugen können, indem Sie `languageOverride = "de"` setzen.
 
 Um nun tatsächlich eine Umfrage zu starten, würden Sie ein Kommando wie `!abstimmung 30 links rechts geradeaus` an den Chat senden. Dieses startet eine Abstimmung, die 30 Sekunden dauern und den Zuschauern erlauben wird, auszuwählen, wo es im derzeit gespielten Spiel als Nächstes langgehen soll – nach links, rechts oder geradeaus –, indem sie das passende Wort in den Chat schreiben. Eine entsprechende Nachricht wird im Chat erscheinen. Willowbot wird anschließend the Stimmen einsammeln und in einer Liste sammeln, die am Ende ausgewertet wird. Jeder Nutzer kann nur einmal abstimmen, jedoch seine Stimme ändern, indem er eine andere der verfügbaren Optionen in den Chat schreibt. Nachdem die Zeit, die dem `!abstimmung`-Kommando übergeben wurde, abgelaufen ist, wird die Abstimmung zusammengefasst und Willowbot schickt eine List mit den Ergebnissen an den Chat, angezeigt in Prozent und absteigender Reihenfolge, von der Option mit den meisten zu derjenigen mit den wenigsten Stimmen.
-
-Derzeit sind in diesem Modul nur deutsche Infotexte hinterlegt und eine Änderung zu einer anderen Sprache erfordert das direkte Bearbeiten des Moduls selbst.
 
 
 ### 4.3 `modChannelInfo`-Modul (Kanalinformationen bearbeiten)

@@ -24,16 +24,16 @@ def dateDiff_fromStrings(a, b = ""):
 def dateDiff_contextString(targetDate, nowDate = "", contextString = "{dateDiff}", useAccusativeMod = False, languageOverride = ""):
   # Transform the date component keywords into the used language.
   langDict = importlib.import_module("lang.en").langDict | importlib.import_module("lang." + (getLanguage() if languageOverride == "" else languageOverride)).langDict
-  accusativeMod = langDict['dateDiff_accusativeMod'] if useAccusativeMod else ""
-  day = langDict['dateDiff_day'].format(accusativeMod = accusativeMod)
-  days = langDict['dateDiff_days'].format(accusativeMod = accusativeMod)
-  hour = langDict['dateDiff_hour'].format(accusativeMod = accusativeMod)
-  hours = langDict['dateDiff_hours'].format(accusativeMod = accusativeMod)
-  minute = langDict['dateDiff_minute'].format(accusativeMod = accusativeMod)
-  minutes = langDict['dateDiff_minutes'].format(accusativeMod = accusativeMod)
-  second = langDict['dateDiff_second'].format(accusativeMod = accusativeMod)
-  seconds = langDict['dateDiff_seconds'].format(accusativeMod = accusativeMod)
-  and_ = langDict['dateDiff_and']
+  accusativeMod = langDict['accusativeMod'] if useAccusativeMod else ""
+  day = langDict['day'].format(accusativeMod = accusativeMod)
+  days = langDict['days'].format(accusativeMod = accusativeMod)
+  hour = langDict['hour'].format(accusativeMod = accusativeMod)
+  hours = langDict['hours'].format(accusativeMod = accusativeMod)
+  minute = langDict['minute'].format(accusativeMod = accusativeMod)
+  minutes = langDict['minutes'].format(accusativeMod = accusativeMod)
+  second = langDict['second'].format(accusativeMod = accusativeMod)
+  seconds = langDict['seconds'].format(accusativeMod = accusativeMod)
+  and_ = langDict['and']
   
   diff = dateDiff_fromStrings(targetDate, nowDate)
   diffComponents = re.findall("^([0-9]+|).*?([0-9]+):([0-9]+):([0-9]+)", str(diff))[0]
