@@ -97,11 +97,24 @@ python main_cli.py --channel myownchannel
 Obviously, you have to replace `myownchannel` with the actual name of the appropriate channel where Willowbot is supposed to do its duty and run a specific set of commands.
 
 
+### Cyrillic-to-Latin conversion
+
+Willowbot provides the option to convert Cyrillic letters that look like Latin ones to actually transform them into their Latin look-alike counterpart. This function has been implemented because of scam bots trying to circumvent counter-bot measures by mixing Latin and Cyrillic letters and avoiding pattern matching this way. The default for this option is `False`, but if you use the bot in a mainly Latin context or community and use that feature, you can activate it by typing
+```
+python main_cli.py --set-config 'cyrillicToLatinConversion' True
+```
+
+
 ### Hints on migrations (first-time users may skip this part)
 
 If you have used Willowbot before (earlier than March 2023), you have to change a few things in your commands to ensure that they will still work with the new Twitch API. You may still use the chat commands `/ban` and `/timeout`; they have been mapped to the new API endpoints. However, their argument is no longer `$senderName`, but `$senderID`.
 
 Moreover, Willowbot now supports API shoutouts and API announcements. To use them, simply use the legacy commands `/shoutout` or `/announce`.
+
+
+#### Update June 2024
+
+To use the Cyrillic-to-Latin conversion, the key `cyrillicToLatinConversion` and its value `True` (Attention! A boolean, not a string, i.e. no quotation marks.) have to be inserted into the configuration file manually.
 
 
 ## 3 Creating command sets

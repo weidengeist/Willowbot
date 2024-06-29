@@ -66,10 +66,10 @@ def createConfigFiles():
     # Create an empty file …
     configFile = open(os.path.join(configDir, "config.py"), 'w')
     # … and write a configuration template to it.
-    configFile.write('config = {\n  \'botname\'                 : \'IAmYourFirstBot\',\n  \'clientID\'                : \'e5kdpgd2bbnbj1u5gbjpzeq7vsgwup\',\n  \'connectionRetries\'       : 10,\n  \'disconnectCheckInterval\' : 10,\n  \'port\'                    : 6697,\n  \'server\'                  : \'irc.chat.twitch.tv\'\n}')
+    configFile.write('config = {\n  \'botname\'                   : \'IAmYourFirstBot\',\n  \'clientID\'                  : \'e5kdpgd2bbnbj1u5gbjpzeq7vsgwup\',\n  \'connectionRetries\'         : 10,\n  \'disconnectCheckInterval\'   : 10,\n  \'port\'                      : 6697,\n  \'server\'                    : \'irc.chat.twitch.tv\'\n  \'cyrillicToLatinConversion\' : False}')
     configFile.close()
     # Generate the file here
-    print(langDict['configFiles_newConfigFile'].format(optionalNew = (answer == localeYes and (langDict['new_female'] + " ") or "")))
+    print(langDict['configFiles_newConfigFile'].format(optionalNew = langDict['new_female'] + " " if answer == localeYes else ""))
   else:
     print(langDict['configFiles_configFileUntouched'])
 
@@ -223,7 +223,7 @@ def setConfigValue():
           with open(os.path.join(configDir, "config.py"), "r") as f:
             content = f.read()
             # Replace the old value with the new one.
-            content = re.sub('(\n *\')' + distinctKey + '(\'[^:]+:.*)' + str(configData[distinctKey]) + '(\'?,\n)', '\g<1>' + distinctKey + '\g<2>' + str(sys.argv[distinctKeyIndex + 1]) + '\g<3>', content)
+            content = re.sub('(\n *\')' + distinctKey + '(\'[^:]+:.*)' + str(configData[distinctKey]) + '(\'?,?\n)', '\g<1>' + distinctKey + '\g<2>' + str(sys.argv[distinctKeyIndex + 1]) + '\g<3>', content)
             # Write to a temporary file instead of to the original one so that the config file has a higher protection from corruption in case of writing errors.
             with open(os.path.join(configDir, "config_tmp.py"), "w") as tempFile:
               tempFile.write(content)

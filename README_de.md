@@ -97,11 +97,24 @@ python main_cli.py --channel meineigenerkanal
 Natürlich müssen Sie `meineigenerkanal` durch den Namen des passenden Kanals, auf dem Willowbot seinen Dienst antreten und die von Ihnen definierten Befehle ausführen soll, ersetzen.
 
 
+### Kyrillisch-Latein-Konvertierung
+
+Willowbot enthält eine Option, kyrillische Buchstaben, die wie lateinische aussehen, tatsächlich in ihr lateinisches Pendant to konvertieren. Diese Funktion wurde wegen Scambots, die versuchen, Maßnahmen gegen Bots dadurch zu unterlaufen, indem sie lateinische Buchstaben mit kyrillischen kombinieren und damit Mustererkennungen entgehen, eingerichtet. Der Standardwert für diese Option ist `False` (falsch), aber wenn Sie den Bot in einem hauptsächlich lateinischen Kontext respektive in einer entsprechenden Community verwenden und diese Funktion einsetzen wollen, können Sie diese mit folgendem Befehl aktivieren:
+```
+python main_cli.py --set-config 'cyrillicToLatinConversion' True
+```
+
+
 ### Migrationshinweise (Erstnutzer können diesen Part überspringen)
 
 Sollten Sie Willowbot zuvor schon einmal verwendet haben (vor März 2023), müssen Sie ggf. ein paar Ihrer Kommandos anpassen, um sicherzustellen, dass sie mit der neuen Twitch-API weiterhin funktionieren. Die Chatkommandos `/ban` sowie `/timeout` können weiterhin verwendet werden; sie werden auf die entsprechenden API-Endpunkte umgeleitet. Jedoch werden sie nicht mehr mit dem Argument `$senderName`, sondern mit `$senderID` aufgerufen.
 
 Des Weiteren unterstützt Willowbot nun API-Shoutouts und -Ankündigungen. Um sie zu nutzen, verwenden Sie einfach die bekannten Kommandos `/shoutout` oder `/announce` in den `answer`-Schlüsseln ihrer Kommandodefinitionen.
+
+
+#### Update Juni 2024
+
+Um die Kyrillisch-Latein-Konvertierung nutzen zu können, muss der Schlüssel `cyrillicToLatinConversion` mit dem Wert `True` (Achtung! Als Wahrheitswert, nicht als Zeichenkette, d. h. ohne Anführungszeichen.) von Hand in die Konfigurationsdatei geschrieben werden.
 
 
 ## 3 Kommandosets erstellen

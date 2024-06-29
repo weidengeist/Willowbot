@@ -332,8 +332,9 @@ class Message():
     if self.getType() == "PRIVMSG":
       # All the following code covers triggerType chat message.
 
-      # Convert Cyrillic letters to Latin ones to strike scam bots.
-      self.text = cyrillicToLatin(self.getText())
+      # Convert Cyrillic letters to Latin ones (if that option is set) to strike scam bots.
+      if 'cyrillicToLatinConversion' in CONFIG and CONFIG['cyrillicToLatinConversion']:
+        self.text = cyrillicToLatin(self.getText())
       senderLevel = self.getSenderLevel()
       print(self.getSenderDisplayName() + " (lvl " + str(senderLevel) + ", " + msgTime + ")\n" + self.text + "\n———————")
 
