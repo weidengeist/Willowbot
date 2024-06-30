@@ -612,7 +612,7 @@ Umfragen abzubrechen ist ebenfalls möglich und kann durch die Verwendung von `p
 commands = {
   '^!abstimmung abbrechen$' : {
     'matchType' : 'regex',
-    'debug'     : 'Abstimmung wurde gestartet.',
+    'debug'     : 'Abstimmung wurde abgebrochen.',
     'function'  : ['poll_cancel(commands, irc, cancelMessage = "Keine Stimmen mehr abgeben. Die Abstimmung wurde abgebrochen."'],
     'minLevel'  : 3
   }

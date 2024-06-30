@@ -612,7 +612,7 @@ Cancelling polls is also possible and can be achieved by using `poll_cancel(comm
 commands = {
   '^!poll cancel$' : {
     'matchType' : 'regex',
-    'debug'     : 'Poll has been started.',
+    'debug'     : 'Poll has been cancelled.',
     'function'  : ['poll_cancel(commands, irc, cancelMessage = "Votes no longer accepted. Poll has been cancelled."'],
     'minLevel'  : 3
   }
