@@ -15,9 +15,13 @@ def poll_start(commands, irc, *args, contextString = "{pollDuration} seconds: {p
   # Poll arguments are passed to the function as a blank space-separated string. Split it into an array.
   poll_options = args[0].split(" ")
 
-  duration = int(poll_options[0])
-  del poll_options[0]
-
+  # If the first argument is not convertible to an integer, e.g. it has been forgotten to be specified, default the poll duration to 60 seconds.
+  try:
+    duration = int(poll_options[0])
+    del poll_options[0]
+  except:
+    duration = 60
+  
   commands['timed']['willowbot_poll'] = {
     'interval' : duration,
     'debug'    : "Poll ended.",
