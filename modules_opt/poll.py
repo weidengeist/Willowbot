@@ -6,6 +6,7 @@ from cliOptions import getLanguage
 # Is needed outside any function definition so that the other bot modules have access to this variable.
 poll_results = {}
 
+
 def poll_start(commands, irc, *args, contextString = "{pollDuration} seconds: {pollOptions}", resultString = "{votesQuantity}", languageOverride = ""):
   langDict = importlib.import_module("lang.en").langDict | importlib.import_module("lang." + (getLanguage() if languageOverride == "" else languageOverride)).langDict
 
@@ -21,42 +22,45 @@ def poll_start(commands, irc, *args, contextString = "{pollDuration} seconds: {p
     del poll_options[0]
   except:
     duration = 60
-  
-  commands['timed']['willowbot_poll'] = {
-    'interval' : duration,
-    'debug'    : "Poll ended.",
-    'function' : ['poll_stop(commands, irc, resultString = "' + resultString + '", languageOverride = "' + languageOverride + '")']
-  }
 
-  # A string that gathers the vote options for an message that announces the beginning of a poll.
-  poll_options_announcementString = ""
+  # Only start the poll if there are at least two options left to choose from.
+  if len(poll_options) > 1:
   
-  for i in range(0, len(poll_options)):
-    a = poll_options[i]
-    poll_options_announcementString = poll_options_announcementString + "»" + a + "«"
-    if i < len(poll_options) - 2:
-      poll_options_announcementString = poll_options_announcementString + ", "
-    elif i == len(poll_options) - 2:
-      poll_options_announcementString = poll_options_announcementString + " " + langDict['or'] + " "
-    poll_results[a] = []
-    if not a in commands['general']:
-      print("Adding a poll option in the commands for " + a)
-      commands['general'][a] = {
-        'debug'     : '$senderDisplayName added with vote ' + a,
-        'function'  : ['poll_addUserVote("' + a + '", "$senderDisplayName")'],
-        'matchType' : 'is_caseInsensitive'
-      }
-    else:
-      print("Vote option already defined. Poll not started.")
-      del commands['timed']['willowbot_poll']
-      for o in poll_options:
-        if o in commands['general']:
-          if o != poll_options[i]:
-            del commands['general'][o]
-          del poll_results[o]
-      return
-
-  irc.send("/me " + contextString.format(pollDuration = duration, pollOptions = poll_options_announcementString))
+    commands['timed']['willowbot_poll'] = {
+      'interval' : duration,
+      'debug'    : "Poll ended.",
+      'function' : ['poll_end(commands, irc, resultString = "' + resultString + '", languageOverride = "' + languageOverride + '")']
+    }
+  
+    # A string that gathers the vote options for an message that announces the beginning of a poll.
+    poll_options_announcementString = ""
+    
+    for i in range(0, len(poll_options)):
+      a = poll_options[i]
+      poll_options_announcementString = poll_options_announcementString + "»" + a + "«"
+      if i < len(poll_options) - 2:
+        poll_options_announcementString = poll_options_announcementString + ", "
+      elif i == len(poll_options) - 2:
+        poll_options_announcementString = poll_options_announcementString + " " + langDict['or'] + " "
+      poll_results[a] = []
+      if not a in commands['general']:
+        print("Adding a poll option in the commands for " + a)
+        commands['general'][a] = {
+          'debug'     : '$senderDisplayName added with vote ' + a,
+          'function'  : ['poll_addUserVote("' + a + '", "$senderDisplayName")'],
+          'matchType' : 'is_caseInsensitive'
+        }
+      else:
+        print("Vote option already defined. Poll not started.")
+        del commands['timed']['willowbot_poll']
+        for o in poll_options:
+          if o in commands['general']:
+            if o != poll_options[i]:
+              del commands['general'][o]
+            del poll_results[o]
+        return
+  
+    irc.send("/me " + contextString.format(pollDuration = duration, pollOptions = poll_options_announcementString))
 
 
 def poll_addUserVote(vote, sender):
@@ -75,7 +79,7 @@ def poll_addUserVote(vote, sender):
         print("Sender already in the list with this vote.")
 
 
-def poll_stop(commands, irc, resultString, languageOverride):
+def poll_end(commands, irc, resultString, languageOverride):
   langDict = importlib.import_module("lang.en").langDict | importlib.import_module("lang." + (getLanguage() if languageOverride == "" else languageOverride)).langDict
   # Make the global variable poll_results modifiable.
   global poll_results
@@ -95,3 +99,15 @@ def poll_stop(commands, irc, resultString, languageOverride):
   votes_total = max(votes_total, 1)
   for v in votes_sorted:
     irc.send(v[0] + ": " + str(round(v[1]/votes_total*100)) + " %")
+
+
+def poll_cancel(commands, irc, cancelMessage = "Poll aborted."):
+  global poll_results
+  # Delete the timed poll command, if it exists. This has to be ensured, because the cancel command might be sent without an active poll.
+  if 'willowbot_poll' in commands['timed']:
+    del commands['timed']['willowbot_poll']
+    for c in poll_results.keys():
+      # Delete the vote options from the commands dictionary.
+      del commands['general'][c]
+    poll_results = {}
+    irc.send(cancelMessage)

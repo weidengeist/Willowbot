@@ -605,7 +605,19 @@ Welche Phrase zur Zusammenfassung der Abstimmergebnisse genutzt wird, wird durch
 
 Das letzte optionale Argument der `poll_start`-Routine ist `languageOverride`. Es wird verwendet, um die Sprache, in der die Konjuktion zwischen der vorletzten und letzten Abstimmoption in der generierten `{pollOptions}`-Zeichenkette erscheint, zu bestimmen. Dies bedeutet, dass Sie Willowbot bspw. auf Englisch starten, aber dennoch eine Ausgabe auf Deutsch erzeugen können, indem Sie `languageOverride = "de"` setzen.
 
-Um nun tatsächlich eine Umfrage zu starten, würden Sie ein Kommando wie `!abstimmung 30 links rechts geradeaus` an den Chat senden. Dieses startet eine Abstimmung, die 30 Sekunden dauern und den Zuschauern erlauben wird, auszuwählen, wo es im derzeit gespielten Spiel als Nächstes langgehen soll – nach links, rechts oder geradeaus –, indem sie das passende Wort in den Chat schreiben. Eine entsprechende Nachricht wird im Chat erscheinen. Willowbot wird anschließend the Stimmen einsammeln und in einer Liste sammeln, die am Ende ausgewertet wird. Jeder Nutzer kann nur einmal abstimmen, jedoch seine Stimme ändern, indem er eine andere der verfügbaren Optionen in den Chat schreibt. Nachdem die Zeit, die dem `!abstimmung`-Kommando übergeben wurde, abgelaufen ist, wird die Abstimmung zusammengefasst und Willowbot schickt eine List mit den Ergebnissen an den Chat, angezeigt in Prozent und absteigender Reihenfolge, von der Option mit den meisten zu derjenigen mit den wenigsten Stimmen.
+Um nun tatsächlich eine Umfrage zu starten, würden Sie ein Kommando wie `!abstimmung 30 links rechts geradeaus` an den Chat senden. Dieses startet eine Abstimmung, die 30 Sekunden dauern und den Zuschauern erlauben wird, auszuwählen, wo es im derzeit gespielten Spiel als Nächstes langgehen soll – nach links, rechts oder geradeaus –, indem sie das passende Wort in den Chat schreiben. (Hinweis: Es ist ebenso möglich, die Abstimmdauer im `!abstimmung`-Befehl wegzulassen. Dann wird diese mit 60 Sekunden festgelegt.) Willowbot wird die Stimmen einsammeln und in einer Liste ablegen, die schließlich ausgewertet wird. Jeder Nutzer kann nur einmal abstimmen, jedoch seine Stimme ändern, indem er eine andere der verfügbaren Optionen in den Chat schreibt. Nachdem die Zeit, die dem `!abstimmung`-Kommando übergeben wurde, abgelaufen ist, wird die Abstimmung zusammengefasst und Willowbot schickt eine List mit den Ergebnissen an den Chat, angezeigt in Prozent und absteigender Reihenfolge, von der Option mit den meisten zu derjenigen mit den wenigsten Stimmen.
+
+Umfragen abzubrechen ist ebenfalls möglich und kann durch die Verwendung von `poll_cancel(commands, irc)` als Wert für den Schlüssel `function` eingerichtet werden. Diese Routine wird darüber informieren, dass der Abbruch erfolgreich war, indem »Poll aborted.« in den Chat geschrieben wird. Soll Willowbot eine andere Bestätigungsnachricht abschicken, kann `cancelMessage` als optionaler Parameter beim Aufruf von `poll_cancel` gesetzt werden, was folgendermaßen aussehen würde:
+```
+commands = {
+  '^!abstimmung abbrechen$' : {
+    'matchType' : 'regex',
+    'debug'     : 'Abstimmung wurde gestartet.',
+    'function'  : ['poll_cancel(commands, irc, cancelMessage = "Keine Stimmen mehr abgeben. Die Abstimmung wurde abgebrochen."'],
+    'minLevel'  : 3
+  }
+}
+```
 
 
 ### 4.3 `modChannelInfo`-Modul (Kanalinformationen bearbeiten)
