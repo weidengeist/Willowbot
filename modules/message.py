@@ -488,6 +488,9 @@ class Message():
       print("\nWHISPER\n")
       print(self.text)
 
+    elif self.getType() == "PONG":
+      pass
+
     else:
       if not re.match('^PING :tmi\.twitch\.tv$', self.meta) and not re.match("^:.*", self.meta):
         print("\n——— unclassified message ———\n", message)

@@ -103,8 +103,6 @@ class IRC:
       else:
         text = 'EXCEPTION'
 
-      print( time.strftime("%H:%M:%S") + ": " + text)
-
       # Twitch sent a ping to check if you are still there.
       if "PING :tmi.twitch.tv" in str(text):
         self.sendPlain("PONG :tmi.twitch.tv")
@@ -132,6 +130,7 @@ class IRC:
 
     if not self.isConnected and len(text) > 0:
       print(" " + self.langDict['symbol_success'] + " " + self.langDict['irc_connectionEstablished'])
+      print("\n", "—" * 25, "\n")
       self.isConnected = True
       # Reset the trials and the timeout.
       self.retries_curr = 0

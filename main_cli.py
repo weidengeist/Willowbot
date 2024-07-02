@@ -69,7 +69,6 @@ while 1:
   # Read full message from chat. Returns an array with zero or more messages.
   # Get this response before checking the timed commands to ensure the connection is still/already alive.
   response = irc.getResponse()
-  
   # Needs the irc connection as an argument to enable sending reactions to the chat. Full commands are passed for »function« key, which might tamper with the commands set.
   checkTimedCommands(commands, irc)
   
