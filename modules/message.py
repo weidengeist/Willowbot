@@ -24,13 +24,13 @@ class Message():
   ################################
   def contains(self, string):
     return re.match(".*" + string + ".*", self.text)
-    
+
   def contains_caseInsensitive(self, string):
     return re.match(".*" + string.lower() + ".*", self.text.lower())
-    
+
   def endsWith(self, string):
     return re.match(".*" + string + "$", self.text)
-  
+
   def equals(self, string):
     return self.text == string
 
@@ -43,7 +43,7 @@ class Message():
   # For continued subgifts.
   def getOriginalGifter(self):
     return re.sub(".+?;msg-param-sender-name=([^;]+).*", r'\1', self.meta)
- 
+
   def getRaidersCount(self):
     return re.sub(".+?;msg-param-viewerCount=([^;]+).*", r'\1', self.meta)
 
@@ -79,10 +79,10 @@ class Message():
 
   def getSubMonth_current(self):
     return 0 if ";subscriber=0" else re.sub("^\@badge[^/]+/([0-9]*);.*", r'\1', self.meta)
-  
+
   def getSubMonth_new(self):
     return re.sub(".+?;msg-param-cumulative-months=([^;]+).*", r'\1', self.meta)
-  
+
   def getText(self):
     return re.sub(".+?tmi\.twitch\.tv [A-Z]+ [^:]+:(.+)", r'\1', self.fullText)
 
@@ -129,7 +129,7 @@ class Message():
       return re.match(regex, self.text)
     except:
       print("Regex error! Please check " + regex + ".")
-    
+
   def senderIsBroadcaster(self):
     return "badges=broadcaster" in self.meta
 
@@ -187,7 +187,7 @@ class Message():
 
     return answerText
 
-  
+
   def resolveCaptureGroups(self, pattern, replacement):
     try:
       replEncoded = re.sub("\\\\x([0-9]{2})", r"\\\\g<\1>", replacement.encode('unicode_escape').decode()).encode().decode('unicode_escape')
@@ -227,7 +227,7 @@ class Message():
       # Resolve the single arguments.
       for i in range(0, len(argsMsg)):
         answerText = answerText.replace("$arg" + str(i), argsMsg[i])
-      
+
       # All the remaining arguments used in the answer string but not provided by the command are renamed to »missingArg«
       return re.sub("\$arg[@0-9+]+", "", answerText)
 
@@ -241,7 +241,7 @@ class Message():
         answer = self.resolveCaptureGroups(match, reaction['answer'])
       else:
         answer = reaction['answer']
-      
+
       answer = self.resolveArguments(answer)
       answer = self.resolvePlaceholders(answer)
 
@@ -320,16 +320,15 @@ class Message():
           print("    [debug]: " + a)
 
 
-  def processCommands(self, commands, message, irc):
+  def processCommands(self, commands, message, irc, ignoredUsers):
     self.fullText = message
-    #print(self.fullText)
     self.text = self.getText()
     self.meta = self.getMeta()
     msgTime = self.getTimeSent()
     msgTime = ("" if msgTime.tm_hour > 9 else "0") + str(msgTime.tm_hour) + ":" + ("" if msgTime.tm_min > 9 else "0") + str(msgTime.tm_min) + ":" + ("" if msgTime.tm_sec > 9 else "0") + str(msgTime.tm_sec)
 
     # Response type is user’s chat message.
-    if self.getType() == "PRIVMSG":
+    if self.getType() == "PRIVMSG":      
       # All the following code covers triggerType chat message.
 
       # Convert Cyrillic letters to Latin ones (if that option is set) to strike scam bots.
@@ -344,9 +343,9 @@ class Message():
       while i < len(list(commands['general'].keys())):
         c = list(commands['general'].keys())[i]
         i += 1
-        
+
         # The following chain of checks will be either successful (»pass« in each check instance) or break at some point and »continue« with respectively jump to the next item in the commands loop. 
-        
+
         # Check if the most recent chat message matches the command currently being processed as well as its matching type.
         if (commands['general'][c]['matchType'] == "startsWith" and self.startsWith(c)) or (commands['general'][c]['matchType'] == "contains" and self.contains(c)) or (commands['general'][c]['matchType'] == "contains_caseInsensitive" and self.contains_caseInsensitive(c)) or (commands['general'][c]['matchType'] == "endsWith" and self.endsWith(c)) or (commands['general'][c]['matchType'] == "regex" and self.matchesRegex(c)) or (commands['general'][c]['matchType'] == "is" and self.text == c) or (commands['general'][c]['matchType'] == "is_caseInsensitive" and self.text.lower() == c.lower()):
           pass
@@ -372,7 +371,7 @@ class Message():
           pass
         else:
           continue
-        
+
         # Check if the user has the necessary level to use the command.
         if (not 'level' in commands['general'][c] and not 'minLevel' in commands['general'][c]) or ('level' in commands['general'][c] and senderLevel == commands['general'][c]['level']) or ('minLevel' in commands['general'][c] and senderLevel >= commands['general'][c]['minLevel']):
           pass
@@ -392,8 +391,12 @@ class Message():
           continue
 
         # If all restrictions above have been met, the reaction is free to be executed. This point is not reached otherwise.
-        self.reactToMessage(commands, 'general', c, irc)
-        
+        if not self.getSenderName() in ignoredUsers:
+          self.reactToMessage(commands, 'general', c, irc)
+        else:
+          print("User ignored.")
+
+
     elif self.getType() == "USERNOTICE":
 
       # Message indicates a regular subscription.
@@ -441,7 +444,7 @@ class Message():
         for m in commands['sub']:
           if commands['sub'][m]['triggerType'] == 'subGiftSingleFollowup':
             self.reactToMessage(commands, 'sub', m, irc)
-      
+
       # Message indicates a sub bomb i. e. multiple gifted subs.
       elif self.isSubGiftMulti():
         for m in commands['sub']:
@@ -458,11 +461,11 @@ class Message():
           for m in commands['raid']:
             if  lowerBound <= raidersCount and raidersCount <= upperBound:
               self.reactToMessage(commands, 'raid', m, irc)
-        
+
       else:
         print("\nUSERNOTICE\n")
         print(message)
-  
+
     elif self.getType() == "CLEARCHAT":
       print("\nCLEARCHAT\n")
       print("    Message: " + message)

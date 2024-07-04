@@ -33,6 +33,10 @@ langDict = {
   'irc_connectionEstablished'             : 'Erfolgreich verbunden. Warte auf Nachrichten auf dem Server.',
   'irc_passSent'                          : 'Zugangsschlüssel erfolgreich übermittelt.',
   'irc_reconnectionTrial'                 : 'Verbindungsversuch {currentTrial} von {maxTrials} in {seconds} Sekunden …   ',
+  'ignoredUsers_loadingSuccessful'        : 'Erfolgreich Liste ignorierter Nutzer geladen.',
+  'ignoredUsers_loadingFailed'            : 'WARNUNG! Datei ignoredUsers.txt nicht gefunden.',
+  'ignoredUsers_listEmpty'                : 'Sie enthält keine Einträge.',
+  'ignoredUsers_listHasEntries'           : 'Sie enthält die folgenden Nutzer:',
   'logins_loadingFailed'                  : 'In Willowbots Konfigurationsverzeichnis befindet sich keine Logindatei:\n       {dir}\n   Programm beendet. Wurde Willowbot bereits konfiguriert (--configure)?',
   'logins_loadingSuccessful'              : 'Logindatei erfolgreich geladen.',
   'optModules_importTrial'                : 'Versuche, das Modul {module} zu importieren.',
@@ -111,6 +115,7 @@ langDict = {
   'new_female'                            : 'neue',
   'pluralMod1'                            : 'n',
   'symbol_failure'                        : '×',
+  'symbol_item'                           : '•',
   'symbol_success'                        : '✔',
   'yesNo_prompt'                          : '[j]a/[n]ein'
 }

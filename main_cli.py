@@ -26,6 +26,7 @@ if '-gc' in sys.argv or '--get-config' in sys.argv:
 from modules.basics import checkTimedCommands  # Import various general functions from the basics(.py) module in ./modules.
 from modules.basics import getCommands    
 from modules.basics import getConfig
+from modules.basics import getIgnoredUsers 
 from modules.basics import getLogins
 from modules.irc import IRC                    # Import the IRC class from the irc(.py) module in ./modules.
 
@@ -39,6 +40,10 @@ else:
 
 LOGINS = getLogins(feedback = globalFeedback)   # Load all available login oauths.
 CONFIG = getConfig(feedback = globalFeedback)   # Load configuration files. 
+
+
+# Read the list of ignored users, i.e. users whose commands won’t be evaluated.
+ignoredUsers = getIgnoredUsers(feedback = globalFeedback)
 
 
 if '-t' in sys.argv or '--token' in sys.argv:
@@ -74,4 +79,4 @@ while 1:
   
   # Iterate over the received messages.
   for r in response:
-    chatMsg.processCommands(commands, r, irc)
+    chatMsg.processCommands(commands, r, irc, ignoredUsers)

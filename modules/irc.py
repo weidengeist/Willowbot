@@ -37,7 +37,7 @@ class IRC:
 
   def connect(self):
     logins = getLogins()
-    
+
     botname = self.config['botname'] if 'botname' in self.config else ""
     oauth = logins[botname] if botname in logins else ""
     port = self.config['port'] if 'port' in self.config else ""
@@ -110,10 +110,10 @@ class IRC:
       # You have sent a ping to Twitch to check if your connection is still alive and Twitch has (hopefully) answered with a pong.
       #if "PONG tmi.twitch.tv :tmi.twitch.tv" in str(text):
       #  self.latestDisconnectCheckTime = time.time()
-  
+
       if (text == 'EXCEPTION' or text == "") and self.retries_curr <= self.config['connectionRetries']:
         self.tryReconnect()
-    
+
     else:
       # If there is no message waiting to be processed and the disconnectCheckInterval has elapsed since the latest check, send Twitch a ping to check if the connection is still alive.
       elapsedSinceLatestCheck = time.time() - self.latestDisconnectCheckTime
@@ -122,7 +122,7 @@ class IRC:
       if elapsedSinceLatestCheck >= 2 * self.config['disconnectCheckInterval']:
         print("WARNING! Connection seems dead. Trying to reconnect.")
         self.tryReconnect()
-  
+
     # Split the response for cases where more than one user message is in one response.
     text = text.replace("\r\n", "\n").split('\n')
     # Split command above creates an empty last entry in response list. Delete this.
@@ -135,5 +135,5 @@ class IRC:
       # Reset the trials and the timeout.
       self.retries_curr = 0
       self.retries_timeout = 1
-    
+
     return text

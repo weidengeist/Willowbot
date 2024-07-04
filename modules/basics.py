@@ -53,7 +53,7 @@ def loadOptionalModules(lang = 'en', feedback = False):
         line = re.findall("^[^#\n ]+", line)
         line = line[0] if len(line) > 0 else ""
         if line != "":
-          feedback and print(" • " + langDict['optModules_importTrial'].format(module = line))
+          feedback and print(" " + langDict['symbol_item'] + " " + langDict['optModules_importTrial'].format(module = line))
           if os.path.exists("./modules_opt/" + line + ".py"):
             module = importlib.import_module(line)
             # Determine a list of names to copy to the current namespace.
@@ -84,10 +84,10 @@ def getLogins(feedback = False):
     loginsDir = os.path.join(os.getenv("APPDATA"), "twitch", "willowbot")
   elif userOS == "Darwin":
     loginsDir = os.path.join(os.path.expanduser("~"), "Library", "Preferences", "twitch", "willowbot")
-  
+
   # Add the configuration path to the system paths to enable python to load configuration modules in this location.
   sys.path.append(loginsDir)
-  
+
   # Load the logins file from the according path …
   if os.path.exists(os.path.join(loginsDir, "logins.py")):  
     loginsFromFile = importlib.import_module("logins").logins
@@ -97,7 +97,7 @@ def getLogins(feedback = False):
   else:
     feedback and print(" " + langDict['symbol_failure'] + " " + langDict['logins_loadingFailed'].format(dir = loginsDir))
     exit()
-  
+
   return LOGINS
 
 
@@ -137,7 +137,7 @@ def getConfig(feedback = False):
     CONFIG['dir'] = os.path.join(os.getenv("APPDATA"), "twitch", "willowbot")
   elif userOS == "Darwin":
     CONFIG['dir'] = os.path.join(os.path.expanduser("~"), "Library", "Preferences", "twitch", "willowbot")
-  
+
   # Add the configuration path to the system paths to enable python to load configuration modules in this location.
   sys.path.append(CONFIG['dir'])
   # Load the configuration file from the according path …
@@ -173,7 +173,7 @@ def getConfig(feedback = False):
   else:
     feedback and print(" " + langDict['symbol_failure'] + " " + langDict['config_loginFailed_noOauth'].format(botname = potentialBotAccount))
     exit()
-    
+
   if '-c' in sys.argv or '--channel' in sys.argv:
     channelIndex = sys.argv.index("-c" in sys.argv and "-c" or "--channel") + 1
     CONFIG['channel'] = len(sys.argv) > channelIndex and sys.argv[channelIndex].lower() or 'channel' in CONFIG and CONFIG['channel'].lower()
@@ -190,7 +190,7 @@ def getConfig(feedback = False):
       feedback and print(" " + langDict['symbol_success'] + " " + langDict['config_channelOauthFound'].format(channel = CONFIG['channel']))
     else:
       feedback and print(" " + langDict['symbol_failure'] + " " + langDict['config_channelOauthMissing'].format(channel = CONFIG['channel']))
-  
+
   return CONFIG
 
 
@@ -212,7 +212,7 @@ def getCommands(config, feedback = False):
     sys.path.append(os.path.join(config['dir'], 'commands'))
     commandsModule = importlib.import_module(config['channel'])
     commands = commandsModule.commands
-    
+
     # Create separate lists for timed commands, subscription messages, and raid messages.
     for c in commands.keys():
       # Check if the user’s regex in the command definition is correct.
@@ -233,7 +233,7 @@ def getCommands(config, feedback = False):
         commands_raid[c] = {}
         for k in commands[c].keys():
           commands_raid[c][k] = commands[c][k]
-    
+
     if len(regexErrors) > 0:
       print(langDict['regexError_listPrefix'])
       for e in regexErrors:
@@ -301,16 +301,15 @@ def checkTimedCommands(commands, irc):
             answer = splitIntoGroupsOf(answer[0], 500)
             for a in answer:
               irc.send(a)
-    
+
         # Execute the string in »os-command« as a system command.
         if 'os-command' in reaction:
           os.system(reaction['os-command'])
-    
+
         if 'function' in reaction:
           for f in reaction['function']:
-            print("Evaluating", f)
             eval(f)
-    
+
         # If there is a debug message provided, output this on the console.
         if 'debug' in reaction:
           answer = reaction['debug'].split('\n')
@@ -336,6 +335,23 @@ def checkTimedCommands(commands, irc):
         print("Channel offline. Skipping timed commands.")
 
 
+def getIgnoredUsers(feedback = False):
+  langDict = importlib.import_module("lang.en").langDict | importlib.import_module("lang." + getLanguage()).langDict
+  if os.path.exists("./ignoredUsers.txt"):
+    f = open("./ignoredUsers.txt", "r")
+    ignoredUsers =  re.findall("(?:^|\n)([^#\n $]+)", f.read())
+    f.close()
+    print(" " + langDict['symbol_success'] + " " + langDict['ignoredUsers_loadingSuccessful'])
+    if len(ignoredUsers) == 0:
+      print(" " * 3 + langDict['ignoredUsers_listEmpty'])
+    else:
+      print(" " * 3 + langDict['ignoredUsers_listHasEntries'])
+      for u in ignoredUsers:
+        print(" " * 5 + langDict['symbol_item'] + " " + u)
+  else:
+    print(" " + langDict['symbol_failure'] + " " + langDict['ignoredUsers_loadingFailed'])
+
+
 # Used to split too long bot messages into chunks of a distinct character limit.
 def splitIntoGroupsOf(s, length):
   finalStringsList = []
@@ -355,7 +371,7 @@ def splitIntoGroupsOf(s, length):
         # Otherwise, the word is too long to fit the restrictions, so omit it by setting it an empty string.
         else:
           first = ""
-        
+
     # Only append the string of length at max 12 characters to the string if it actually exists.
     # Prevents infinite loops by words being longer than the character limit.
     if len(first) > 0:
@@ -363,7 +379,7 @@ def splitIntoGroupsOf(s, length):
     else:
       # Delete the very first word in the remaining input string s if it is too long.
       first = re.sub("^([^ ]+).*", r'\1', s)
-    
+
     # Use string.replace instead of re.sub to ensure replacement without stumbling over special regex patterns/characters.
     s = re.sub("^ *", "", s.replace(first, ""))
 

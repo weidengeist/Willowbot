@@ -55,13 +55,13 @@ def createConfigFiles():
     os.makedirs(os.path.join(configDir, 'commands'))
 
   localeYes = re.match("^\[.\]", langDict['yesNo_prompt']) and re.findall("^\[(.)\]", langDict['yesNo_prompt'])[0] or "y"
-  
+
   if os.path.exists(os.path.join(configDir, "config.py")):  
     print(langDict['configFiles_configFileAlreadyExists'].format(dir = configDir))
     answer = input(langDict['yesNo_prompt'] + ": ")
   else:
     answer = localeYes
-  
+
   if answer == localeYes:
     # Create an empty file …
     configFile = open(os.path.join(configDir, "config.py"), 'w')
@@ -78,7 +78,7 @@ def createConfigFiles():
     answer = input(langDict['yesNo_prompt'] + ": ")
   else:
     answer = localeYes
-  
+
   if answer == localeYes:
     # Create an empty file …
     loginsFile = open(os.path.join(configDir, "logins.py"), 'w')
@@ -251,10 +251,10 @@ def showHelp():
   #os.system('echo "' + "Test" * 1000 + '" | ' + (os.name == 'posix' and 'less' or 'more'))
 
   from importlib import import_module
-  
+
   langDict = import_module("lang.en").langDict | import_module("lang." + getLanguage()).langDict
   from basics import indentedWithWidth
-  
+
   helpPages = markup.bold + langDict['usage'] + markup.end + "\n"
   helpPages += indentedWithWidth("main_cli.py [" + langDict['option'] + "]", 4)
   helpPages += "\n"
@@ -381,7 +381,7 @@ def tokenActions(CONFIG, LOGINS):
             print(langDict['tokenActions_delete_cancelled'])
         else:
           print(" " + langDict['symbol_failure'] + " " + langDict['tokenActions_delete_nameNotFound'].format(name = loginName))
-          
+
     elif keyword == "get":
       from modules.oauthToken import scopes
       from modules.oauthToken import baseURL

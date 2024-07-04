@@ -105,6 +105,11 @@ python main_cli.py --set-config 'cyrillicToLatinConversion' True
 ```
 
 
+### List of ignored users
+
+In Willowbot’s root directory, you can find a file called `ignoredUsers.txt`. There you can insert chat participants whose chat message evaluation shall be skipped. This will only affect the bot’s behaviour of reacting to those users’ messages, not the detection of the messages. The intended use-case of this feature is to prevent bots from reacting to each other when multiple bots operate on the same channel simultaneously. The users that shall be ignored are entered line by line into the file; lines starting with `#` are ignored.
+
+
 ### Hints on migrations (first-time users may skip this part)
 
 If you have used Willowbot before (earlier than March 2023), you have to change a few things in your commands to ensure that they will still work with the new Twitch API. You may still use the chat commands `/ban` and `/timeout`; they have been mapped to the new API endpoints. However, their argument is no longer `$senderName`, but `$senderID`.
