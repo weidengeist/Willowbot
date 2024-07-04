@@ -677,6 +677,7 @@ The most complex function in this module is `category_set`. Just like `title_set
 A very popular command is getting the time remaining until a certain event happens, e.g. a game presentation or the streamer’s birthday. That’s what the `dateDiff` module can be used for. It allows you to calculate the difference between two dates as well as the one between the time of sending the command linked to this module and a target date.
 
 The core function supposed to be used by the end-user is `dateDiff_send`. It uses the following parameters:
+
 * `irc`: mandatory.
 * `targetDate`: mandatory; a string in ISO format [YYYY]-[MM]-[DD]T[hh]:[mm]:[ss] or [MM]-[DD]; if the latter variant is used, Willowbot will assume the next occurrence of this month-day combination, i.e. either the current or the next year.
 * `nowDate`: optional, default: `""`; see `targetDate`; if this parameter is omitted, the actual current date and time will be used instead of the one expressed by the provided string.
@@ -693,6 +694,33 @@ An example definition for a command using `dateDiff_send` is the following:
 ```
 
 When a chat participant issues the command `!bday`, the bot will (for example) answer `The channel owner’s next birthday will be in 221 days, 12 hours, 10 minutes and 17 seconds.` The date difference string is inserted where `{dateDiff}` appears in the `contextString` parameter and in this case it is the time remaining until April 8th.
+
+
+### 4.5 `randomIntegers` module
+
+Rolling dice in the chat is pretty popular among some channels, but generating random numbers can also be useful for other little games to entertain the viewers with. With the module `randomIntegers` you can send such numbers to the chat, embedded in a string of your choice.
+
+The following piece of sample code is supposed to illustrate the usage of this module:
+```
+'!roll [0-9]+( |$)' : {
+  'matchType' : 'regex',
+  'function' : ['randomIntegers_generate(irc, interval = [1, 6], contextString = "You have rolled {resultString}, summing up to {resultSum}.", quantity = $arg0, finalConjunction = "and")']
+}
+```
+Like other modules, `randomIntegers_generate` requires `irc` as a mandatory argument. All other arguments are optional. The following are accepted:
+
+* `interval`: list, default value: `[1, 100]`; the range [*a*, *b*] of numbers that is used to generate random numbers *x* with  *a* ≤ *x* ≤ *b*.
+* `contextString`: string, default value: `"{resultString}"`; the answer string that will be sent to the chat after the number generation has finished; `contextString` accepts the following placeholders:
+  * * `{resultString}`: comma-separated string of the results; may contain »and« or other conjunctions after second-last item in the set locale.
+  * * `{resultSum}`: the sum of the generated random numbers.
+  * * `{0}`, `{1}`, `{2}`, etc.: the first, second, third, etc. result of the number generation; numbers within the braces exceeding the quantity of generated numbers (Note: if, for example, 12 numbers are generated, `{11}` is the maximum allowed placeholder number, as the enumeration of the results begins with 0) are handled by the module and won’t crash Willowbot.
+* `quantity`: integer, default value: `1`; the quantity of generated random numbers.
+* `sort`: boolean, default value: `False`; if set to `True`, the generated numbers will be presented in ascending order.
+* `summarize`: boolean, default value: `False`; if set to `True`, the generated numbers will be presented in groups, using the format defined by the `summaryFormat` argument.
+* `summaryFormat`: string, default value: `"{quantity} × {number}"`; a string that defines the layout of each group when the `summarize = True` argument is used; accepts the placeholders `{quantity}` and `{number}`.
+* `unique`: boolean, default value: `False`; if set to `True`, the generated numbers won’t contain any duplicates; no numbers will be generated with this argument, if the `interval` is smaller than the specified `quantity`.
+* `finalConjunction`: string, default value: `", "`; this string determines the delimiter between the second-last and the last number or group of the `{resultString}`; if the locale dictionary contains an entry for the key defined by the `finalConjunction` argument, e.g. `"and"`, the corresponding string of that locale will be used, adding a blank space before and after it.
+* `languageOverride`: string, default value: `""`; just like in the `dateDiff` module or in the `poll` module, this argument will make the module look up the `finalConjunction` in the dictionary specified by the value of `languageOverride`; the values accepted by the `languageOverride` argument correspond to the names (i.e. without the file extension `.py`) of the dictionary files located in the `./lang` subdirectory.
 
 
 ## 5 Test/Debugging mode

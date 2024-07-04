@@ -595,7 +595,7 @@ commands = {
   '!abstimmung' : {
     'matchType' : 'startsWith',
     'debug'     : 'Abstimmung wurde gestartet.',
-    'function'  : ['poll_start(commands, irc, "$arg0+", contextString = "Abstimmung offen für {pollDuration} Sekunden. Stimmt ab mit {pollOptions}.", resultString = "{votesQuantity} Stimme{pluralMod} wurde{pluralMod} abgegeben.", languageOverride = "en")'],
+    'function'  : ['poll_start(commands, irc, "$arg0+", contextString = "Abstimmung offen für {pollDuration} Sekunden. Stimmt ab mit {pollOptions}.", resultString = "{votesQuantity} Stimme{pluralMod} wurde{pluralMod} abgegeben.", languageOverride = "de")'],
     'minLevel'  : 3
   }
 }
@@ -693,6 +693,33 @@ Eine Beispieldefinition für einen Chatbefehl, der `dateDiff_send` verwendet, is
 ```
 
 Schickt ein Chatteilnehmer den Befehl `!geb` ab, gibt der Bot (bspw.) die Antwort `In 221 Tagen, 12 Stunden, 10 Minuten und 17 Sekunden hat die Streamerin Geburtstag.` aus. Die Datumsdifferenzzeichenkette wird dort eingefügt, wo `{dateDiff}` in `contextString` auftaucht, und in diesem Fall ist es die bis 08. April verbleibende Zeit. In den meisten Fällen wird bei deutscher Sprache erforderlich sein, die Verwendung der Akkusativendungen via `useAccusativeMod = True` zuzuschalten, damit der Satz grammatisch korrekt ist. Wird Willowbot nicht ohnehin schon in deutscher Sprache gestartet, soll aber eine auf Deutsch formulierte Datumsdifferenz ausgeben, ist obendrein `languageOverride = "de"` als Funktionsparameter notwendig.
+
+
+### 4.5 `randomIntegers`-Modul
+
+Würfel zu werfen, ist auf einigen Kanälen recht beliebt, doch das Generieren von Zufallszahlen kann auch für andere kleine Spiele, mit denen man die Zuschauer unterhalten kann, nützlich sein. Über das Modul `randomIntegers` können derartige Zahlen, eingebettet in eine Zeichenkette Ihrer Wahl, an den Chat gesendet werden.
+
+Der folgende Codeschnipsel soll die Verwendung dieses Moduls illustrieren:
+```
+'!roll [0-9]+( |$)' : {
+  'matchType' : 'regex',
+  'function' : ['randomIntegers_generate(irc, interval = [1, 6], contextString = "Du hast {resultString} und damit eine Summe von {resultSum} gewürfelt.", quantity = $arg0, finalConjunction = "and")']
+}
+```
+Wie auch andere Module benötigt `randomIntegers_generate` `irc` als Pflichtargument. Alle anderen Argumente sind optional. Folgende werden akzeptiert:
+
+* `interval`: Liste, Standardwert: `[1, 100]`; die Spanne [*a*, *b*] der Zahlen, aus der Zufallszahlen *x* mit *a* ≤ *x* ≤ *b* erzeugt werden.
+* `contextString`: Zeichenkette, Standardwert: `"{resultString}"`; die Zeichenkette, die als Antwort an den Chat gesendet wird, nachdem die Zufallszahlen generiert wurden; `contextString` akzeptiert die folgenden Platzhalter:
+  * * `{resultString}`: kommaseparierte Zeichenkette des Ergebnisses; darf »und« oder andere Konjunktionen zwischen dem letzten und vorletzten Element der Aufzählung in der jeweils für Willowbot gesetzten Sprache enthalten.
+  * * `{resultSum}`: die Summe der generierten Zahlen.
+  * * `{0}`, `{1}`, `{2}`, etc.: das erste, zweite, dritte etc. Ergebnis der Zahlengenerierung; Zahlen innerhalb der Klammern, die die Anzahl erzeugter Zufallszahlen übersteigen (Hinweis: bei bspw. 12 erzeugten Zufallszahlen kann maximal `{11}` verwendet werden, da ab 0 gezählt wird), werden vom Modul abgefangen und verursachen keinen Absturz des Willowbots.
+* `quantity`: Ganzzahl, Standardwert: `1`; die Anzahl erzeugter Zufallszahlen.
+* `sort`: Wahrheitswert, Standardwert: `False`; falls auf `True` gesetzt, werden die generierten Zufallszahlen in aufsteigender Reihenfolge ausgegeben.
+* `summarize`: Wahrheitswert, Standardwert: `False`; falls auf `True` gesetzt, werden die erzeugten Zufallszahlen in Gruppen dargestellt, wobei das über das `summaryFormat`-Argument definierte Ausgabeformat verwendet wird.
+* `summaryFormat`: Zeichenkette, Standardwert: `"{quantity} × {number}"`; eine Zeichenkette, die das Aussehen jeder Gruppe des Ergebnisses bestimmt, sofern `summarize = True` verwendet wird; akzeptiert die Platzhalter `{quantity}` und `{number}`.
+* `unique`: Wahrheitswert, Standardwert: `False`; falls auf `True` gesetzt, werden die erzeugten Zufallszahlen keine Duplikate enthalten; es werden bei `unique = True` keine Zahlen generiert, wenn die über `interval` definierte Spanne kleiner als die durch `quantity` festgelegte Anzahl zu erzeugender Zahlen ist.
+* `finalConjunction`: Zeichenkette, Standardwert: `", "`; diese Zeichenkette bestimmt das Trennzeichen zwischen der vorletzten und der letzten Zahl oder Gruppe in `{resultString}`; enthält das verwendete Wörterbuch einen Eintrag für den Schlüssel, der durch `finalConjunction` angegeben wird, z. B. `"and"`, wird die entsprechende Zeichenkette mit einem voran- sowie nachgestellten Leerzeichen verwendet.
+* `languageOverride`: Zeichenkette, Standardwert: `""`; genau wie beim `dateDiff`- oder `poll`-Modul sorgt dieses Argument dafür, dass das Modul den `finalConjunction`-Wert im durch `languageOverride` festgelegten Wörterbuch nachschlägt; die für `languageOverride` akzeptierten Werte entsprechen den Namen (d. h. ohne die Dateiendung `.py`) der im Unterverzeichnis `./lang` zu findenden Wörterbuchdateien.
 
 
 ## 5 Test-/Fehlerbehandlungsmodus
