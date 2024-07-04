@@ -337,6 +337,9 @@ def checkTimedCommands(commands, irc):
 
 def getIgnoredUsers(feedback = False):
   langDict = importlib.import_module("lang.en").langDict | importlib.import_module("lang." + getLanguage()).langDict
+
+  ignoredUsers = []
+
   if os.path.exists("./ignoredUsers.txt"):
     f = open("./ignoredUsers.txt", "r")
     ignoredUsers =  re.findall("(?:^|\n)([^#\n $]+)", f.read())
@@ -350,6 +353,8 @@ def getIgnoredUsers(feedback = False):
         print(" " * 5 + langDict['symbol_item'] + " " + u)
   else:
     print(" " + langDict['symbol_failure'] + " " + langDict['ignoredUsers_loadingFailed'])
+
+  return ignoredUsers
 
 
 # Used to split too long bot messages into chunks of a distinct character limit.
