@@ -29,6 +29,7 @@
     * [4.2 `poll` module](https://github.com/weidengeist/Willowbot#42-poll-module)
     * [4.3 `modChannelInfo` module](https://github.com/weidengeist/Willowbot#43-modchannelinfo-module)
     * [4.4 `dateDiff` module](https://github.com/weidengeist/Willowbot#44-dateDiff-module)
+    * [4.5 `randomIntegers` module](https://github.com/weidengeist/Willowbot#45-randomIntegers-module)
 * [5 Test/Debugging mode](https://github.com/weidengeist/Willowbot#5-testdebugging-mode)
 * [6 Concluding words](https://github.com/weidengeist/Willowbot#6-concluding-words)
 * [Appendix](https://github.com/weidengeist/Willowbot#appendix)
