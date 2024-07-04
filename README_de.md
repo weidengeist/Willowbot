@@ -711,9 +711,9 @@ Wie auch andere Module benötigt `randomIntegers_generate` `irc` als Pflichtargu
 
 * `interval`: Liste, Standardwert: `[1, 100]`; die Spanne [*a*, *b*] der Zahlen, aus der Zufallszahlen *x* mit *a* ≤ *x* ≤ *b* erzeugt werden.
 * `contextString`: Zeichenkette, Standardwert: `"{resultString}"`; die Zeichenkette, die als Antwort an den Chat gesendet wird, nachdem die Zufallszahlen generiert wurden; `contextString` akzeptiert die folgenden Platzhalter:
-  * * `{resultString}`: kommaseparierte Zeichenkette des Ergebnisses; darf »und« oder andere Konjunktionen zwischen dem letzten und vorletzten Element der Aufzählung in der jeweils für Willowbot gesetzten Sprache enthalten.
-  * * `{resultSum}`: die Summe der generierten Zahlen.
-  * * `{0}`, `{1}`, `{2}`, etc.: das erste, zweite, dritte etc. Ergebnis der Zahlengenerierung; Zahlen innerhalb der Klammern, die die Anzahl erzeugter Zufallszahlen übersteigen (Hinweis: bei bspw. 12 erzeugten Zufallszahlen kann maximal `{11}` verwendet werden, da ab 0 gezählt wird), werden vom Modul abgefangen und verursachen keinen Absturz des Willowbots.
+    * `{resultString}`: kommaseparierte Zeichenkette des Ergebnisses; darf »und« oder andere Konjunktionen zwischen dem letzten und vorletzten Element der Aufzählung in der jeweils für Willowbot gesetzten Sprache enthalten.
+    * `{resultSum}`: die Summe der generierten Zahlen.
+    * `{0}`, `{1}`, `{2}`, etc.: das erste, zweite, dritte etc. Ergebnis der Zahlengenerierung; Zahlen innerhalb der Klammern, die die Anzahl erzeugter Zufallszahlen übersteigen (Hinweis: bei bspw. 12 erzeugten Zufallszahlen kann maximal `{11}` verwendet werden, da ab 0 gezählt wird), werden vom Modul abgefangen und verursachen keinen Absturz des Willowbots.
 * `quantity`: Ganzzahl, Standardwert: `1`; die Anzahl erzeugter Zufallszahlen.
 * `sort`: Wahrheitswert, Standardwert: `False`; falls auf `True` gesetzt, werden die generierten Zufallszahlen in aufsteigender Reihenfolge ausgegeben.
 * `summarize`: Wahrheitswert, Standardwert: `False`; falls auf `True` gesetzt, werden die erzeugten Zufallszahlen in Gruppen dargestellt, wobei das über das `summaryFormat`-Argument definierte Ausgabeformat verwendet wird.

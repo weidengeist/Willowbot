@@ -712,9 +712,9 @@ Like other modules, `randomIntegers_generate` requires `irc` as a mandatory argu
 
 * `interval`: list, default value: `[1, 100]`; the range [*a*, *b*] of numbers that is used to generate random numbers *x* with  *a* ≤ *x* ≤ *b*.
 * `contextString`: string, default value: `"{resultString}"`; the answer string that will be sent to the chat after the number generation has finished; `contextString` accepts the following placeholders:
-  * * `{resultString}`: comma-separated string of the results; may contain »and« or other conjunctions after second-last item in the set locale.
-  * * `{resultSum}`: the sum of the generated random numbers.
-  * * `{0}`, `{1}`, `{2}`, etc.: the first, second, third, etc. result of the number generation; numbers within the braces exceeding the quantity of generated numbers (Note: if, for example, 12 numbers are generated, `{11}` is the maximum allowed placeholder number, as the enumeration of the results begins with 0) are handled by the module and won’t crash Willowbot.
+    * `{resultString}`: comma-separated string of the results; may contain »and« or other conjunctions after second-last item in the set locale.
+    * `{resultSum}`: the sum of the generated random numbers.
+    * `{0}`, `{1}`, `{2}`, etc.: the first, second, third, etc. result of the number generation; numbers within the braces exceeding the quantity of generated numbers (Note: if, for example, 12 numbers are generated, `{11}` is the maximum allowed placeholder number, as the enumeration of the results begins with 0) are handled by the module and won’t crash Willowbot.
 * `quantity`: integer, default value: `1`; the quantity of generated random numbers.
 * `sort`: boolean, default value: `False`; if set to `True`, the generated numbers will be presented in ascending order.
 * `summarize`: boolean, default value: `False`; if set to `True`, the generated numbers will be presented in groups, using the format defined by the `summaryFormat` argument.
