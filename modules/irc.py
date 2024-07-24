@@ -1,11 +1,9 @@
 import datetime
 import importlib
 import platform  # Import module »platform« to be able to get the user’s operating system.
-import re # For checking the currently used version of Python.
 import socket
 import ssl
 import select
-import sys # For checking the currently used version of Python.
 import time
 
 # Nur fürs Debugging. Später entfernen.
@@ -49,12 +47,12 @@ class IRC:
       self.irc.connect((server, port)) # Connects to the server.
     elif port == 6697:
       # Wrap the socket.
-      subversion = re.findall("^3.([0-9.]+)", sys.version)[0]
-      print(subversion)
-      if float(subversion) >= 11:
-        self.irc = ssl.SSLContext().wrap_socket(self.irc)#, ssl_version=ssl.PROTOCOL_TLS)
-      else:
+      # Python versions prior 3.11.
+      if hasattr(ssl, "wrap_socket"):
         self.irc = ssl.wrap_socket(self.irc, ssl_version=ssl.PROTOCOL_TLS)
+      # Python versions 3.11 and above.
+      else:
+        self.irc = ssl.SSLContext().wrap_socket(self.irc)
       try:
         self.irc.connect((server, port)) # Connects to the server.
       except:
